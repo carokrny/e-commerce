@@ -1,18 +1,21 @@
 "use strict";
-
 const { Pool } = require('pg');
-const { DB } = require('./devConfig');
 
-const config = {
-    user: DB.PGUSER,
-    host: DB.PGHOST,
-    database: DB.PGDATABASE,
-    password: DB.PGPASSWORD,
-    port: DB.PGPORT
+require('dotenv').config();
+
+// configurations for development 
+const devConfig = {
+    user: process.env.PGUSER,
+    host: process.env.PGHOST,
+    database: process.env.PGDATABASE,
+    password: process.env.PGPASSWORD,
+    port: process.env.PGPORT
 };
 
-const pool = new Pool(config);
+// instantiate pool 
+const pool = new Pool(devConfig);
 
+// export query
 module.exports = {
     query: (text, params) => {
         return pool.query(text, params)
