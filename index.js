@@ -1,17 +1,17 @@
 const express = require('express');
-const app = express();
-
 const loaders = require('./loaders');
 
-const PORT = process.env.PORT || 4001;
+require('dotenv').config();
+
+const app = express();
 
 const startServer = async () => {
     // initilize express application
-    loaders(app);
+    await loaders(app);
 
     // Bind to port
-    app.listen(PORT, () => {
-        console.log(`Express server started at port ${PORT}`);
+    app.listen(process.env.PORT, () => {
+        console.log(`Express server started at port ${process.env.PORT}`);
     });
 }
 
