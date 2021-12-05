@@ -18,18 +18,14 @@ module.exports = (app) => {
     // trust first proxy for session
     app.set('trust proxy', 1) 
 
-    // enable session for use with passport 
-    app.use(session ({
-        secret: process.env.SESSION_SECRET, 
-        resave: false, 
-        saveUninitialized: true, 
-        cookie: {
-            maxAge: 1000 * 60 * 60 * 24 // 1 day
-        }
-    }));
+    // // enable session for use with passport-local
+    // app.use(session ({
+    //     secret: process.env.SESSION_SECRET, 
+    //     resave: false, 
+    //     saveUninitialized: true, 
+    //     cookie: {
+    //         maxAge: 1000 * 60 * 60 * 24 // 1 day
+    //     }
+    // }));
 
-    // NTS - add store property to session and npm i connect-pg-simple to save sessions data to database?
-
-    // ??
-    // return app;
 }

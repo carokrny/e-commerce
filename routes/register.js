@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const form = require('../templates/register');
+const registerPage = require('../templates/registerPage');
 const registerService = require('../services/registerService');
 
 module.exports = (app) => {
@@ -8,19 +8,14 @@ module.exports = (app) => {
 
     // GET new user registration 
     router.get('/', (req, res, next) => {
-        res.send(form);
+        res.send(registerPage);
     });
 
     // POST new user registration 
     router.post('/', async (req, res, next) => {
         try {
-            const newUser = await registerService(req.body);
-
-            if (newUser) {
-                res.status(201).redirect('./login');
-            } else {
-                res.status(400).send();
-            }
+            const userAndToken = await registerService(req.body);
+            res.status(201).json(userAndToken);
         } catch(err) {
             next(err);
         }

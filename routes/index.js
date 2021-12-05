@@ -1,12 +1,13 @@
-const loginRouter = require('./login');
+const homeRouter = require('./home');
 const registerRouter = require('./register');
-const userRouter = require('./user');
-const passport = require('../loaders/passport');
+const loginRouter = require('./login');
+const logoutRouter = require('./logout');
+const accountRouter = require('./account');
 
 module.exports = (app, passport) => {
-    loginRouter(app, passport);
+    homeRouter(app);
     registerRouter(app);
-    
-    // TO DELETE:
-    app.use('/user', userRouter);
+    loginRouter(app, passport);
+    logoutRouter(app, passport);
+    accountRouter(app, passport);
 }

@@ -1,5 +1,6 @@
 const router = require('express').Router();
-const form = require('../templates/login');
+const loginPage = require('../templates/loginPage');
+const loginService = require('../services/loginService');
 
 module.exports = (app, passport) => {
 
@@ -7,19 +8,17 @@ module.exports = (app, passport) => {
 
     // GET new user login  
     router.get('/', (req, res, next) => {
-        res.send(form);
+        res.send(loginPage.form);
     });
 
     // POST new user login 
-    router.post('/', passport.authenticate('local', { failureRedirect: '/login/failure', successRedirect: '/login/success' }));
-
-    // GET login success route 
-    router.get('/success', (req, res, next) => {
-        res.send(`<p>You have successfully logged in. --> [[add protected route]]</p>`)
+    router.post('/', async (req, res, next) => {
+        try {
+            const userAndToken = await loginService(req.body);
+            res.status(200).json(userAndToken);
+        } catch(err) {
+            next(err);
+        }
     });
 
-    // GET login failure route
-    router.get('/failure', (req, res, next) => {
-        res.send(`<p>Incorrect email or password. Please <a href="/login">try again</a>.` + form);
-    });
 };
