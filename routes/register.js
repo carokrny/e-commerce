@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const registerPage = require('../templates/registerPage');
 const registerService = require('../services/registerService');
 
 module.exports = (app) => {
@@ -8,7 +7,7 @@ module.exports = (app) => {
 
     // GET new user registration 
     router.get('/', (req, res, next) => {
-        res.send(registerPage);
+        res.send('Registration form goes here');
     });
 
     // POST new user registration 

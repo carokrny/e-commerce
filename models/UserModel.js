@@ -5,7 +5,8 @@ module.exports = class User {
     /**
     * Adds new user to the database
     * 
-    * @param {Obj} data     Data about user
+    * @param {Object} data Data about user
+    * @return {Oject} The new user
     */
     async create(data) {
         try {
@@ -13,9 +14,12 @@ module.exports = class User {
             const statement = `INSERT INTO users (email, pw_hash, pw_salt) 
                                 VALUES ($1, $2, $3) 
                                 RETURNING *`;
+
+            // pg values
+            const values = [data.email, data.hash, data.salt];
             
             // make query
-            const result = await db.query(statement, [data.email, data.hash, data.salt]);
+            const result = await db.query(statement, values);
 
             // check for valid results
             if (result.rows.length > 0) {
@@ -28,11 +32,44 @@ module.exports = class User {
         }
     }
 
+
+    /**
+    * Updates a user in the database
+    * 
+    * @param {Obj} data Data about user to update
+    * @return {Oject} The updated user
+    */
+    async update(data) {
+        try {
+            // pg statement
+            const statement = `UPDATE users  
+                                SET email=$2, pw_hash=$3, pw_salt=$4, first_name=$5, last_name=$6, cart_id=$7, modified=now()
+                                WHERE id = $1
+                                RETURNING *`;
+            
+            // pg values
+            const values = [data.id, data.email, data.pw_hash, data.pw_salt, data.first_name, data.last_name, data.cart_id];
+            
+            // make query
+            const result = await db.query(statement, values);
+
+            // check for valid results
+            if (result.rows.length > 0) {
+                return result.rows[0];
+            } else {
+                return null;
+            }
+        } catch(err) {
+            throw new Error(err);
+        }
+    }
+
+
     /**
      * Returns user associated with email in database, if exists
      *
-     * @param {string} email    The email to find user based on
-     * @return {Object|null}    The user
+     * @param {string} email the email to find user based on
+     * @return {Object|null} the user
      */
     async findByEmail(email) {
         try {
@@ -56,8 +93,8 @@ module.exports = class User {
     /**
      * Returns user associated with id in database, if exists
      *
-     * @param {number} id       The id to find user based on
-     * @return {Object|null}    The user
+     * @param {number} id the id to find user based on
+     * @return {Object|null} the user
      */
     async findById(id) {
         try {

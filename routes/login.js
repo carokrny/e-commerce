@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const loginPage = require('../templates/loginPage');
 const loginService = require('../services/loginService');
 
 module.exports = (app, passport) => {
@@ -8,7 +7,7 @@ module.exports = (app, passport) => {
 
     // GET new user login  
     router.get('/', (req, res, next) => {
-        res.send(loginPage.form);
+        res.send('Login form goes here.');
     });
 
     // POST new user login 
