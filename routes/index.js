@@ -3,6 +3,7 @@ const registerRouter = require('./register');
 const loginRouter = require('./login');
 const logoutRouter = require('./logout');
 const accountRouter = require('./account');
+const productsRouter = require('./products');
 
 module.exports = (app, passport) => {
     homeRouter(app);
@@ -10,4 +11,5 @@ module.exports = (app, passport) => {
     loginRouter(app, passport);
     logoutRouter(app, passport);
     accountRouter(app, passport);
+    productsRouter(app);
 }

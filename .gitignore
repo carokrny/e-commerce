@@ -6,3 +6,4 @@
 priv_key.pem
 pub_key.pem
 /templates
+.vscode/
