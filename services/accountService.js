@@ -3,18 +3,11 @@ const genPassword = require('../utils/passwordUtils').genPassword;
 const UserModel = require('../models/UserModel');
 const User = new UserModel();
 
-/**
- * Processes user updating their account 
- *
- * @param {Object} data contains account data to update
- * @param {number} id contains the id of the user to update
- * @returns {Object} containing info to be sent by http response
- */
-module.exports = async (data, id) => {
+module.exports = async (data, user_id) => {
     try {
 
         // check if user exists
-        const user = await User.findById(id);
+        const user = await User.findById(user_id);
         if (!user) {
             throw httpError(404, 'User not found.');
         }
