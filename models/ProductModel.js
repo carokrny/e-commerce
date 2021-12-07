@@ -63,7 +63,7 @@ module.exports = class Product {
             const statement = `SELECT * FROM products`;
 
             // make query
-            const result = await db.query(statement, []);
+            const result = await db.query(statement);
 
             // check for valid results
             if (result.rows.length > 0) {

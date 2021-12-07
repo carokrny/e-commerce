@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getAll, getById, getByCat } = require('../services/productService');
+const { getAll, getById, getCategory } = require('../services/productService');
 
 module.exports = (app) => {
 
@@ -8,8 +8,8 @@ module.exports = (app) => {
     // GET all products
     router.get('/', async (req, res, next) => {
         try {
-            const allProd = await getAll();
-            res.status(200).json(allProd);
+            const response = await getAll();
+            res.status(200).json(response);
         } catch(err) { 
             next(err)
         }
@@ -18,8 +18,8 @@ module.exports = (app) => {
     // GET product by id 
     router.get('/:id', async (req, res, next) => {
         try {
-            const product = await getById(req.params.id);
-            res.status(200).json(product);
+            const response = await getById(req.params.id);
+            res.status(200).json(response);
         } catch(err) { 
             next(err)
         }
@@ -28,8 +28,8 @@ module.exports = (app) => {
     // GET products by category 
     router.get('/category/:category', async (req, res, next) => {
         try {
-            const catProd = await getByCat(req.params.category);
-            res.status(200).json(catProd);
+            const response = await getCategory(req.params.category);
+            res.status(200).json(response);
         } catch(err) { 
             next(err)
         }

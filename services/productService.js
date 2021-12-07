@@ -25,7 +25,7 @@ module.exports.getById = async (id) => {
     }
 } 
 
-module.exports.getByCat = async (category) => {
+module.exports.getCategory = async (category) => {
     try {
         const prods = await Product.findByCategory(category);
 

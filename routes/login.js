@@ -13,8 +13,8 @@ module.exports = (app, passport) => {
     // POST new user login 
     router.post('/', async (req, res, next) => {
         try {
-            const userAndToken = await loginService(req.body);
-            res.status(200).json(userAndToken);
+            const response = await loginService(req.body);
+            res.status(200).json(response);
         } catch(err) {
             next(err);
         }
