@@ -78,4 +78,31 @@ module.exports = class Order {
             throw new Error(err);
         }
     }
+
+    /**
+     * Deletes order associated with id in database, if exists
+     *
+     * @param {number} id the id to delete order based on
+     * @return {Object|null} the order
+     */
+    async delete(id) {
+        try {
+            // pg statement
+            const statement = `DELETE FROM orders
+                                WHERE id=$1
+                                RETURNING *`;
+            
+            // make query
+            const result = await db.query(statement, [id]);
+
+            // check for valid results
+            if (result.rows.length > 0) {
+                return result.rows[0];
+            } else {
+                return null;
+            }
+        } catch(err) {
+            throw new Error(err);
+        }
+    }
 }

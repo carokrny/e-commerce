@@ -3,7 +3,7 @@ const genPassword = require('../utils/passwordUtils').genPassword;
 const UserModel = require('../models/UserModel');
 const User = new UserModel();
 
-module.exports = async (data, user_id) => {
+module.exports.updateAccount = async (data, user_id) => {
     try {
 
         // check if user exists
@@ -23,10 +23,18 @@ module.exports = async (data, user_id) => {
             }
         }
 
-        // send updated user to database
-        return User.update(user);
+        // update the user
+        const updatedUser = await User.update(user);
+
+        // throw error if not updated 
+        if (!updatedUser) {
+            throw httpError(500, 'Error updating user account.');
+        }
+
+        // return updated user;
+        return { user: updatedUser };
 
     } catch(err) {
-        throw new Error(err);
+        throw err;
     }
 }

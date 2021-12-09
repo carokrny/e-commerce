@@ -2,23 +2,6 @@ const httpError = require('http-errors');
 const CartItemModel = require('../models/CartItemModel');
 const CartItem = new CartItemModel();
 
-module.exports.getCartItem = async (data) => {
-    try {
-        // find cart item
-        const cartItem = await CartItem.findOne(data);
-        
-        // throw error if not found
-        if (!cartItem) {
-            throw httpError(404, 'Cart item not found');
-        }
-
-        return cartItem;
-
-    } catch(err) {
-        throw new Error(err);
-    }
-}
-
 module.exports.postCartItem = async (data) => {
     try {
         // check if cart item exists already
@@ -39,10 +22,27 @@ module.exports.postCartItem = async (data) => {
             throw httpError(404, 'Cart item not found');
         }
 
-        return cartItem;
+        return { cartItem };
 
     } catch(err) {
-        throw new Error(err);
+        throw err;
+    }
+}
+
+module.exports.getCartItem = async (data) => {
+    try {
+        // find cart item
+        const cartItem = await CartItem.findOne(data);
+        
+        // throw error if not found
+        if (!cartItem) {
+            throw httpError(404, 'Cart item not found');
+        }
+
+        return { cartItem };
+
+    } catch(err) {
+        throw err;
     }
 }
 
@@ -56,10 +56,10 @@ module.exports.putCartItem = async (data) => {
             throw httpError(404, 'Cart item not found');
         }
 
-        return cartItem;
+        return { cartItem };
 
     } catch(err) {
-        throw new Error(err);
+        throw err;
     }
 }
 
@@ -73,9 +73,9 @@ module.exports.deleteCartItem = async (data) => {
             throw httpError(404, 'Cart item not found');
         }
 
-        return cartItem;
+        return { cartItem };
 
     } catch(err) {
-        throw new Error(err);
+        throw err;
     }
 }

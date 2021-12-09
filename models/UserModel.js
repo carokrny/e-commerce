@@ -95,7 +95,6 @@ module.exports = class User {
         }
     }
 
-
     /**
      * Returns user associated with email in database, if exists
      *
@@ -134,6 +133,34 @@ module.exports = class User {
 
             // make query
             const result = await db.query(statement, [id]);
+
+            // check for valid results
+            if (result.rows.length > 0) {
+                return result.rows[0];
+            } else {
+                return null;
+            }
+        } catch(err) {
+            throw new Error(err);
+        }
+    }
+
+    /**
+     * Deletes user associated with email in database, if exists
+     * For use with testing, not for use with production. 
+     *
+     * @param {string} email the email to delete user based on
+     * @return {Object|null} the user
+     */
+    async deleteByEmail(email) {
+        try {
+            // pg statement
+            const statement = `DELETE FROM users  
+                                WHERE email=$1
+                                RETURNING *`
+
+            // make query
+            const result = await db.query(statement, [email]);
 
             // check for valid results
             if (result.rows.length > 0) {

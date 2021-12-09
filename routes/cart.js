@@ -10,7 +10,7 @@ module.exports = (app, passport) => {
     router.post('/', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
         try {
             const response = await postCart(req.user.id);
-            res.json(response);
+            res.status(201).json(response);
         } catch(err) {
             next(err);
         }
@@ -20,7 +20,7 @@ module.exports = (app, passport) => {
     router.get('/:cart_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
         try {
             const response = await getCart(req.params.cart_id);
-            res.json(response);
+            res.status(200).json(response);
         } catch(err) {
             next(err);
         }
@@ -33,7 +33,7 @@ module.exports = (app, passport) => {
             // Payment info would go in req.body and be processed by a 3rd party API (e.g., Paypal)
 
             const response = await getCheckout(req.user.id, req.params.cart_id);
-            res.json(response);
+            res.status(201).json(response);
         } catch(err) {
             next(err);
         }

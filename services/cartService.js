@@ -33,7 +33,7 @@ module.exports.postCart = async (user_id) => {
             cart: newCart
         }
     } catch(err) {
-        throw new Error(err);
+        throw err;
     }
 }
 
@@ -53,7 +53,7 @@ module.exports.getCart = async (cart_id) => {
             cartItems: cartItems
         }
     } catch(err) {
-        throw new Error(err);
+        throw err;
     }
 }
 
@@ -93,7 +93,7 @@ module.exports.getCheckout = async (user_id, cart_id) => {
                 const deletedCartItem = await CartItem.delete({ ...cartItem, cart_id: cart_id });
                 if (!deletedCartItem) {
                     throw httpError(500, 'Unable to remove cart items');
-                }
+            }
 
                 // add item to order items
                 orderItems.push(newOrderItem);
@@ -113,6 +113,6 @@ module.exports.getCheckout = async (user_id, cart_id) => {
         };
         
     } catch(err) {
-        throw new Error(err);
+        throw err;
     }
 }

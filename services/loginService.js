@@ -14,7 +14,7 @@ module.exports = async (data) => {
     try {
         // check for required inputs 
         const { email, password } = data;
-        if (!(email && password)) {
+        if (email === null || password === null || email.length === 0 || password.length === 0) {
             throw httpError(400, 'Email and password required.');
         };
         
@@ -23,7 +23,7 @@ module.exports = async (data) => {
 
         // if no user throw error 
         if (!user) {
-            throw httpError(404, 'User not found.');
+            throw httpError(401, 'Incorrect email or password.');
         };
 
         // validate password
@@ -33,9 +33,9 @@ module.exports = async (data) => {
         if (isValid) {
             return attachJWT(user);
         } else {
-            throw httpError(401, 'Incorrect password.');
+            throw httpError(401, 'Incorrect email or password.');
         }
     } catch(err) {
-        throw new Error(err);
+        throw err;
     };
 };

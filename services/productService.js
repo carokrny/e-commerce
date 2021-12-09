@@ -5,36 +5,47 @@ const Product = new ProductModel();
 
 module.exports.getAll = async () => {
     try {
-        return await Product.getAll();
+        const products = await Product.getAll();
+
+        // throw error if no products found 
+        if(!products) {
+            throw httpError(404, 'Products not in category.');
+        }
+
+        return { products };
+        
     } catch(err) {
-        throw new Error(err);
+        throw err;
     }
 } 
 
 module.exports.getById = async (id) => {
     try {
-        const prod = await Product.findById(id);
+        const product = await Product.findById(id);
 
-        if(!prod) {
+        // throw error if no product found
+        if(!product) {
             throw httpError(404, 'Product not found');
         }
 
-        return prod;
+        return { product };
+
     } catch(err) {
-        throw new Error(err);
+        throw err;
     }
 } 
 
 module.exports.getCategory = async (category) => {
     try {
-        const prods = await Product.findByCategory(category);
+        const products = await Product.findByCategory(category);
 
-        if(!prods) {
+        if(!products) {
             throw httpError(404, 'Products not in category.');
         }
 
-        return prods;
+        return { products };
+
     } catch(err) {
-        throw new Error(err);
+        throw err;
     }    
 } 

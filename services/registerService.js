@@ -14,7 +14,7 @@ module.exports = async (data) => {
     try {
         // check for required inputs 
         const { email, password } = data;
-        if (!(email && password)) {
+        if (email === null || password === null || email.length === 0 || password.length === 0) {
             throw httpError(400, 'Email and password required.');
         };
         
@@ -42,6 +42,6 @@ module.exports = async (data) => {
         }
 
     } catch(err) {
-        throw new Error(err);
+        throw err;
     };
 };

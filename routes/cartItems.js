@@ -8,19 +8,6 @@ module.exports = (app, passport) => {
 
     app.use('/:cart_id/item', router);
 
-    // GET cart item info by product id
-    router.get('/:product_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
-        try {
-            const { cart_id, product_id } = req.params;
-
-            const response = await getCartItem({ cart_id, product_id });
-            
-            res.status(200).json(response);
-        } catch(err) {
-            next(err);
-        }
-    });
-
     // POST cart item by product id
     router.post('/:product_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
         try {
@@ -30,6 +17,19 @@ module.exports = (app, passport) => {
             const response = await postCartItem({ cart_id, product_id, quantity });
 
             res.status(201).json(response);
+        } catch(err) {
+            next(err);
+        }
+    });
+
+    // GET cart item info by product id
+    router.get('/:product_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+        try {
+            const { cart_id, product_id } = req.params;
+
+            const response = await getCartItem({ cart_id, product_id });
+            
+            res.status(200).json(response);
         } catch(err) {
             next(err);
         }

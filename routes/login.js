@@ -7,7 +7,7 @@ module.exports = (app, passport) => {
 
     // GET new user login  
     router.get('/', (req, res, next) => {
-        res.send('Login form goes here.');
+        res.status(200).json('Login form goes here.');
     });
 
     // POST new user login 

@@ -7,14 +7,14 @@ module.exports = (app) => {
 
     // GET new user registration 
     router.get('/', (req, res, next) => {
-        res.send('Registration form goes here');
+        res.status(200).json('Registration form goes here');
     });
 
     // POST new user registration 
     router.post('/', async (req, res, next) => {
         try {
-            const userAndToken = await registerService(req.body);
-            res.status(201).json(userAndToken);
+            const response = await registerService(req.body);
+            res.status(201).json(response);
         } catch(err) {
             next(err);
         }
