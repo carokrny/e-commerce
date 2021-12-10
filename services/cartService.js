@@ -28,6 +28,10 @@ module.exports.postCart = async (user_id) => {
             throw httpError(404, 'User not found.');
         }
 
+        // wipe password info before returning
+        delete updatedUser.pw_hash;
+        delete updatedUser.pw_salt;
+
         return {
             user: updatedUser,
             cart: newCart
@@ -102,6 +106,10 @@ module.exports.getCheckout = async (user_id, cart_id) => {
 
         // update user cart to be null 
         const updatedUser = await User.updateCart({ id: user_id, cart_id: null });
+
+        // wipe password info before returning
+        delete updatedUser.pw_hash;
+        delete updatedUser.pw_salt;
 
         // delete cart deom database
         const deletedCart = await Cart.delete(cart_id);

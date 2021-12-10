@@ -11,6 +11,10 @@ module.exports.getAccount = async (user_id) => {
         if (!user) {
             throw httpError(404, 'User not found.');
         }
+        
+        // wipe password info before returning
+        delete user.pw_hash;
+        delete user.pw_salt;
 
         return { user };
 
@@ -46,6 +50,10 @@ module.exports.updateAccount = async (data, user_id) => {
         if (!updatedUser) {
             throw httpError(500, 'Error updating user account.');
         }
+
+        // wipe password info before returning
+        delete updatedUser.pw_hash;
+        delete updatedUser.pw_salt;
 
         // return updated user;
         return { user: updatedUser };
