@@ -47,48 +47,14 @@ describe ('Account endpoints', () => {
         })
     }),
 
-    describe('GET \'/account/:user_id\'', () => {
-
-        describe('Valid token', () => {
-
-            it ('Should return user info', async () => {
-                const res = await request(app)
-                    .get(`/account/${userId}`)
-                    .set('Authorization', token)
-                    .set('Accept', 'application/json')
-                    .expect('Content-Type', /json/)
-                    .expect(200);
-                expect(res.body).toBeDefined();
-                expect(res.body.user).toBeDefined();
-                expect(res.body.user.id).toEqual(userId);
-                expect(res.body.user.email).toEqual(testLogin.email);
-            })
-        }), 
-
-        describe('Invalid token', () => {
-
-            it ('Should return 401 error', (done) => {
-                request(app)
-                    .get(`/account/${userId}`)
-                    .set('Authorization', null)
-                    .set('Accept', 'application/json')
-                    .expect(401)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
-            })
-        })
-    }),
-
-    describe('PUT \'/account/:user_id\'', () => {
+    describe('PUT \'/account/\'', () => {
 
         describe('Valid token', () => {
 
             it ('Should return user info', async () => {
                 const firstName = 'Sam'
                 const res = await request(app)
-                    .put(`/account/${userId}`)
+                    .put(`/account/`)
                     .send({ first_name: firstName })
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
@@ -106,7 +72,7 @@ describe ('Account endpoints', () => {
 
             it ('Should return 401 error', (done) => {
                 request(app)
-                    .get(`/account/${userId}`)
+                    .get(`/account/`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(401)

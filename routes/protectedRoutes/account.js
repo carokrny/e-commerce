@@ -17,20 +17,11 @@ module.exports = (app) => {
 
         res.status(200).json(response);
     });
-    
-    // GET user info when user is logged into account, superfluous to above route
-    router.get('/:user_id', async (req, res ,next) => {
-        const user_id = req.params.user_id;
-
-        const response = await getAccount(user_id);
-
-        res.status(200).json(response);
-    });
 
     // PUT user update when user is logged into account
-    router.put('/:user_id', async (req, res ,next) => {
+    router.put('/', async (req, res ,next) => {
         try {
-            const user_id = req.params.user_id;
+            const user_id = req.jwt.sub;
             const data = req.body;
 
             const response = await updateAccount(data, user_id);
