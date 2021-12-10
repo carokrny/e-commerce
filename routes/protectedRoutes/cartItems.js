@@ -2,14 +2,14 @@ const router = require('express').Router({ mergeParams : true });
 const { getCartItem, 
     postCartItem, 
     putCartItem, 
-    deleteCartItem } = require('../services/cartItemService');
+    deleteCartItem } = require('../../services/cartItemService');
 
-module.exports = (app, passport) => {
+module.exports = (app) => {
 
     app.use('/:cart_id/item', router);
 
     // POST cart item by product id
-    router.post('/:product_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+    router.post('/:product_id', async (req, res ,next) => {
         try {
             const { cart_id, product_id } = req.params;
             const { quantity } = req.body;
@@ -23,7 +23,7 @@ module.exports = (app, passport) => {
     });
 
     // GET cart item info by product id
-    router.get('/:product_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+    router.get('/:product_id', async (req, res ,next) => {
         try {
             const { cart_id, product_id } = req.params;
 
@@ -36,7 +36,7 @@ module.exports = (app, passport) => {
     });
 
     // PUT cart item by product id
-    router.put('/:product_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+    router.put('/:product_id', async (req, res ,next) => {
         try {
             const { cart_id, product_id } = req.params;
             const { quantity } = req.body;
@@ -50,7 +50,7 @@ module.exports = (app, passport) => {
     });
 
     // DELETE cart item by product id
-    router.delete('/:product_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+    router.delete('/:product_id', async (req, res ,next) => {
         try {
             const { cart_id, product_id } = req.params;
 

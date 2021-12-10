@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const registerService = require('../services/registerService');
+const registerService = require('../../services/registerService');
 
 module.exports = (app) => {
     

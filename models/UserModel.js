@@ -104,7 +104,9 @@ module.exports = class User {
     async findByEmail(email) {
         try {
             // pg statement
-            const statement = `SELECT * FROM users WHERE email = $1`;
+            const statement = `SELECT *
+                                FROM users 
+                                WHERE email = $1`;
 
             // make query
             const result = await db.query(statement, [email]);
@@ -129,7 +131,9 @@ module.exports = class User {
     async findById(id) {
         try {
             // pg statement
-            const statement = `SELECT * FROM users WHERE id = $1`;
+            const statement = `SELECT *
+                                FROM users 
+                                WHERE id = $1`;
 
             // make query
             const result = await db.query(statement, [id]);

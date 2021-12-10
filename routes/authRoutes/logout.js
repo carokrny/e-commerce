@@ -1,11 +1,12 @@
 const router = require('express').Router();
+const isAuth = require('../../utils/jwtAuth');
 
-module.exports = (app, passport) => {
+module.exports = (app) => {
 
     app.use('/logout', router);
 
-    router.post('/', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-        req.logout();
+    router.post('/', isAuth, (req, res, next) => {
+        delete req.jwt;
         res.status(200).json('You have successfully been logged out.');
     })
 }

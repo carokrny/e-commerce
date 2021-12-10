@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getAll, getById, getCategory } = require('../services/productService');
+const { getAll, getById, getCategory } = require('../../services/productService');
 
 module.exports = (app) => {
 

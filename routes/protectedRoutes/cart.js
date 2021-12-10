@@ -1,15 +1,21 @@
 const router = require('express').Router();
 const cartItemsRouter = require('./cartItems');
-const { postCart, getCart, getCheckout } = require('../services/cartService');
+const { postCart, getCart, getCheckout } = require('../../services/cartService');
+const isAuth = require('../../utils/jwtAuth');
 
-module.exports = (app, passport) => {
+module.exports = (app) => {
 
     app.use('/cart', router);
 
+    router.use(isAuth);
+
     // POST create new cart for authenticated user
-    router.post('/', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+    router.post('/', async (req, res ,next) => {
         try {
-            const response = await postCart(req.user.id);
+            const user_id = req.jwt.sub;
+
+            const response = await postCart(user_id);
+
             res.status(201).json(response);
         } catch(err) {
             next(err);
@@ -17,9 +23,12 @@ module.exports = (app, passport) => {
     });
 
     // GET cart by cart id
-    router.get('/:cart_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+    router.get('/:cart_id', async (req, res ,next) => {
         try {
-            const response = await getCart(req.params.cart_id);
+            const cart_id = req.params.cart_id;
+
+            const response = await getCart(cart_id);
+
             res.status(200).json(response);
         } catch(err) {
             next(err);
@@ -27,12 +36,15 @@ module.exports = (app, passport) => {
     });
 
     // POST checkout
-    router.post('/:cart_id/checkout', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+    router.post('/:cart_id/checkout', async (req, res ,next) => {
         try {
             // NOTE: checkout process only updates database, it does not process payment since this is not a real site
             // Payment info would go in req.body and be processed by a 3rd party API (e.g., Paypal)
+            const user_id = req.jwt.sub;
+            const cart_id = req.params.cart_id;
 
-            const response = await getCheckout(req.user.id, req.params.cart_id);
+            const response = await getCheckout(user_id, cart_id);
+
             res.status(201).json(response);
         } catch(err) {
             next(err);
@@ -40,5 +52,5 @@ module.exports = (app, passport) => {
     });
 
     // extend route to cart items
-    cartItemsRouter(router, passport);
+    cartItemsRouter(router);
 }

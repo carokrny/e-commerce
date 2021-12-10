@@ -10,11 +10,17 @@ async function loadApp() {
     // load basic express middleware
     expressLoader(app);
     
-    // configure passport 
-    const passport = await passportLoader(app);
+    /**
+     * Taking passport out in favor of custom jwt middlware
+     */
+    // // configure passport 
+    // const passport = await passportLoader(app);
 
-    // configure routes with passport
-    routeLoader(app, passport);
+    // // configure routes with passport
+    // routeLoader(app, passport);
+
+    // load routes without passport
+    routeLoader(app);
 
     // lastly, add custom error-handling middleware
     app.use((err, req, res, next) => {

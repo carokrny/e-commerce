@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const pathToKey = path.join(__dirname, '..', 'pub_key.pem');
 require('dotenv').config();
+const UserModel = require('../models/UserModel');
+const User = new UserModel();
 
 const isProduction = process.env.NODE_ENV === 'production';
 const PUB_KEY = isProduction ? process.env.PUB_KEY : fs.readFileSync(pathToKey, 'utf8');
@@ -11,7 +13,6 @@ const PUB_KEY = isProduction ? process.env.PUB_KEY : fs.readFileSync(pathToKey, 
 /**
  * Custom JWT authentication middleware, to replace passport altogether
  * 
- * NOT CURRENTLY BEING USED, just for exercise
  * */
 module.exports = async (req, res, next) => {
     // split header which comes in format "Bearer eyJhbGciOiJ...."
@@ -24,6 +25,7 @@ module.exports = async (req, res, next) => {
             const verified = jwt.verify(headerParts[1], PUB_KEY, { algorithms: ['RS256'] });
             // attach verified JWT to request
             req.jwt = verified;
+            req.user = await User.findById(verified.sub);
             next();
         } catch(err) {
             next(err);

@@ -13,6 +13,14 @@ const User = new UserModel();
 const isProduction = process.env.NODE_ENV === 'production';
 const PUB_KEY = isProduction ? process.env.PUB_KEY : fs.readFileSync(pathToKey, 'utf8');
 
+/**
+ * Passport authentication middleware
+ * implementations of local strategy and jwt strategy below. 
+ *
+ * NOT CURRENTLY BEING USED, developed as a learning exercise
+ *
+ */
+
 module.exports = async (app) => {
 
     // connect express app to passport 

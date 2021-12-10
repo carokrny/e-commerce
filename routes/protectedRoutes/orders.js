@@ -1,14 +1,17 @@
 const router = require('express').Router({ mergeParams : true });
-const { getAllOrders, getOneOrder } = require('../services/orderService');
+const { getAllOrders, getOneOrder } = require('../../services/orderService');
 
-module.exports = (app, passport) => {
+module.exports = (app) => {
     
     app.use('/orders', router);
 
     // GET all of a user's orders
-    router.get('/all', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+    router.get('/all', async (req, res ,next) => {
         try {
-            const response = await getAllOrders(req.user.id);
+            const user_id = req.jwt.sub;
+
+            const response = await getAllOrders(user_id);
+
             res.status(200).json(response);
         } catch(err) {
             next(err);
@@ -16,10 +19,15 @@ module.exports = (app, passport) => {
     });
 
     // GET a particular order
-    router.get('/:order_id', passport.authenticate('jwt', {session: false}), async (req, res ,next) => {
+    router.get('/:order_id', async (req, res ,next) => {
         try {
-            const data = { user_id: req.user.id, order_id: req.params.order_id }
+            const data = { 
+                user_id: req.jwt.sub, 
+                order_id: req.params.order_id 
+            };
+
             const response = await getOneOrder(data);
+
             res.status(200).json(response);
         } catch(err) {
             next(err);

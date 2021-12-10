@@ -1,7 +1,7 @@
 const router = require('express').Router();
-const loginService = require('../services/loginService');
+const loginService = require('../../services/loginService');
 
-module.exports = (app, passport) => {
+module.exports = (app) => {
 
     app.use('/login', router);
 
