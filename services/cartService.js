@@ -1,41 +1,24 @@
 const httpError = require('http-errors');
-const UserModel = require('../models/UserModel');
 const CartModel = require('../models/CartModel');
 const CartItemModel = require('../models/CartItemModel');
 const OrderModel = require('../models/OrderModel');
 const OrderItemModel = require('../models/OrderItemModel');
 const Cart = new CartModel();
 const CartItem = new CartItemModel();
-const User = new UserModel();
 const Order = new OrderModel();
 const OrderItem = new OrderItemModel();
 
 module.exports.postCart = async (user_id) => {
     try {
         // create a new cart
-        const newCart = await Cart.create();
+        const cart = await Cart.create(user_id);
         
         // check that cart was created
-        if (!newCart) {
+        if (!cart) {
             throw httpError(500, 'Server error creating cart.');
         }
 
-        // assign cart PK as FK in user db
-        const updatedUser = await User.updateCart({ id: user_id, cart_id: newCart.id });
-        
-        // check that user was updated
-        if (!updatedUser) {
-            throw httpError(404, 'User not found.');
-        }
-
-        // wipe password info before returning
-        delete updatedUser.pw_hash;
-        delete updatedUser.pw_salt;
-
-        return {
-            user: updatedUser,
-            cart: newCart
-        }
+        return { cart }
     } catch(err) {
         throw err;
     }
@@ -104,20 +87,12 @@ module.exports.getCheckout = async (user_id, cart_id) => {
             }
         }
 
-        // update user cart to be null 
-        const updatedUser = await User.updateCart({ id: user_id, cart_id: null });
-
-        // wipe password info before returning
-        delete updatedUser.pw_hash;
-        delete updatedUser.pw_salt;
-
-        // delete cart deom database
+        // delete cart from database
         const deletedCart = await Cart.delete(cart_id);
 
         return {
             order: newOrder, 
             orderItems: orderItems,
-            user: updatedUser
         };
         
     } catch(err) {

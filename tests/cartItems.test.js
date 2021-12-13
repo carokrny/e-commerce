@@ -1,6 +1,6 @@
 const app = require('../app');
 const request = require('supertest');
-const { testLogin, userId, product, updatedProduct } = require('./testData');
+const { testLogin2, product, updatedProduct } = require('./testData');
 const CartModel = require('../models/CartModel');
 const UserModel = require('../models/UserModel');
 const Cart = new CartModel();
@@ -15,7 +15,7 @@ describe ('Cart endpoints', () => {
         // create JWT for authentication 
         const res = await request(app)
             .post('/login')
-            .send(testLogin);
+            .send(testLogin2);
         token = res.body.token;
 
         // create a cart for cart_item endpoints 
@@ -28,8 +28,6 @@ describe ('Cart endpoints', () => {
 
     afterAll(async () => {
         if(cartId) {
-            // update user's cart to be null
-            await User.updateCart({ id: userId, cart_id: null });
             // delete cart
             await Cart.delete(cartId);
         }

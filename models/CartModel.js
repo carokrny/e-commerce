@@ -5,17 +5,18 @@ module.exports = class Cart {
     /**
     * Adds new cart to the database
     * 
+    * @param {number} user_id id of the user of the cart
     * @return {Oject} The new cart
     */
-    async create() {
+    async create(user_id) {
         try {
             // pg statement
-            const statement = `INSERT INTO carts
-                                DEFAULT VALUES
+            const statement = `INSERT INTO carts (user_id)
+                                VALUES ($1)
                                 RETURNING *`;
             
             // make query
-            const result = await db.query(statement);
+            const result = await db.query(statement, [user_id]);
 
             // check for valid results
             if (result.rows.length > 0) {

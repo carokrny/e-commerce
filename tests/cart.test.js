@@ -44,9 +44,7 @@ describe ('Cart endpoints', () => {
                     .set('Accept', 'application/json')
                     .expect(201);
                 expect(res.body).toBeDefined();
-                expect(res.body.user).toBeDefined();
                 expect(res.body.cart).toBeDefined();
-                expect(res.body.user.id).toEqual(userId);
                 newCartId = res.body.cart.id;
             });
         }), 

@@ -45,3 +45,12 @@ module.exports.userAccountPut = {
     zip: '94103', 
     country: 'United States'
 }
+
+
+
+// test login 2 since tests run synchronously and carts must have unique user_id
+// test login 2 is used for cartItems 
+ module.exports.testLogin2 = {
+    email: 'john@me.com', 
+    password: 'abc123'
+ };
