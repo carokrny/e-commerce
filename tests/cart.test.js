@@ -12,8 +12,10 @@ describe ('Cart endpoints', () => {
 
     var token;
 
-    var newCartId;
-    var newOrderId;
+    var newCartId_token;
+    var newCartId_noToken;
+    var newOrderId_token;
+    var newOrderId_noToken
 
     beforeAll(async () => {
         // create JWT for authentication 
@@ -24,12 +26,20 @@ describe ('Cart endpoints', () => {
     }),
 
     afterAll(async() => {
-        if(newOrderId) {
+        if(newOrderId_token) {
             // delete order_item created by checkout test
-            await OrderItem.delete({ order_id: newOrderId, product_id: product.product_id });
+            await OrderItem.delete({ order_id: newOrderId_token, product_id: product.product_id });
 
             // delete order created by checkout test
-            await Order.delete(newOrderId);
+            await Order.delete(newOrderId_token);
+        }
+
+        if(newOrderId_noToken) {
+            // delete order_item created by checkout test
+            await OrderItem.delete({ order_id: newOrderId_noToken, product_id: product.product_id });
+
+            // delete order created by checkout test
+            await Order.delete(newOrderId_noToken);
         }
     }),
 
@@ -45,25 +55,24 @@ describe ('Cart endpoints', () => {
                     .expect(201);
                 expect(res.body).toBeDefined();
                 expect(res.body.cart).toBeDefined();
-                newCartId = res.body.cart.id;
+                newCartId_token = res.body.cart.id;
             });
         }), 
 
         describe('Invalid token', () => {
 
-            it ('Should return 401 error', (done) => {
-                request(app)
+            it ('Should create a new cart', async () => {
+                const res = await request(app)
                     .post('/cart')
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
-                    .expect(401)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
+                    .expect(201);
+                expect(res.body).toBeDefined();
+                expect(res.body.cart).toBeDefined();
+                newCartId_noToken = res.body.cart.id;
             })
         })
-    }),
+    })
 
     describe('GET \'/cart/cart_id\'', () => {
 
@@ -71,28 +80,27 @@ describe ('Cart endpoints', () => {
 
             it ('Should get the cart', async () => {
                 const res = await request(app)
-                    .get(`/cart/${newCartId}`)
+                    .get(`/cart/${newCartId_token}`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(200);
                 expect(res.body).toBeDefined();
                 expect(res.body.cart).toBeDefined();
-                expect(res.body.cart.id).toEqual(newCartId);
+                expect(res.body.cart.id).toEqual(newCartId_token);
             })
         }), 
 
         describe('Invalid token', () => {
             
-            it ('Should return 401 error', (done) => {
-                request(app)
-                    .get(`/cart/${newCartId}`)
+            it ('Should get the cart', async () => {
+                const res = await request(app)
+                    .get(`/cart/${newCartId_noToken}`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
-                    .expect(401)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
+                    .expect(200);
+                expect(res.body).toBeDefined();
+                expect(res.body.cart).toBeDefined();
+                expect(res.body.cart.id).toEqual(newCartId_noToken);
             })
         })
     }),
@@ -103,7 +111,7 @@ describe ('Cart endpoints', () => {
 
             it ('Should reject an empty cart with 404 error', (done) => {
                 request(app)
-                    .post(`/cart/${newCartId}/checkout`)
+                    .post(`/cart/${newCartId_token}/checkout`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(404)
@@ -115,9 +123,9 @@ describe ('Cart endpoints', () => {
 
             it ('Should create a new order', async () => {
                 // add a product to cart to avoid empty cart error 
-                await CartItem.create({ ...product, cart_id: newCartId });
+                await CartItem.create({ ...product, cart_id: newCartId_token });
                 const res = await request(app)
-                    .post(`/cart/${newCartId}/checkout`)
+                    .post(`/cart/${newCartId_token}/checkout`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(201);
@@ -125,22 +133,37 @@ describe ('Cart endpoints', () => {
                 expect(res.body.order).toBeDefined();
                 expect(res.body.orderItems).toBeDefined();
                 expect(res.body.orderItems[0].product_id).toEqual(product.product_id);
-                newOrderId = res.body.order.id;
+                newOrderId_token = res.body.order.id;
             })
         }),
 
         describe('Invaid token', () => {
 
-            it ('Should return 401 error', (done) => {
+            it ('Should reject an empty cart with 404 error', (done) => {
                 request(app)
-                    .post(`/cart/${newCartId}/checkout`)
+                    .post(`/cart/${newCartId_noToken}/checkout`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
-                    .expect(401)
+                    .expect(404)
                     .end((err, res) => {
                         if (err) return done(err);
                         return done();
                     });
+            })
+
+            it ('Should return 401 error', async () => {
+                // add a product to cart to avoid empty cart error 
+                await CartItem.create({ ...product, cart_id: newCartId_noToken });
+                const res = await request(app)
+                    .post(`/cart/${newCartId_noToken}/checkout`)
+                    .set('Authorization', null)
+                    .set('Accept', 'application/json')
+                    .expect(201);
+                expect(res.body).toBeDefined();
+                expect(res.body.order).toBeDefined();
+                expect(res.body.orderItems).toBeDefined();
+                expect(res.body.orderItems[0].product_id).toEqual(product.product_id);
+                newOrderId_noToken = res.body.order.id;
             })
         })
     })

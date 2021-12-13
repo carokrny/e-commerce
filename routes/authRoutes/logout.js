@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const isAuth = require('../../utils/jwtAuth');
+const { isAuth } = require('../../utils/jwtAuth');
 
 module.exports = (app) => {
 

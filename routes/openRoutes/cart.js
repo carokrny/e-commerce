@@ -1,18 +1,19 @@
 const router = require('express').Router();
 const cartItemsRouter = require('./cartItems');
 const { postCart, getCart, getCheckout } = require('../../services/cartService');
-const isAuth = require('../../utils/jwtAuth');
+const { demiAuth } = require('../../utils/jwtAuth');
 
 module.exports = (app) => {
 
     app.use('/cart', router);
 
-    router.use(isAuth);
+    // demi auth will still allow a user access if they are not logged in
+    router.use(demiAuth);
 
     // POST create new cart for authenticated user
     router.post('/', async (req, res ,next) => {
         try {
-            const user_id = req.jwt.sub;
+            const user_id = req.jwt ? req.jwt.sub : null;
 
             const response = await postCart(user_id);
 
@@ -40,7 +41,7 @@ module.exports = (app) => {
         try {
             // NOTE: checkout process only updates database, it does not process payment since this is not a real site
             // Payment info would go in req.body and be processed by a 3rd party API (e.g., Paypal)
-            const user_id = req.jwt.sub;
+            const user_id = req.jwt ? req.jwt.sub : null;
             const cart_id = req.params.cart_id;
 
             const response = await getCheckout(user_id, cart_id);

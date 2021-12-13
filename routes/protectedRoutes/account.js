@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const ordersRouter = require('./orders');
 const { getAccount, updateAccount } = require('../../services/accountService');
-const isAuth = require('../../utils/jwtAuth');
+const { isAuth }  = require('../../utils/jwtAuth');
 
 module.exports = (app) => {
 
