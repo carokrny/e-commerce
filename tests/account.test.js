@@ -1,6 +1,6 @@
 const app = require('../app');
 const request = require('supertest');
-const { testLogin, userId } = require('./testData');
+const { testLogin, userId, userAccountPut } = require('./testData');
 
 describe ('Account endpoints', () => {
 
@@ -52,10 +52,9 @@ describe ('Account endpoints', () => {
         describe('Valid token', () => {
 
             it ('Should return user info', async () => {
-                const firstName = 'Sam'
                 const res = await request(app)
                     .put(`/account/`)
-                    .send({ first_name: firstName })
+                    .send(userAccountPut)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
@@ -64,7 +63,8 @@ describe ('Account endpoints', () => {
                 expect(res.body.user).toBeDefined();
                 expect(res.body.user.id).toEqual(userId);
                 expect(res.body.user.email).toEqual(testLogin.email);
-                expect(res.body.user.first_name).toEqual(firstName);
+                expect(res.body.user.first_name).toEqual(userAccountPut.first_name);
+                expect(res.body.user.address.zip).toEqual(userAccountPut.zip);
             })
         }), 
 

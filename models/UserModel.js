@@ -43,12 +43,24 @@ module.exports = class User {
         try {
             // pg statement
             const statement = `UPDATE users  
-                                SET email=$2, pw_hash=$3, pw_salt=$4, first_name=$5, last_name=$6, modified=now()
+                                SET email=$2, 
+                                    pw_hash=$3, 
+                                    pw_salt=$4, 
+                                    first_name=$5, 
+                                    last_name=$6, 
+                                    address_id=$7, 
+                                    modified=now()
                                 WHERE id = $1
                                 RETURNING *`;
             
             // pg values
-            const values = [data.id, data.email, data.pw_hash, data.pw_salt, data.first_name, data.last_name];
+            const values = [data.id, 
+                            data.email, 
+                            data.pw_hash, 
+                            data.pw_salt, 
+                            data.first_name, 
+                            data.last_name, 
+                            data.address_id];
             
             // make query
             const result = await db.query(statement, values);

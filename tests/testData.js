@@ -35,3 +35,13 @@ module.exports.updatedProduct = {
     product_id: 1,
     quantity: 5
 };
+
+module.exports.userAccountPut = {
+    first_name: 'Sam', 
+    address1: '643 Minna St',
+    address2: 'Apt 3',
+    city: 'San Francisco', 
+    state: 'CA', 
+    zip: '94103', 
+    country: 'United States'
+}
