@@ -53,6 +53,34 @@ module.exports = class Product {
     }
 
     /**
+     * Returns products in the specified query, if exists
+     *
+     * @param {String} query the query to find products based on
+     * @return {Object|null} the product(s) that fit the query
+     */
+    async findByQuery(query) {
+        try {
+            // pg statement
+            const statement = `SELECT * 
+                                FROM products 
+                                WHERE LOWER(description) 
+                                LIKE LOWER('%' || $1 || '%')`;
+
+            // make query
+            const result = await db.query(statement, [query]);
+
+            // check for valid results
+            if (result.rows.length > 0) {
+                return result.rows;
+            } else {
+                return null;
+            }
+        } catch(err) {
+            throw new Error(err);
+        }
+    }
+
+    /**
      * Returns all products in the database
      *
      * @return {Object|null} the product(s), if there are any on the database

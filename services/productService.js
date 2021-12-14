@@ -49,3 +49,34 @@ module.exports.getCategory = async (category) => {
         throw err;
     }    
 } 
+
+module.exports.getSearch = async (query) => {         // NTS - won't scale well, come up with a better search
+    try {
+        // return error if no queries
+        if (!query) {
+            throw httpError(400, 'Please enter search query.');
+        }
+
+        // get all products
+        var products = [];
+        
+        // remove products that do not match query 
+        for (var [key, value] of Object.entries(query)) {
+            value = value.toLowerCase();
+            const queryResults = await Product.findByQuery(value);
+            if (queryResults) {
+                products = [...products, ...queryResults];
+            }
+        }
+
+        // return error if no products match query
+        if(products.length === 0) {
+            throw httpError(404, 'No results. Please try another search.');
+        }
+
+        return { products };
+
+    } catch(err) {
+        throw err;
+    }    
+} 

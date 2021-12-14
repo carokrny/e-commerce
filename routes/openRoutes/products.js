@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getAll, getById, getCategory } = require('../../services/productService');
+const { getAll, getById, getCategory, getSearch } = require('../../services/productService');
 
 module.exports = (app) => {
 
@@ -15,10 +15,22 @@ module.exports = (app) => {
         }
     });
 
-    // GET product by id 
-    router.get('/:id', async (req, res, next) => {
+    // GET products by search query 
+    router.get('/search', async (req, res, next) => {
         try {
-            const response = await getById(req.params.id);
+            const query = req.query;
+            const response = await getSearch(query);
+            res.status(200).json(response);
+        } catch(err) { 
+            next(err)
+        }
+    });
+
+    // GET product by id 
+    router.get('/:product_id', async (req, res, next) => {
+        try {
+            const product_id = req.params.product_id
+            const response = await getById(product_id);
             res.status(200).json(response);
         } catch(err) { 
             next(err)
@@ -28,11 +40,11 @@ module.exports = (app) => {
     // GET products by category 
     router.get('/category/:category', async (req, res, next) => {
         try {
-            const response = await getCategory(req.params.category);
+            const category = req.params.category;
+            const response = await getCategory(category);
             res.status(200).json(response);
         } catch(err) { 
             next(err)
         }
     });
-
 }

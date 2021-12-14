@@ -17,6 +17,23 @@ describe ('Product endpoints', () => {
         })
     }), 
 
+    describe('GET \'/products/search?q=cotton\'', () => {
+
+        it ('should return products by category', async () => {
+            const query = 'cotton';
+            const res = await request(app)
+                .get(`/products/search?q=${query}`)
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(200);
+            expect(res.body).toBeDefined();
+            expect(res.body.products).toBeDefined();
+            expect(res.body.products[0]).toBeDefined();
+            expect(res.body.products[0].description).toBeDefined();
+            expect(res.body.products[0].description).toContain(query);
+        })
+    }),
+
     describe('GET \'/products/:product_id\'', () => {
 
         it ('should return a product by id', async () => {
