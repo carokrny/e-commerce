@@ -1,10 +1,10 @@
-const homeRouter = require('./openRoutes/home');
-const productsRouter = require('./openRoutes/products');
-const cartRouter = require('./openRoutes/cart');
+const homeRouter = require('./shopRoutes/home');
+const productsRouter = require('./shopRoutes/products');
+const cartRouter = require('./shopRoutes/cart');
 const registerRouter = require('./authRoutes/register');
 const loginRouter = require('./authRoutes/login');
 const logoutRouter = require('./authRoutes/logout');
-const accountRouter = require('./protectedRoutes/account');
+const accountRouter = require('./accountRoutes/account');
 
 
 module.exports = (app) => {
