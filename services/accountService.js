@@ -1,5 +1,5 @@
 const httpError = require('http-errors');
-const genPassword = require('../utils/passwordUtils').genPassword;
+const genPassword = require('../lib/passwordUtils').genPassword;
 const UserModel = require('../models/UserModel');
 const AddressModel = require('../models/AddressModel');
 const User = new UserModel();

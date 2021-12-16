@@ -1,6 +1,6 @@
 const passport = require('passport');
-// const LocalStrategy = require('passport-local').Strategy;
-// const validPassword = require('../utils/passwordUtils').validPassword;
+const LocalStrategy = require('passport-local').Strategy;
+const validPassword = require('../lib/passwordUtils').validPassword;
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 const fs = require('fs');
@@ -26,55 +26,55 @@ module.exports = async (app) => {
     // connect express app to passport 
     app.use(passport.initialize());
 
-    // // -- START LOCAL STRATEGY SECTION --
+    // -- START LOCAL STRATEGY SECTION --
 
-    // // initialize session for local strategy
-    // app.use(passport.session());
+    // initialize session for local strategy
+    app.use(passport.session());
 
-    // // field names from HTML form that passport should look for in JSON
-    // const fieldNames = {
-    //     usernameField: 'email', 
-    //     passwrdField: 'password'
-    // };
+    // field names from HTML form that passport should look for in JSON
+    const fieldNames = {
+        usernameField: 'email', 
+        passwrdField: 'password'
+    };
 
-    // // use local strategy for initial login 
-    // passport.use(new LocalStrategy(fieldNames, async (username, password, done) => {
-    //     try {
-    //         // find user in database, if one exists
-    //         const user = await User.findByEmail(username);
+    // use local strategy for initial login 
+    passport.use(new LocalStrategy(fieldNames, async (username, password, done) => {
+        try {
+            // find user in database, if one exists
+            const user = await User.findByEmail(username);
             
-    //         // if no user, tell passport to be done
-    //         if(!user) return done(null, false);
+            // if no user, tell passport to be done
+            if(!user) return done(null, false);
 
-    //         // validate user password 
-    //         const isValid = validPassword(password, user.pw_hash, user.pw_salt);
+            // validate user password 
+            const isValid = validPassword(password, user.pw_hash, user.pw_salt);
 
-    //         if (isValid) {
-    //             return done(null, user);
-    //         } else {
-    //             return done(null, false);
-    //         };
-    //     } catch(err) {
-    //         done(err);
-    //     };
-    // }));
+            if (isValid) {
+                return done(null, user);
+            } else {
+                return done(null, false);
+            };
+        } catch(err) {
+            done(err);
+        };
+    }));
 
-    // // put user id into the session
-    // passport.serializeUser((user, done) => {
-    //     done(null, user.id);
-    // });
+    // put user id into the session
+    passport.serializeUser((user, done) => {
+        done(null, user.id);
+    });
 
-    // // take user id out of the session 
-    // passport.deserializeUser(async (userId, done) => {
-    //     try {
-    //         const user = await User.findById(userId);
-    //         done(null, user);
-    //     } catch(err) {
-    //         done(err);
-    //     }
-    // });
+    // take user id out of the session 
+    passport.deserializeUser(async (userId, done) => {
+        try {
+            const user = await User.findById(userId);
+            done(null, user);
+        } catch(err) {
+            done(err);
+        }
+    });
 
-    // // -- END LOCAL STRATEGY SECTION --
+    // -- END LOCAL STRATEGY SECTION --
 
 
 

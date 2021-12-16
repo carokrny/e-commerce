@@ -6,12 +6,15 @@ const { getCartItem,
 
 module.exports = (app) => {
 
-    app.use('/:cart_id/item', router);
+    app.use('/item', router);
 
     // POST cart item by product id
     router.post('/:product_id', async (req, res ,next) => {
         try {
-            const { cart_id, product_id } = req.params;
+            // grab cart_id from express session
+            const cart_id = req.session.cart_id ? req.session.cart_id : null;
+            // grab product_id and quantity from express objects
+            const { product_id } = req.params;
             const { quantity } = req.body;
 
             const response = await postCartItem({ cart_id, product_id, quantity });
@@ -25,7 +28,10 @@ module.exports = (app) => {
     // GET cart item info by product id
     router.get('/:product_id', async (req, res ,next) => {
         try {
-            const { cart_id, product_id } = req.params;
+            // grab cart_id from express session
+            const cart_id = req.session.cart_id ? req.session.cart_id : null;
+            // grab product_id from express params object
+            const { product_id } = req.params;
 
             const response = await getCartItem({ cart_id, product_id });
             
@@ -38,7 +44,10 @@ module.exports = (app) => {
     // PUT cart item by product id
     router.put('/:product_id', async (req, res ,next) => {
         try {
-            const { cart_id, product_id } = req.params;
+            // grab cart_id from express session
+            const cart_id = req.session.cart_id ? req.session.cart_id : null;
+            // grab product_id and quantity from express objects
+            const { product_id } = req.params;
             const { quantity } = req.body;
 
             const response = await putCartItem({ cart_id, product_id, quantity });
@@ -52,7 +61,10 @@ module.exports = (app) => {
     // DELETE cart item by product id
     router.delete('/:product_id', async (req, res ,next) => {
         try {
-            const { cart_id, product_id } = req.params;
+            // grab cart_id from express session
+            const cart_id = req.session.cart_id ? req.session.cart_id : null;
+            // grab product_id from express params object
+            const { product_id } = req.params;
 
             const response = await deleteCartItem({ cart_id, product_id });
 

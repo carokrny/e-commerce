@@ -4,6 +4,11 @@ const CartItem = new CartItemModel();
 
 module.exports.postCartItem = async (data) => {
     try {
+        // throw error if no cart_id
+        if(!data.cart_id) {
+            throw httpError(400, 'No cart identifier.');
+        }
+
         // check if cart item exists already
         var cartItem = await CartItem.findOne(data);
 
@@ -31,6 +36,11 @@ module.exports.postCartItem = async (data) => {
 
 module.exports.getCartItem = async (data) => {
     try {
+        // throw error if no cart_id
+        if(!data.cart_id) {
+            throw httpError(400, 'No cart identifier.');
+        }
+
         // find cart item
         const cartItem = await CartItem.findOne(data);
         
@@ -48,6 +58,11 @@ module.exports.getCartItem = async (data) => {
 
 module.exports.putCartItem = async (data) => {
     try {
+        // throw error if no cart_id
+        if(!data.cart_id) {
+            throw httpError(400, 'No cart identifier.');
+        }
+
         // update quantity of item in cart
         const cartItem = await CartItem.update(data);
 
@@ -65,6 +80,11 @@ module.exports.putCartItem = async (data) => {
 
 module.exports.deleteCartItem = async (data) => {
     try {
+        // throw error if no cart_id
+        if(!data.cart_id) {
+            throw httpError(400, 'No cart identifier.');
+        }
+
         // delete cart item and return it
         const cartItem = await CartItem.delete(data);
 

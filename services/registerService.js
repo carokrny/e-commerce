@@ -1,6 +1,6 @@
 const httpError = require('http-errors');
-const genPassword = require('../utils/passwordUtils').genPassword;
-const attachJWT = require('../utils/attachJWT');
+const genPassword = require('../lib/passwordUtils').genPassword;
+const attachJWT = require('../lib/attachJWT');
 const UserModel = require('../models/UserModel');
 const User = new UserModel();
 

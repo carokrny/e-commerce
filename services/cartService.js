@@ -26,6 +26,11 @@ module.exports.postCart = async (user_id) => {
 
 module.exports.getCart = async (cart_id) => {
     try {
+        // throw error if no cart_id
+        if(!cart_id) {
+            throw httpError(400, 'No cart identifier.');
+        }
+
         // throw error if cart not found 
         const cart = await Cart.findById(cart_id);
         if (!cart) {
@@ -46,6 +51,11 @@ module.exports.getCart = async (cart_id) => {
 
 module.exports.getCheckout = async (user_id, cart_id) => {
     try {
+        // throw error if no cart_id
+        if(!cart_id) {
+            throw httpError(400, 'No cart identifier.');
+        }
+
         // throw error if cart not found
         const cart = await Cart.findById(cart_id);        
         if (!cart) {

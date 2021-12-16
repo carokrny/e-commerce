@@ -1,57 +1,47 @@
 const app = require('../app');
 const request = require('supertest');
+const session = require('supertest-session');
 const { testLogin2, product, updatedProduct } = require('./testData');
 const CartModel = require('../models/CartModel');
-const UserModel = require('../models/UserModel');
+const CartItemModel = require('../models/CartItemModel');
 const Cart = new CartModel();
-const User = new UserModel();
+const CartItem = new CartItemModel();
 
 describe ('Cart endpoints', () => {
 
-    var token;
-    var cartId_token;
-    var cartId_noToken;
+    describe('Valid JWT', () => {
 
-    beforeAll(async () => {
-        // create JWT for authentication 
-        const res = await request(app)
-            .post('/login')
-            .send(testLogin2);
-        token = res.body.token;
+        var token;
+        var cartId;
+        var testSession;
 
-        // create a cart for cart_item endpoints with a token
-        const res2 = await request(app)
-            .post('/cart')
-            .set('Authorization', token)
-            .set('Accept', 'application/json');
-        cartId_token = res2.body.cart.id;
+        beforeAll(async () => {
+            // create JWT for authentication 
+            const res = await request(app)
+                .post('/login')
+                .send(testLogin2);
+            token = res.body.token;
 
-        // create a cart for cart_item endpoints without a token
-        const res3 = await request(app)
-            .post('/cart')
-            .set('Authorization', null)
-            .set('Accept', 'application/json');
-        cartId_noToken = res3.body.cart.id;
-    }),
+            testSession = session(app);
 
-    afterAll(async () => {
-        if(cartId_token) {
-            // delete cart
-            await Cart.delete(cartId_token);
-        }
+            const res2 = await testSession
+                    .post('/cart')
+                    .set('Authorization', token)
+                    .set('Accept', 'application/json');
+            cartId = res2.body.cart.id;
+        }),
 
-        if(cartId_noToken) {
-            // delete cart
-            await Cart.delete(cartId_noToken);
-        }
-    }),
+        afterAll(async () => {
+            if (cartId) {
+                await Cart.delete(cartId);
+            }
+        }),
 
-    describe('POST \'/cart/:cart_id/item/:product_id\'', () => {
+        describe('POST \'/cart/item/:product_id\'', () => {
 
-        describe('Valid token', () => {
             it('Should return the cart item', async () => {
-                const res = await request(app)
-                    .post(`/cart/${cartId_token}/item/${product.product_id}`)
+                const res = await testSession
+                    .post(`/cart/item/${product.product_id}`)
                     .send(product)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
@@ -59,14 +49,130 @@ describe ('Cart endpoints', () => {
                 expect(res.body).toBeDefined();
                 expect(res.body.cartItem).toBeDefined();
                 expect(res.body.cartItem.product_id).toEqual(product.product_id);
+                expect(res.body.cartItem.cart_id).toEqual(cartId);
             })
-        }), 
+        })
 
-        describe('Invalid token', () => {
+        describe('GET \'/cart/item/:product_id\'', () => {
 
             it('Should return the cart item', async () => {
-                const res = await request(app)
-                    .post(`/cart/${cartId_noToken}/item/${product.product_id}`)
+                const res = await testSession
+                    .get(`/cart/item/${product.product_id}`)
+                    .set('Authorization', token)
+                    .set('Accept', 'application/json')
+                    .expect(200);
+                expect(res.body).toBeDefined();
+                expect(res.body.cartItem).toBeDefined();
+                expect(res.body.cartItem.product_id).toEqual(product.product_id);
+                expect(res.body.cartItem.cart_id).toEqual(cartId);
+            }),
+                
+            describe('Incorrect product_id', () => {
+
+                it ('Should return 404 error', (done) => {
+                    testSession
+                        .get(`/cart/item/7`)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(404)
+                        .end((err, res) => {
+                            if (err) return done(err);
+                            return done();
+                        });
+                })
+            })
+        }),
+
+        describe('PUT \'/cart/item/:product_id\'', () => {
+
+            it('Should return the cart item', async () => {
+                const res = await testSession
+                    .put(`/cart/item/${product.product_id}`)
+                    .send(updatedProduct)
+                    .set('Authorization', token)
+                    .set('Accept', 'application/json')
+                    .expect(200);
+                expect(res.body).toBeDefined();
+                expect(res.body.cartItem).toBeDefined();
+                expect(res.body.cartItem.product_id).toEqual(product.product_id);
+                expect(res.body.cartItem.cart_id).toEqual(cartId);
+                expect(res.body.cartItem.quantity).toEqual(updatedProduct.quantity);
+            }),
+
+            describe('Incorrect product_id', () => {
+
+                it ('Should return 404 error', (done) => {
+                    testSession
+                        .put(`/cart/item/7`)
+                        .send(updatedProduct)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(404)
+                        .end((err, res) => {
+                            if (err) return done(err);
+                            return done();
+                        });
+                })
+            })
+        }),
+
+        describe('DELETE \'/cart/item/:product_id\'', () => {
+
+            it('Should return the cart item', async () => {
+                const res = await testSession
+                    .delete(`/cart/item/${product.product_id}`)
+                    .set('Authorization', token)
+                    .set('Accept', 'application/json')
+                    .expect(200);
+                expect(res.body).toBeDefined();
+                expect(res.body.cartItem).toBeDefined();
+                expect(res.body.cartItem.product_id).toEqual(product.product_id);
+                expect(res.body.cartItem.cart_id).toEqual(cartId);
+            })
+
+            describe('Incorrect product_id', () => {
+
+                it ('Should return 404 error', (done) => {
+                    testSession
+                        .delete(`/cart/item/${product.product_id}`)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(404)
+                        .end((err, res) => {
+                            if (err) return done(err);
+                            return done();
+                        });
+                })
+            })
+        })
+    })
+
+    describe('Invalid JWT', () => {
+
+        var testSession;
+        var cartId;
+
+        beforeAll(async () => {
+            testSession = session(app);
+
+            const res = await testSession
+                    .post('/cart')
+                    .set('Authorization', null)
+                    .set('Accept', 'application/json');
+            cartId = res.body.cart.id;
+        }),
+
+        afterAll(async () => {
+            if (cartId) {
+                await Cart.delete(cartId);
+            }
+        }),
+
+        describe('POST \'/cart/item/:product_id\'', () => {
+
+            it('Should return the cart item', async () => {
+                const res = await testSession
+                    .post(`/cart/item/${product.product_id}`)
                     .send(product)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
@@ -74,95 +180,30 @@ describe ('Cart endpoints', () => {
                 expect(res.body).toBeDefined();
                 expect(res.body.cartItem).toBeDefined();
                 expect(res.body.cartItem.product_id).toEqual(product.product_id);
-            })
-        })
-    }),
-
-    describe('GET \'/cart/:cart_id/item/:product_id\'', () => {
-
-        describe('Valid token', () => {
-
-            it('Should return the cart item', async () => {
-                const res = await request(app)
-                    .get(`/cart/${cartId_token}/item/${product.product_id}`)
-                    .set('Authorization', token)
-                    .set('Accept', 'application/json')
-                    .expect(200);
-                expect(res.body).toBeDefined();
-                expect(res.body.cartItem).toBeDefined();
-                expect(res.body.cartItem.product_id).toEqual(product.product_id);
-            })
-        }), 
-
-        describe('Valid token, incorrect product_id', () => {
-
-            it ('Should return 404 error', (done) => {
-                request(app)
-                    .get(`/cart/${cartId_token}/item/7`)
-                    .set('Authorization', token)
-                    .set('Accept', 'application/json')
-                    .expect(404)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
-            })
-        })
-
-        describe('Invalid token', () => {
-
-            it('Should return the cart item', async () => {
-                const res = await request(app)
-                    .get(`/cart/${cartId_noToken}/item/${product.product_id}`)
-                    .set('Authorization', null)
-                    .set('Accept', 'application/json')
-                    .expect(200);
-                expect(res.body).toBeDefined();
-                expect(res.body.cartItem).toBeDefined();
-                expect(res.body.cartItem.product_id).toEqual(product.product_id);
-            })
-        })
-    }),
-
-    describe('PUT \'/cart/:cart_id/item/:product_id\'', () => {
-
-        describe('Valid token', () => {
-
-            it('Should return the cart item', async () => {
-                const res = await request(app)
-                    .put(`/cart/${cartId_token}/item/${product.product_id}`)
-                    .send(updatedProduct)
-                    .set('Authorization', token)
-                    .set('Accept', 'application/json')
-                    .expect(200);
-                expect(res.body).toBeDefined();
-                expect(res.body.cartItem).toBeDefined();
-                expect(res.body.cartItem.product_id).toEqual(product.product_id);
-                expect(res.body.cartItem.quantity).toEqual(updatedProduct.quantity);
-            })
-        }), 
-
-        describe('Valid token, incorrect product_id', () => {
-
-            it ('Should return 404 error', (done) => {
-                request(app)
-                    .put(`/cart/${cartId_token}/item/7`)
-                    .send(updatedProduct)
-                    .set('Authorization', token)
-                    .set('Accept', 'application/json')
-                    .expect(404)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
+                expect(res.body.cartItem.cart_id).toEqual(cartId);
             })
         }),
 
-        describe('Invalid token', () => {
+        describe('GET \'/cart/item/:product_id\'', () => {
 
             it('Should return the cart item', async () => {
-                const res = await request(app)
-                    .put(`/cart/${cartId_noToken}/item/${product.product_id}`)
+                const res = await testSession
+                    .get(`/cart/item/${product.product_id}`)
+                    .set('Authorization', null)
+                    .set('Accept', 'application/json')
+                    .expect(200);
+                expect(res.body).toBeDefined();
+                expect(res.body.cartItem).toBeDefined();
+                expect(res.body.cartItem.product_id).toEqual(product.product_id);
+                expect(res.body.cartItem.cart_id).toEqual(cartId);
+            })
+        }),
+
+        describe('PUT \'/cart/item/:product_id\'', () => {
+
+            it('Should return the cart item', async () => {
+                const res = await testSession
+                    .put(`/cart/item/${product.product_id}`)
                     .send(updatedProduct)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
@@ -170,53 +211,23 @@ describe ('Cart endpoints', () => {
                 expect(res.body).toBeDefined();
                 expect(res.body.cartItem).toBeDefined();
                 expect(res.body.cartItem.product_id).toEqual(product.product_id);
+                expect(res.body.cartItem.cart_id).toEqual(cartId);
                 expect(res.body.cartItem.quantity).toEqual(updatedProduct.quantity);
-            })
-        })
-    }),
-
-    describe('DELETE \'/cart/:cart_id/item/:product_id\'', () => {
-
-        describe('Valid token', () => {
-
-            it('Should return the cart item', async () => {
-                const res = await request(app)
-                    .delete(`/cart/${cartId_token}/item/${product.product_id}`)
-                    .set('Authorization', token)
-                    .set('Accept', 'application/json')
-                    .expect(200);
-                expect(res.body).toBeDefined();
-                expect(res.body.cartItem).toBeDefined();
-                expect(res.body.cartItem.product_id).toEqual(product.product_id);
-            })
-        }), 
-
-        describe('Valid token, incorrect product_id', () => {
-
-            it ('Should return 404 error', (done) => {
-                request(app)
-                    .delete(`/cart/${cartId_token}/item/${product.product_id}`)
-                    .set('Authorization', token)
-                    .set('Accept', 'application/json')
-                    .expect(404)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
             })
         }),
 
-        describe('Invalid token', () => {
-
+        describe('DELETE \'/cart/item/:product_id\'', () => {
+            
             it('Should return the cart item', async () => {
-                const res = await request(app)
-                    .delete(`/cart/${cartId_noToken}/item/${product.product_id}`)
+                const res = await testSession
+                    .delete(`/cart/item/${product.product_id}`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(200);
                 expect(res.body).toBeDefined();
                 expect(res.body.cartItem).toBeDefined();
                 expect(res.body.cartItem.product_id).toEqual(product.product_id);
+                expect(res.body.cartItem.cart_id).toEqual(cartId);
             })
         })
     })
