@@ -1,16 +1,10 @@
 const httpError = require('http-errors');
-const genPassword = require('../lib/passwordUtils').genPassword;
+const { genPassword, validPassword } = require('../lib/passwordUtils');
 const attachJWT = require('../lib/attachJWT');
 const UserModel = require('../models/UserModel');
 const User = new UserModel();
 
-/**
- * Processes user registration 
- *
- * @param {Object} data contains user registration data, has email and password properties
- * @returns {Object} containing info to be sent by http response
- */
-module.exports = async (data) => {
+module.exports.register = async (data) => {
     try {
         // check for required inputs 
         const { email, password } = data;
@@ -41,6 +35,36 @@ module.exports = async (data) => {
             throw httpError(500, 'Error creating new account.');
         }
 
+    } catch(err) {
+        throw err;
+    };
+};
+
+module.exports.login = async (data) => {
+    try {
+        // check for required inputs 
+        const { email, password } = data;
+        if (email === null || password === null || email.length === 0 || password.length === 0) {
+            throw httpError(400, 'Email and password required.');
+        };
+        
+        // check if user already exists
+        const user = await User.findByEmail(data.email);
+
+        // if no user throw error 
+        if (!user) {
+            throw httpError(401, 'Incorrect email or password.');
+        };
+
+        // validate password
+        const isValid = validPassword(data.password, user.pw_hash, user.pw_salt);
+
+        // attach JWT if password is valid 
+        if (isValid) {
+            return attachJWT(user);
+        } else {
+            throw httpError(401, 'Incorrect email or password.');
+        }
     } catch(err) {
         throw err;
     };
