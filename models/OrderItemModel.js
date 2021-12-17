@@ -1,6 +1,6 @@
 const db = require('../db');
 
-module.exports = class OrderItem {
+class OrderItem {
 
     /**
     * Adds new order item to the database
@@ -91,5 +91,6 @@ module.exports = class OrderItem {
             throw new Error(err);
         }
     }
-
 }
+
+module.exports = new OrderItem();

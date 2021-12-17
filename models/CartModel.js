@@ -1,6 +1,6 @@
 const db = require('../db');
 
-module.exports = class Cart {
+class Cart {
 
     /**
     * Adds new cart to the database
@@ -137,3 +137,5 @@ module.exports = class Cart {
         }
     }
 }
+
+module.exports = new Cart();

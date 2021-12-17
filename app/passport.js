@@ -6,9 +6,9 @@ const ExtractJWT = require('passport-jwt').ExtractJwt;
 const fs = require('fs');
 const path = require('path');
 const pathToKey = path.join(__dirname, '..', 'pub_key.pem');
+const User = require('../models/UserModel');
+
 require('dotenv').config();
-const UserModel = require('../models/UserModel');
-const User = new UserModel();
 
 const isProduction = process.env.NODE_ENV === 'production';
 const PUB_KEY = isProduction ? process.env.PUB_KEY : fs.readFileSync(pathToKey, 'utf8');

@@ -1,6 +1,5 @@
 const httpError = require('http-errors');
-const CartItemModel = require('../models/CartItemModel');
-const CartItem = new CartItemModel();
+const CartItem = require('../models/CartItemModel');
 
 module.exports.postCartItem = async (data) => {
     try {

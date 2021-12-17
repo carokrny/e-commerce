@@ -1,8 +1,6 @@
 const httpError = require('http-errors');
-const OrderModel = require('../models/OrderModel');
-const OrderItemModel = require('../models/OrderItemModel');
-const Order = new OrderModel();
-const OrderItem = new OrderItemModel();
+const Order = require('../models/OrderModel');
+const OrderItem = require('../models/OrderItemModel');
 
 module.exports.getAllOrders = async (user_id) => {
     try {

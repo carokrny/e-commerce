@@ -1,6 +1,6 @@
 const db = require('../db');
 
-module.exports = class Product {
+class Product {
 
     /**
      * Returns product associated with id in database, if exists
@@ -104,3 +104,5 @@ module.exports = class Product {
         }
     }
 }
+
+module.exports = new Product();

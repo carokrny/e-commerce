@@ -1,6 +1,6 @@
 const db = require('../db');
 
-module.exports = class User {
+class User {
 
     /**
     * Adds new user to the database
@@ -157,4 +157,6 @@ module.exports = class User {
             throw new Error(err);
         }
     }
-};
+}
+
+module.exports = new User();

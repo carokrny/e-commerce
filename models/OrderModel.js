@@ -1,6 +1,6 @@
 const db = require('../db');
 
-module.exports = class Order {
+class Order {
 
     /**
     * Adds new order to the database
@@ -106,3 +106,5 @@ module.exports = class Order {
         }
     }
 }
+
+module.exports = new Order();

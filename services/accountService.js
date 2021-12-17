@@ -1,9 +1,7 @@
 const httpError = require('http-errors');
 const genPassword = require('../lib/passwordUtils').genPassword;
-const UserModel = require('../models/UserModel');
-const AddressModel = require('../models/AddressModel');
-const User = new UserModel();
-const Address = new AddressModel();
+const User = require('../models/UserModel');
+const Address = require('../models/AddressModel');
 
 module.exports.getAccount = async (user_id) => {
     try {

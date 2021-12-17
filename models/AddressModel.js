@@ -1,6 +1,6 @@
 const db = require('../db');
 
-module.exports = class Address {
+class Address {
 
     /**
     * Adds new address to the database
@@ -99,3 +99,5 @@ module.exports = class Address {
         }
     }
 }
+
+module.exports = new Address();

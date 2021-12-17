@@ -2,8 +2,7 @@ const httpError = require('http-errors');
 const { genPassword, validPassword } = require('../lib/passwordUtils');
 const attachJWT = require('../lib/attachJWT');
 const cartConsolidator = require('../lib/cartConsolidator');
-const UserModel = require('../models/UserModel');
-const User = new UserModel();
+const User = require('../models/UserModel');
 
 module.exports.register = async (data) => {
     try {

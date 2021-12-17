@@ -1,6 +1,5 @@
 const httpError = require('http-errors');
-const ProductModel = require('../models/ProductModel');
-const Product = new ProductModel();
+const Product = require('../models/ProductModel');
 
 
 module.exports.getAll = async () => {

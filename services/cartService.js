@@ -1,12 +1,8 @@
 const httpError = require('http-errors');
-const CartModel = require('../models/CartModel');
-const CartItemModel = require('../models/CartItemModel');
-const OrderModel = require('../models/OrderModel');
-const OrderItemModel = require('../models/OrderItemModel');
-const Cart = new CartModel();
-const CartItem = new CartItemModel();
-const Order = new OrderModel();
-const OrderItem = new OrderItemModel();
+const Cart = require('../models/CartModel');
+const CartItem = require('../models/CartItemModel');
+const Order = require('../models/OrderModel');
+const OrderItem = require('../models/OrderItemModel');
 
 module.exports.postCart = async (user_id) => {
     try {

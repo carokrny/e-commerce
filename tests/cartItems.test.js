@@ -2,10 +2,8 @@ const app = require('../app');
 const request = require('supertest');
 const session = require('supertest-session');
 const { testLogin2, product, updatedProduct } = require('./testData');
-const CartModel = require('../models/CartModel');
-const CartItemModel = require('../models/CartItemModel');
-const Cart = new CartModel();
-const CartItem = new CartItemModel();
+const Cart = require('../models/CartModel');
+const CartItem = require('../models/CartItemModel');
 
 describe ('Cart endpoints', () => {
 

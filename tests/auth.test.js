@@ -2,12 +2,9 @@ const app = require('../app');
 const request = require('supertest');
 const session = require('supertest-session');
 const { testLogin, testRegister, userId, product } = require('./testData');
-const UserModel = require('../models/UserModel');
-const CartModel = require('../models/CartModel');
-const CartItemModel = require('../models/CartItemModel');
-const User = new UserModel();
-const Cart = new CartModel();
-const CartItem = new CartItemModel();
+const User = require('../models/UserModel');
+const Cart = require('../models/CartModel');
+const CartItem = require('../models/CartItemModel');
 
 describe('Auth endpoints', () => {
         
