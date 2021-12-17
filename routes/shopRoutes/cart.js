@@ -32,7 +32,7 @@ module.exports = (app) => {
     // GET cart by cart id
     router.get('/', async (req, res ,next) => {
         try {
-            // grab cart_id from express session
+            // grab cart_id from express session, if it exists
             const cart_id = req.session.cart_id ? req.session.cart_id : null;
 
             // await response

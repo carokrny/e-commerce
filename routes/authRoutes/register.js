@@ -13,7 +13,13 @@ module.exports = (app) => {
     // POST new user registration 
     router.post('/', async (req, res, next) => {
         try {
-            const response = await register(req.body);
+            // grab cart_id from express session, if it exists
+            const cart_id = req.session.cart_id ? req.session.cart_id : null;
+
+            // await response
+            const response = await register({...req.body, cart_id: cart_id });
+
+            // send response to client
             res.status(201).json(response);
         } catch(err) {
             next(err);

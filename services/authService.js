@@ -2,7 +2,9 @@ const httpError = require('http-errors');
 const { genPassword, validPassword } = require('../lib/passwordUtils');
 const attachJWT = require('../lib/attachJWT');
 const UserModel = require('../models/UserModel');
+const CartModel = require('../models/CartModel');
 const User = new UserModel();
+const Cart = new CartModel();
 
 module.exports.register = async (data) => {
     try {
@@ -30,6 +32,12 @@ module.exports.register = async (data) => {
 
         // attach JWT to newly created user or throw error
         if (newUser) {
+            //update shopping cart, if it exists, with newUser's id 
+            if (data.cart_id) {
+                await Cart.update({ id: data.cart_id, user_id: newUser.id });
+            }
+
+            // attach JWT
             return attachJWT(newUser);
         } else {
             throw httpError(500, 'Error creating new account.');

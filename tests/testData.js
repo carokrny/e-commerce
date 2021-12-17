@@ -12,6 +12,12 @@
     password: 'purple'
  };
 
+ // second test registration for user that does not exist in database
+ module.exports.testRegister2 = {
+    email: 'arugula@me.com', 
+    password: 'lettuce'
+ };
+
 // login for user that does exist in database
  module.exports.testLogin = {
     email: 'mascara@me.com', 

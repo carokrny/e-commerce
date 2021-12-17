@@ -30,6 +30,37 @@ module.exports = class Cart {
     }
 
     /**
+    * Updates a cart in the database
+    * 
+    * @param {Obj} data Data about cart to update
+    * @return {Oject} The updated cart
+    */
+    async update(data) {
+        try {
+            // pg statement
+            const statement = `UPDATE carts  
+                                SET user_id=$2, modified=now()
+                                WHERE id = $1
+                                RETURNING *`;
+            
+            // pg values
+            const values = [data.id, data.user_id];
+            
+            // make query
+            const result = await db.query(statement, values);
+
+            // check for valid results
+            if (result.rows.length > 0) {
+                return result.rows[0];
+            } else {
+                return null;
+            }
+        } catch(err) {
+            throw new Error(err);
+        }
+    }
+
+    /**
      * Returns cart associated with id in database, if exists
      *
      * @param {number} id the id to find cart based on
