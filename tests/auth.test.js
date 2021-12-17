@@ -1,11 +1,13 @@
 const app = require('../app');
 const request = require('supertest');
 const session = require('supertest-session');
-const { testLogin, testRegister } = require('./testData');
+const { testLogin, testRegister, userId, product } = require('./testData');
 const UserModel = require('../models/UserModel');
 const CartModel = require('../models/CartModel');
+const CartItemModel = require('../models/CartItemModel');
 const User = new UserModel();
 const Cart = new CartModel();
+const CartItem = new CartItemModel();
 
 describe('Auth endpoints', () => {
         
@@ -226,6 +228,134 @@ describe('Auth endpoints', () => {
                         if (err) return done(err);
                         return done();
                     });
+            })
+        }), 
+
+        describe('Cart with login', () => {
+
+            var testSession;
+            var cartId;
+            var cartItem;
+
+            beforeEach(async () => {
+                testSession = session(app);
+            }),
+
+            afterEach(async () => {
+                if (cartItem) {
+                    await CartItem.delete({ ...cartItem });
+                    cartItem = null;
+                }
+                if (cartId) {
+                    await Cart.delete(cartId);
+                    cartId = null;
+                }
+            }),
+
+            describe('Existing cart before login, user has no cart from previous session', () => {
+
+                it('Should assign logged in user_id to existing cart', async () => {
+                    // create cart
+                    const res1 = await testSession
+                        .post('/cart')
+                        .set('Authorization', null)
+                        .set('Accept', 'application/json');
+                    cartId = res1.body.cart.id;
+
+                    // log into user account
+                    const res2 = await testSession
+                        .post('/login')
+                        .send(testLogin)
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .expect(200);
+                    expect(res2.body).toBeDefined();
+                    expect(res2.body.user).toBeDefined();
+                    expect(res2.body.token).toBeDefined();
+                    const token = res2.body.token;
+
+                    // read cart
+                    const res3 = await testSession
+                        .get(`/cart`)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(200);
+                    expect(res3.body).toBeDefined();
+                    expect(res3.body.cart).toBeDefined();
+                    expect(res3.body.cart.id).toEqual(cartId);
+                })
+            }),
+
+            describe('Existing cart before login, user has cart from previous session', () => {
+
+                it('Should consolidate carts', async () => {
+                    // create cart in database, from previous session
+                    const oldCart = await Cart.create(userId);
+
+                    // add item to cart from previous session
+                    const oldCartItem = await CartItem.create({ ...product, cart_id: oldCart.id });
+
+                    // --- new session ---
+                    
+                    // create new cart
+                    const res1 = await testSession
+                        .post('/cart')
+                        .set('Authorization', null)
+                        .set('Accept', 'application/json');
+                    const newCart = res1.body.cart;
+                    cartId = newCart.id;
+
+                    // add same item to new session cart
+                    cartItem = await CartItem.create({ ...product, cart_id: newCart.id });
+
+                    // log into user account
+                    const res2 = await testSession
+                        .post('/login')
+                        .send(testLogin)
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .expect(200);
+                    expect(res2.body).toBeDefined();
+                    expect(res2.body.user).toBeDefined();
+                    expect(res2.body.token).toBeDefined();
+                    const token = res2.body.token;
+
+                    // read cart
+                    const res3 = await testSession
+                        .get(`/cart`)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(200);
+                    expect(res3.body).toBeDefined();
+                    expect(res3.body.cart).toBeDefined();
+                    expect(res3.body.cart.id).toEqual(cartId);
+                    expect(res3.body.cartItems[0].quantity).toEqual(product.quantity * 2);
+
+                })
+            }), 
+
+            describe ('No existing cart before login', () => {
+
+                it ('Should log in, and GET /cart should return a 400 error' , async () => {
+                    // log into user account
+                    const res1 = await testSession
+                        .post('/login')
+                        .send(testLogin)
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .expect(200);
+                    expect(res1.body).toBeDefined();
+                    expect(res1.body.user).toBeDefined();
+                    expect(res1.body.token).toBeDefined();
+                    const token = res1.body.token;
+
+                    // read cart
+                    const res2 = await testSession
+                        .get(`/cart`)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(400);
+                })
             })
         })
     })

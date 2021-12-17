@@ -12,7 +12,7 @@ module.exports.postCartItem = async (data) => {
         // check if cart item exists already
         var cartItem = await CartItem.findOne(data);
 
-        // if so, allow user to add item again and update quantity
+        // if item already in cart, update quantity
         if (cartItem) {
             // update quantity of item in cart
             const updatedQuantity = cartItem.quantity + data.quantity;
@@ -20,11 +20,6 @@ module.exports.postCartItem = async (data) => {
         } else {
             // otherwise, create new cart item
             cartItem = await CartItem.create(data);
-        }
-
-        // throw error if not found
-        if (!cartItem) {
-            throw httpError(404, 'Cart item not found');
         }
 
         return { cartItem };

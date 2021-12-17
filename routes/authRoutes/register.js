@@ -17,7 +17,7 @@ module.exports = (app) => {
             const cart_id = req.session.cart_id ? req.session.cart_id : null;
 
             // await response
-            const response = await register({...req.body, cart_id: cart_id });
+            const response = await register({ ...req.body, cart_id: cart_id });
 
             // send response to client
             res.status(201).json(response);

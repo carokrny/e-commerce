@@ -1,10 +1,9 @@
 const httpError = require('http-errors');
 const { genPassword, validPassword } = require('../lib/passwordUtils');
 const attachJWT = require('../lib/attachJWT');
+const cartConsolidator = require('../lib/cartConsolidator');
 const UserModel = require('../models/UserModel');
-const CartModel = require('../models/CartModel');
 const User = new UserModel();
-const Cart = new CartModel();
 
 module.exports.register = async (data) => {
     try {
@@ -30,18 +29,19 @@ module.exports.register = async (data) => {
             hash: pwObj.hash
         });
 
-        // attach JWT to newly created user or throw error
-        if (newUser) {
-            //update shopping cart, if it exists, with newUser's id 
-            if (data.cart_id) {
-                await Cart.update({ id: data.cart_id, user_id: newUser.id });
-            }
-
-            // attach JWT
-            return attachJWT(newUser);
-        } else {
+        if (!newUser) {
             throw httpError(500, 'Error creating new account.');
         }
+
+        // handle if user had shopping cart before registering in 
+        await cartConsolidator(data.cart_id, newUser.id);
+
+        // wipe password info before returning
+        delete newUser.pw_hash;
+        delete newUser.pw_salt;
+
+        // attach JWT
+        return attachJWT(newUser);
 
     } catch(err) {
         throw err;
@@ -59,7 +59,7 @@ module.exports.login = async (data) => {
         // check if user already exists
         const user = await User.findByEmail(data.email);
 
-        // if no user throw error 
+        // reject if email not assocaited with existing user  
         if (!user) {
             throw httpError(401, 'Incorrect email or password.');
         };
@@ -67,12 +67,21 @@ module.exports.login = async (data) => {
         // validate password
         const isValid = validPassword(data.password, user.pw_hash, user.pw_salt);
 
-        // attach JWT if password is valid 
-        if (isValid) {
-            return attachJWT(user);
-        } else {
+        // reject if password not valid
+        if (!isValid) {
             throw httpError(401, 'Incorrect email or password.');
         }
+
+        // handle if user had shopping cart before logging in 
+        await cartConsolidator(data.cart_id, user.id);
+
+        // wipe password info before returning
+        delete user.pw_hash;
+        delete user.pw_salt;
+
+        // attach JWT and return user
+        return attachJWT(user);
+
     } catch(err) {
         throw err;
     };

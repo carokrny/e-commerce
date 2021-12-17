@@ -87,7 +87,7 @@ module.exports.getCheckout = async (user_id, cart_id) => {
             } else {
 
                 // delete cart item from database
-                const deletedCartItem = await CartItem.delete({ ...cartItem, cart_id: cart_id });
+                const deletedCartItem = await CartItem.delete({ ...cartItem });
                 if (!deletedCartItem) {
                     throw httpError(500, 'Unable to remove cart items');
             }

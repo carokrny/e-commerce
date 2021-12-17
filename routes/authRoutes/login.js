@@ -13,7 +13,13 @@ module.exports = (app) => {
     // POST new user login 
     router.post('/', async (req, res, next) => {
         try {
-            const response = await login(req.body);
+            // grab cart_id from express session, if it exists
+            const cart_id = req.session.cart_id ? req.session.cart_id : null;
+
+            // await response 
+            const response = await login({ ...req.body, cart_id: cart_id });
+
+            // send response to client
             res.status(200).json(response);
         } catch(err) {
             next(err);
