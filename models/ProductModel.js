@@ -31,7 +31,7 @@ class Product {
      * Returns products in the specified category, if exists
      *
      * @param {string} category the catgory to find products based on
-     * @return {Object|null} the product(s) in the category
+     * @return {Array|null} the product(s) in the category
      */
     async findByCategory(category) {
         try {
@@ -56,7 +56,7 @@ class Product {
      * Returns products in the specified query, if exists
      *
      * @param {String} query the query to find products based on
-     * @return {Object|null} the product(s) that fit the query
+     * @return {Array|null} the product(s) that fit the query
      */
     async findByQuery(query) {
         try {
@@ -83,7 +83,7 @@ class Product {
     /**
      * Returns all products in the database
      *
-     * @return {Object|null} the product(s), if there are any on the database
+     * @return {Array|null} the product(s), if there are any on the database
      */
     async getAll() {
         try {

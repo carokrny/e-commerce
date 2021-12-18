@@ -5,18 +5,23 @@ class Order {
     /**
     * Adds new order to the database
     * 
-    * @param {number} user_id 
-    * @return {Oject} The new order
+    * @param {Object} data data about the order 
+    * @return {Oject|null} The new order
     */
-    async create(user_id) {
+    async create(data) {
         try {
             // pg statement
-            const statement = `INSERT INTO orders (user_id)
-                                VALUES ($1)
+            const statement = `INSERT INTO orders (user_id, shipping_address_id, billing_address_id)
+                                VALUES ($1, $2, $3)
                                 RETURNING *`;
+
+            // ph values 
+            const values = [data.user_id, 
+                            data.shipping_address_id, 
+                            data.billing_address_id]
             
             // make query
-            const result = await db.query(statement, [user_id]);
+            const result = await db.query(statement, values);
 
             // check for valid results
             if (result.rows.length > 0) {
@@ -58,7 +63,7 @@ class Order {
      * Returns orders associated with user_id in database, if exists
      *
      * @param {number} user_id the user_id to find orders based on
-     * @return {Object|null} the orders
+     * @return {Array|null} the orders
      */
     async findByUserId(user_id) {
         try {

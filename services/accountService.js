@@ -11,12 +11,6 @@ module.exports.getAccount = async (user_id) => {
         if (!user) {
             throw httpError(404, 'User not found.');
         }
-
-        // check user address in Address db, if it exists 
-        const address = user.address_id ? await Address.findById(user.address_id) : null;
-
-        // attach address to user
-        user.address = address;
         
         // wipe password info before returning
         delete user.pw_hash;
@@ -29,59 +23,49 @@ module.exports.getAccount = async (user_id) => {
     }
 }
 
-module.exports.updateAccount = async (data, user_id) => {
+module.exports.putAccount = async (data) => {
     try {
 
         // check if user exists
-        const user = await User.findById(user_id);
+        const user = await User.findById(data.user_id);
+
         if (!user) {
             throw httpError(404, 'User not found.');
         }
 
-        // check user address in Address db, if it exists 
-        var address = user.address_id ? await Address.findById(user.address_id) : null;
-
-        // modify user and address with properties in data 
+        // modify user with properties in data 
         for (const property in data) {
             if (property === "email" ||  property === "first_name" || property === "last_name") {
-                user[property] = data[property];
+                
+                // check inputs are truthy and not empty string
+                if (data[property] && data[property].length > 0) {
+                    user[property] = data[property];
+                }
+
             } else if (property === "password") {
+
+                // hash and salt password
                 const pwObj = genPassword(data[property]);
+
+                // save hash and salt to db, not password itself
                 user.pw_hash = pwObj.pw_hash;
                 user.pw_salt = pwObj.pw_salt;
-            } else if (property === "address1" || 
-                        property === "address2" || 
-                        property === "city" || 
-                        property === "state" || 
-                        property === "zip" || 
-                        property === "country") {
-                // create an address if one doesn't exist 
-                if (!address) {
-                    address = await Address.create();
-                    // throw error if there's an error creating address
-                    if (!address) {
-                        httpError(500, 'Error creating address.');
-                    }
-                    // update user address_id FK
-                    user.address_id = address.id;
-                }
-                address[property] = data[property];
-            }
-        }
 
-        // update the address, if there is an address
-        const updatedAddress = address ? await Address.update(address) : null;
+            } else if (property === "primary_address_id") {
+
+                // get address, if it exists 
+                const address = data[property] ? await Address.findById(data[property]) : null;
+
+                // check that address exists and address's user_id is user's id
+                if(address && address.user_id === data.user_id){
+                    user[property] = data[property];
+                }
+            }
+
+        }
 
         // update the user
         const updatedUser = await User.update(user);
-
-        // throw error if not updated 
-        if (!updatedUser) {
-            throw httpError(500, 'Error updating user account.');
-        }
-
-        // attach address to user
-        updatedUser.address = updatedAddress;
 
         // wipe password info before returning
         delete updatedUser.pw_hash;

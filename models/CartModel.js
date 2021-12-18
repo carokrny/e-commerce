@@ -6,7 +6,7 @@ class Cart {
     * Adds new cart to the database
     * 
     * @param {number} user_id id of the user of the cart
-    * @return {Oject} The new cart
+    * @return {Oject|null} The new cart
     */
     async create(user_id) {
         try {
@@ -33,7 +33,7 @@ class Cart {
     * Updates a cart in the database
     * 
     * @param {Obj} data Data about cart to update
-    * @return {Oject} The updated cart
+    * @return {Oject|null} The updated cart
     */
     async update(data) {
         try {

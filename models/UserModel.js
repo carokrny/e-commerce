@@ -6,7 +6,7 @@ class User {
     * Adds new user to the database
     * 
     * @param {Object} data Data about user
-    * @return {Oject} The new user
+    * @return {Oject|null} The new user
     */
     async create(data) {
         try {
@@ -37,7 +37,7 @@ class User {
     * Updates a user in the database
     * 
     * @param {Obj} data Data about user to update
-    * @return {Oject} The updated user
+    * @return {Oject|null} The updated user
     */
     async update(data) {
         try {
@@ -48,7 +48,6 @@ class User {
                                     pw_salt=$4, 
                                     first_name=$5, 
                                     last_name=$6, 
-                                    address_id=$7, 
                                     modified=now()
                                 WHERE id = $1
                                 RETURNING *`;
@@ -59,8 +58,7 @@ class User {
                             data.pw_hash, 
                             data.pw_salt, 
                             data.first_name, 
-                            data.last_name, 
-                            data.address_id];
+                            data.last_name];
             
             // make query
             const result = await db.query(statement, values);

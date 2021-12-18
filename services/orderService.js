@@ -7,11 +7,6 @@ module.exports.getAllOrders = async (user_id) => {
         // find orders assocaited with user_id
         const orders = await Order.findByUserId(user_id);
 
-        // throw error if no orders
-        if(!orders) {
-            throw httpError(404, 'User has not placed any orders');
-        }
-
         return { orders };
 
     } catch(err) {

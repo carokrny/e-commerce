@@ -6,7 +6,7 @@ class OrderItem {
     * Adds new order item to the database
     * 
     * @param {Object} data Contains data about new order item
-    * @return {Oject} The new order item
+    * @return {Oject|null} The new order item
     */
     async create(data) {
         try {
@@ -36,7 +36,7 @@ class OrderItem {
      * Returns order items associated with order_id in database, if exists
      *
      * @param {number} order_id the order_id to find order items based on
-     * @return {Object|null} the order items
+     * @return {Array|null} the order items
      */
     async findInOrder(order_id) {
         try {

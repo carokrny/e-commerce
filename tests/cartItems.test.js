@@ -47,7 +47,25 @@ describe ('Cart endpoints', () => {
                 expect(res.body).toBeDefined();
                 expect(res.body.cartItem).toBeDefined();
                 expect(res.body.cartItem.product_id).toEqual(product.product_id);
+                expect(res.body.cartItem.quantity).toEqual(product.quantity);
                 expect(res.body.cartItem.cart_id).toEqual(cartId);
+            }), 
+
+            describe ('POST same item a second time', () => {
+
+                it('Should double the quantity of cart item', async () => {
+                    const res = await testSession
+                        .post(`/cart/item/${product.product_id}`)
+                        .send(product)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(201);
+                    expect(res.body).toBeDefined();
+                    expect(res.body.cartItem).toBeDefined();
+                    expect(res.body.cartItem.product_id).toEqual(product.product_id);
+                    expect(res.body.cartItem.quantity).toEqual(2 * product.quantity);
+                    expect(res.body.cartItem.cart_id).toEqual(cartId);
+                })
             })
         })
 
@@ -226,6 +244,7 @@ describe ('Cart endpoints', () => {
                 expect(res.body.cartItem).toBeDefined();
                 expect(res.body.cartItem.product_id).toEqual(product.product_id);
                 expect(res.body.cartItem.cart_id).toEqual(cartId);
+                expect(res.body.cartItem.quantity).toEqual(updatedProduct.quantity);
             })
         })
     })

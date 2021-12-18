@@ -38,19 +38,33 @@ module.exports.updatedProduct = {
 
 module.exports.userAccountPut = {
     first_name: 'Sam', 
-    address1: '643 Minna St',
-    address2: 'Apt 3',
+}
+
+module.exports.addressPost = {
+    address1: '123 Easy St',
     city: 'San Francisco', 
     state: 'CA', 
     zip: '94103', 
     country: 'United States'
 }
 
-
+module.exports.addressPut = {
+    address1: '123 Easy St',
+    address2: 'Apt 5',
+    city: 'San Francisco', 
+    state: 'CA', 
+    zip: '94103', 
+    country: 'United States'
+}
 
 // test login 2 since tests run synchronously and carts must have unique user_id
-// test login 2 is used for cartItems 
+// test login 2 is used for cartItems and address tests
  module.exports.testLogin2 = {
     email: 'john@me.com', 
     password: 'abc123'
  };
+
+// test login 2's user ids
+ module.exports.userId2 = 130;
+
+ module.exports.differentAddressId = 1;

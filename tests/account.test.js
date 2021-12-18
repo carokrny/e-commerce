@@ -64,7 +64,6 @@ describe ('Account endpoints', () => {
                 expect(res.body.user.id).toEqual(userId);
                 expect(res.body.user.email).toEqual(testLogin.email);
                 expect(res.body.user.first_name).toEqual(userAccountPut.first_name);
-                expect(res.body.user.address.zip).toEqual(userAccountPut.zip);
             })
         }),
 

@@ -65,7 +65,12 @@ module.exports.getCheckout = async (user_id, cart_id) => {
         }
 
         // create an new order
-        const newOrder = await Order.create(user_id);
+        const newOrder = await Order.create({ 
+            user_id: user_id,
+            shipping_address_id: 1,
+            billing_address_id: 1
+        });
+        
         if (!newOrder) {
             throw httpError(400, 'Unable to create order');
         }

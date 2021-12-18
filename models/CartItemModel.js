@@ -67,7 +67,7 @@ class CartItem {
      * Returns cart items associated with cart_id in database, if exists
      *
      * @param {number} cart_id the cart_id to find cart items based on
-     * @return {Object|null} the cart items
+     * @return {Array|null} the cart items
      */
     async findInCart(cart_id) {
         try {
