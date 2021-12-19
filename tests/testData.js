@@ -49,13 +49,45 @@ module.exports.addressPost = {
 }
 
 module.exports.addressPut = {
-    address1: '123 Easy St',
-    address2: 'Apt 5',
-    city: 'San Francisco', 
-    state: 'CA', 
-    zip: '94103', 
-    country: 'United States'
+    address2: 'Apt 5'
 }
+
+// to get an error on address routes with wrong address id
+module.exports.differentAddressId = 1;
+
+// Note billing_address_id is associated with user_id = 21
+ module.exports.cardPost = {
+    card_type: 'debit', 
+    provider: 'Visa', 
+    card_no: '1234123412341234', 
+    cvv: '123', 
+    expiry: '2022-11-01', 
+    billing_address_id: 1
+ }
+
+ module.exports.cardPut = {
+    provider: 'MasterCard'
+ }
+
+ // Note billing_address_id is associated with user_id = 21
+ module.exports.invalidCardPost = {
+    card_type: 'debit', 
+    provider: 'Visa', 
+    card_no: '123412G412341234', 
+    cvv: '123', 
+    expiry: '2022-11-01', 
+    billing_address_id: 1
+ }
+
+ module.exports.invalidCardPut = {
+    cvv: '1K3',
+ }
+
+ // to get an error on payment routes with wrong payment id
+module.exports.differentPaymentId = 4;
+
+
+
 
 // test login 2 since tests run synchronously and carts must have unique user_id
 // test login 2 is used for cartItems and address tests
@@ -66,5 +98,3 @@ module.exports.addressPut = {
 
 // test login 2's user ids
  module.exports.userId2 = 130;
-
- module.exports.differentAddressId = 1;

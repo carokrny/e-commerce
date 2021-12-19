@@ -75,7 +75,7 @@ describe ('Address endpoints', () => {
         })
     }),
 
-    describe('GET \'/account/address/adress_id\'', () => {
+    describe('GET \'/account/address/address_id\'', () => {
         
         describe('Valid token', () => {
 
@@ -162,7 +162,7 @@ describe ('Address endpoints', () => {
         })
     }), 
 
-    describe('PUT \'/account/address/adress_id\'', () => {
+    describe('PUT \'/account/address/address_id\'', () => {
         
         describe('Valid token', () => {
 
@@ -239,7 +239,7 @@ describe ('Address endpoints', () => {
         })
     }),
 
-    describe('DELETE \'/account/address/adress_id\'', () => {
+    describe('DELETE \'/account/address/address_id\'', () => {
         
         describe('Valid token', () => {
 

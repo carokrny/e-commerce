@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const ordersRouter = require('./orders');
 const addressRouter = require('./address');
+const paymentsRouter = require('./payment');
 const { getAccount, putAccount } = require('../../services/accountService');
 const { isAuth }  = require('../../lib/jwtAuth');
 
@@ -43,4 +44,7 @@ module.exports = (app) => {
 
     //extend route to user's addresses
     addressRouter(router);
+
+    // extend route to user's payment methods 
+    paymentsRouter(router);
 }
