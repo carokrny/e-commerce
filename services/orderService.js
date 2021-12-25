@@ -3,6 +3,7 @@ const Order = require('../models/OrderModel');
 const OrderItem = require('../models/OrderItemModel');
 const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
+const Product = require('../models/ProductModel');
 
 module.exports.postOrder = async (data) => {
     try {
@@ -23,39 +24,46 @@ module.exports.postOrder = async (data) => {
             throw httpError(404, 'Cart empty.')
         }
 
+        // calculate order total 
+        var total = 0;
+        for (const cartItem of cartItems) {
+            // grab item product
+            const price = await Product.getPrice(cartItem.product_id);
+
+            // throw error if missing
+            if(!price) throw httpError(404, 'Product missing');
+
+            total += cartItem.quantity * price.price;
+        }
+
         // create an new order
         const newOrder = await Order.create({ 
             user_id: data.user_id,
             shipping_address_id: data.shipping.address.id,
             billing_address_id: data.billing.address.id, 
-            payment_id: data.payment.id
+            payment_id: data.payment.id, 
+            total: total
         });
 
         // iterate through cart items to create order items
-        var orderItems = [];
+        var orderItems = []; 
         for (const cartItem of cartItems) {
-
             // create new order item 
             const newOrderItem = await OrderItem.create({ ...cartItem, order_id: newOrder.id });
             
-            // throw error if new order item not created
-            if (!newOrderItem) {
-                throw httpError(400, 'Unable to process order items');
-            } else {
+            // delete cart item from database
+            const deletedCartItem = await CartItem.delete({ ...cartItem });
 
-                // delete cart item from database
-                const deletedCartItem = await CartItem.delete({ ...cartItem });
-                if (!deletedCartItem) {
-                    throw httpError(500, 'Unable to remove cart items');
-            }
-
-                // add item to order items
-                orderItems.push(newOrderItem);
-            }
+            // add item to order items
+            orderItems.push(newOrderItem);
         }
 
         // delete cart from database
         const deletedCart = await Cart.delete(data.cart_id);
+
+        // ---------------------------------------------------------
+        // --- charge Card associated with payment_id the total ----
+        // ---------------------------------------------------------
 
         return {
             order: newOrder, 
