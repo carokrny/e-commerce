@@ -1,7 +1,9 @@
 const app = require('../app');
 const request = require('supertest');
 const session = require('supertest-session');
-const { testLogin2, product, updatedProduct } = require('./testData');
+const { user2, 
+        product, 
+        updatedProduct } = require('./testData');
 const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
 
@@ -17,7 +19,7 @@ describe ('Cart endpoints', () => {
             // create JWT for authentication 
             const res = await request(app)
                 .post('/login')
-                .send(testLogin2);
+                .send(user2);
             token = res.body.token;
 
             testSession = session(app);

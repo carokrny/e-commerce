@@ -11,14 +11,15 @@ class Order {
     async create(data) {
         try {
             // pg statement
-            const statement = `INSERT INTO orders (user_id, shipping_address_id, billing_address_id)
-                                VALUES ($1, $2, $3)
+            const statement = `INSERT INTO orders (user_id, shipping_address_id, billing_address_id, payment_id)
+                                VALUES ($1, $2, $3, $4)
                                 RETURNING *`;
 
             // ph values 
             const values = [data.user_id, 
                             data.shipping_address_id, 
-                            data.billing_address_id]
+                            data.billing_address_id, 
+                            data.payment_id]
             
             // make query
             const result = await db.query(statement, values);

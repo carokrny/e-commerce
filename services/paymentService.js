@@ -141,8 +141,8 @@ module.exports.deletePayment = async (data) => {
         await checkPayment(data);
 
         // check if payment is primary payment of user
-        const user = User.findById(data.user_id);
-        if (user.primary_payment_id === data.payment_id) {
+        const user = await User.findById(data.user_id);
+        if (user.primary_payment_id === parseInt(data.payment_id)) {
             // if so, update primary_payment_id to be null
             await User.update({ ...user, primary_payment_id: null });
         }

@@ -1,7 +1,6 @@
 const app = require('../app');
 const request = require('supertest');
-const { testLogin, 
-        userId, 
+const { user, 
         cardPost, 
         cardPut,
         invalidCardPost, 
@@ -11,19 +10,19 @@ const User = require('../models/UserModel');
 
 describe ('Account payment method endpoints', () => {
 
-    var token;
-    var paymentId;
+    describe('Valid JWT', () => {
 
-    beforeAll(async () => {
-        const res = await request(app)
-            .post('/login')
-            .send(testLogin);
-        token = res.body.token;
-    }),
+        var token;
+        var paymentId;
 
-    describe('POST \'/account/payment\'', () => {
-        
-        describe('Valid token', () => {
+        beforeAll(async () => {
+            const res = await request(app)
+                .post('/login')
+                .send(user);
+            token = res.body.token;
+        }),
+
+        describe('POST \'/account/payment\'', () => {
 
             describe('Valid inputs', () => {
 
@@ -38,7 +37,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toBeDefined();
-                    expect(res.body.payment.user_id).toEqual(userId);
+                    expect(res.body.payment.user_id).toEqual(user.id);
                     paymentId = res.body.payment.id;
                 })
             }), 
@@ -77,28 +76,9 @@ describe ('Account payment method endpoints', () => {
                     })
                 })
             })
-        }),
+        }), 
 
-        describe('Invalid token', () => {
-
-            it ('Should return 401 error', (done) => {
-                request(app)
-                    .post('/account/payment')
-                    .send(cardPost)
-                    .set('Authorization', null)
-                    .set('Accept', 'application/json')
-                    .expect(401)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
-            })
-        })
-    }),
-
-    describe('GET \'/account/payment/payment_id\'', () => {
-        
-        describe('Valid token', () => {
+        describe('GET \'/account/payment/payment_id\'', () => {
 
             describe('Valid user_id', () => {
 
@@ -112,7 +92,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
-                    expect(res.body.payment.user_id).toEqual(userId);
+                    expect(res.body.payment.user_id).toEqual(user.id);
                 })
             }), 
 
@@ -130,27 +110,9 @@ describe ('Account payment method endpoints', () => {
                         });
                 })
             })
-        }),
+        }), 
 
-        describe('Invalid token', () => {
-
-            it ('Should return 401 error', (done) => {
-                request(app)
-                    .get(`/account/payment/${paymentId}`)
-                    .set('Authorization', null)
-                    .set('Accept', 'application/json')
-                    .expect(401)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
-            })
-        })
-    }), 
-
-    describe('GET \'/account/payment/all\'', () => {
-        
-        describe('Valid token', () => {
+        describe('GET \'/account/payment/all\'', () => {
 
             it ('Should return the payment methods', async () => {
                 const res = await request(app)
@@ -162,30 +124,11 @@ describe ('Account payment method endpoints', () => {
                 expect(res.body).toBeDefined();
                 expect(res.body.payments).toBeDefined();
                 expect(res.body.payments[0]).toBeDefined();
-                expect(res.body.payments[0].id).toEqual(paymentId);
-                expect(res.body.payments[0].user_id).toEqual(userId);
+                expect(res.body.payments[0].user_id).toEqual(user.id);
             })
-        }),
+        }), 
 
-        describe('Invalid token', () => {
-
-            it ('Should return 401 error', (done) => {
-                request(app)
-                    .get(`/account/payment/all`)
-                    .set('Authorization', null)
-                    .set('Accept', 'application/json')
-                    .expect(401)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
-            })
-        })
-    }), 
-
-    describe('PUT \'/account/payment/payment_id\'', () => {
-        
-        describe('Valid token', () => {
+        describe('PUT \'/account/payment/payment_id\'', () => {
 
             describe('Valid user_id', () => {
 
@@ -200,7 +143,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
-                    expect(res.body.payment.user_id).toEqual(userId);
+                    expect(res.body.payment.user_id).toEqual(user.id);
                     expect(res.body.payment.card_no).toEqual(cardPost.card_no);
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
                 })
@@ -219,7 +162,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
-                    expect(res.body.payment.user_id).toEqual(userId);
+                    expect(res.body.payment.user_id).toEqual(user.id);
                     expect(res.body.payment.card_no).toEqual(cardPost.card_no);
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
                     expect(res.body.payment.telephone).not.toBeDefined();
@@ -239,7 +182,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
-                    expect(res.body.payment.user_id).toEqual(userId);
+                    expect(res.body.payment.user_id).toEqual(user.id);
                     expect(res.body.payment.card_no).toEqual(cardPost.card_no);
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
                     expect(res.body.payment.cvv).toEqual(cardPost.cvv);
@@ -264,26 +207,7 @@ describe ('Account payment method endpoints', () => {
             })
         }),
 
-        describe('Invalid token', () => {
-
-            it ('Should return 401 error', (done) => {
-                request(app)
-                    .put(`/account/payment/${paymentId}`)
-                    .send(cardPut)
-                    .set('Authorization', null)
-                    .set('Accept', 'application/json')
-                    .expect(401)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
-            })
-        })
-    }),
-
-    describe('DELETE \'/account/payment/payment_id\'', () => {
-        
-        describe('Valid token', () => {
+        describe('DELETE \'/account/payment/payment_id\'', () => {
 
             describe('Valid user_id', () => {
 
@@ -291,8 +215,8 @@ describe ('Account payment method endpoints', () => {
 
                     it ('Should delete and return the payment', async () => {
                         // update payment to be user's primary payment
-                        var user = await User.findByEmail(testLogin.email);
-                        await User.update({ ...user, primary_payment_id: paymentId });
+                        var testUser = await User.findByEmail(user.email);
+                        await User.update({ ...testUser, primary_payment_id: paymentId });
 
                         const res = await request(app)
                             .delete(`/account/payment/${paymentId}`)
@@ -303,13 +227,13 @@ describe ('Account payment method endpoints', () => {
                         expect(res.body).toBeDefined();
                         expect(res.body.payment).toBeDefined();
                         expect(res.body.payment.id).toEqual(paymentId);
-                        expect(res.body.payment.user_id).toEqual(userId);
+                        expect(res.body.payment.user_id).toEqual(user.id);
                         expect(res.body.payment.card_no).toEqual(cardPost.card_no);
                         expect(res.body.payment.provider).toEqual(cardPut.provider);
 
                         // verify that primary_payment_id has been reset to null
-                        user = await User.findByEmail(testLogin.email);
-                        expect(user.primary_payment_id).toEqual(null);
+                        testUser = await User.findByEmail(user.email);
+                        expect(testUser.primary_payment_id).toEqual(null);
                     })
                 })
             }), 
@@ -328,9 +252,76 @@ describe ('Account payment method endpoints', () => {
                         });
                 })
             })
+        })
+    }),
+
+    describe('Invalid JWT', () => {
+
+        var paymentId;
+
+        describe('POST \'/account/payment\'', () => {
+
+            it ('Should return 401 error', (done) => {
+                request(app)
+                    .post('/account/payment')
+                    .send(cardPost)
+                    .set('Authorization', null)
+                    .set('Accept', 'application/json')
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        return done();
+                    });
+            })
+        }), 
+
+        describe('GET \'/account/payment/payment_id\'', () => {
+
+            it ('Should return 401 error', (done) => {
+                request(app)
+                    .get(`/account/payment/${paymentId}`)
+                    .set('Authorization', null)
+                    .set('Accept', 'application/json')
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        return done();
+                    });
+            })
+        }), 
+
+        describe('GET \'/account/payment/all\'', () => {
+
+            it ('Should return 401 error', (done) => {
+                request(app)
+                    .get(`/account/payment/all`)
+                    .set('Authorization', null)
+                    .set('Accept', 'application/json')
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        return done();
+                    });
+            })
+        }), 
+
+        describe('PUT \'/account/payment/payment_id\'', () => {
+
+            it ('Should return 401 error', (done) => {
+                request(app)
+                    .put(`/account/payment/${paymentId}`)
+                    .send(cardPut)
+                    .set('Authorization', null)
+                    .set('Accept', 'application/json')
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        return done();
+                    });
+            })
         }),
 
-        describe('Invalid token', () => {
+        describe('DELETE \'/account/payment/payment_id\'', () => {
 
             it ('Should return 401 error', (done) => {
                 request(app)
@@ -344,7 +335,6 @@ describe ('Account payment method endpoints', () => {
                     });
             })
         })
+
     })
-
-
 })

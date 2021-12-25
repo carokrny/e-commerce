@@ -44,12 +44,14 @@ module.exports.putAccount = async (data) => {
             } else if (property === "password") {
                 // hash and salt password
                 const pwObj = genPassword(data[property]);
+
                 // save hash and salt to db, not password itself
                 user.pw_hash = pwObj.pw_hash;
                 user.pw_salt = pwObj.pw_salt;
             } else if (property === "primary_address_id") {
                 // get address, if it exists 
                 const address = data[property] ? await Address.findById(data[property]) : null;
+
                 // check that address exists and address's user_id is user's id
                 if(address && address.user_id === data.user_id){
                     user[property] = data[property];
@@ -57,6 +59,7 @@ module.exports.putAccount = async (data) => {
             } else if (property === "primary_payment_id") {
                 // get payment method, if it exists 
                 const payment = data[property] ? await Card.findById(data[property]) : null;
+                
                 // check that payment exists and payment's user_id is user's id
                 if(payment && payment.user_id === data.user_id){
                     user[property] = data[property];

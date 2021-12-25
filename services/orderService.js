@@ -1,6 +1,71 @@
 const httpError = require('http-errors');
 const Order = require('../models/OrderModel');
 const OrderItem = require('../models/OrderItemModel');
+const Cart = require('../models/CartModel');
+const CartItem = require('../models/CartItemModel');
+
+module.exports.postOrder = async (data) => {
+    try {
+        // throw error if no cart_id
+        if(!data.cart_id) {
+            throw httpError(400, 'No cart identifier.');
+        }
+
+        // throw error if cart not found
+        const cart = await Cart.findById(data.cart_id);        
+        if (!cart) {
+            throw httpError(404, 'Cart not found.')
+        }
+
+        // find all items in cart
+        const cartItems = await CartItem.findInCart(data.cart_id);
+        if (!cartItems) {
+            throw httpError(404, 'Cart empty.')
+        }
+
+        // create an new order
+        const newOrder = await Order.create({ 
+            user_id: data.user_id,
+            shipping_address_id: data.shipping.address.id,
+            billing_address_id: data.billing.address.id, 
+            payment_id: data.payment.id
+        });
+
+        // iterate through cart items to create order items
+        var orderItems = [];
+        for (const cartItem of cartItems) {
+
+            // create new order item 
+            const newOrderItem = await OrderItem.create({ ...cartItem, order_id: newOrder.id });
+            
+            // throw error if new order item not created
+            if (!newOrderItem) {
+                throw httpError(400, 'Unable to process order items');
+            } else {
+
+                // delete cart item from database
+                const deletedCartItem = await CartItem.delete({ ...cartItem });
+                if (!deletedCartItem) {
+                    throw httpError(500, 'Unable to remove cart items');
+            }
+
+                // add item to order items
+                orderItems.push(newOrderItem);
+            }
+        }
+
+        // delete cart from database
+        const deletedCart = await Cart.delete(data.cart_id);
+
+        return {
+            order: newOrder, 
+            orderItems: orderItems,
+        };
+        
+    } catch(err) {
+        throw err;
+    }
+}
 
 module.exports.getAllOrders = async (user_id) => {
     try {
@@ -16,6 +81,10 @@ module.exports.getAllOrders = async (user_id) => {
 
 module.exports.getOneOrder = async (data) => {
     try {
+        if (!data.order_id) {
+            throw httpError(400, 'No order id');
+        }
+
         // find order
         const order = await Order.findById(data.order_id);
 

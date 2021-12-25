@@ -28,10 +28,6 @@ module.exports.register = async (data) => {
             hash: pwObj.hash
         });
 
-        if (!newUser) {
-            throw httpError(500, 'Error creating new account.');
-        }
-
         // handle if user had shopping cart before registering in 
         await cartConsolidator(data.cart_id, newUser.id);
 

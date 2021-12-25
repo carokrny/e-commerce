@@ -9,20 +9,16 @@
 // test registration for user that does not exist in database
  module.exports.testRegister = {
     email: 'orange@me.com', 
-    password: 'purple'
+    password: 'purple',
  };
 
 // login for user that does exist in database
- module.exports.testLogin = {
+ module.exports.user= {
     email: 'mascara@me.com', 
-    password: 'secret'
+    password: 'secret',
+    id: 21,
+    order_id: 7
  };
-
- // user id for testLogin user 
- module.exports.userId = 21;
-
-// sample order for testLogin user
- module.exports.testOrderId = 7;
 
 // test product for entering into carts and orders
 module.exports.product = {
@@ -84,17 +80,76 @@ module.exports.differentAddressId = 1;
  }
 
  // to get an error on payment routes with wrong payment id
-module.exports.differentPaymentId = 4;
+module.exports.differentPaymentId = 162;
 
 
 
 
 // test login 2 since tests run synchronously and carts must have unique user_id
 // test login 2 is used for cartItems and address tests
- module.exports.testLogin2 = {
+ module.exports.user2 = {
     email: 'john@me.com', 
-    password: 'abc123'
+    password: 'abc123', 
+    id: 130
  };
 
-// test login 2's user ids
- module.exports.userId2 = 130;
+
+
+// test login 3 since tests run synchronously and carts must have unique user_id
+// test login 3 is used for checkout tests
+ module.exports.user3 = {
+    email: 'arugula@me.com', 
+    password: 'lettuce', 
+    id: 198, 
+    first_name: 'Arugula', 
+    last_name: 'Salad'
+ };
+
+
+
+// test login 4 since tests run synchronously and carts must have unique user_id
+// test login 4 is used for checkout tests
+ module.exports.user4 = {
+    email: 'coffee@me.com', 
+    password: 'sugarAndCream', 
+    id: 592,
+    first_name: 'Coffee', 
+    last_name: 'Cup'
+ };
+
+
+
+// test login 5 since tests run synchronously and carts must have unique user_id
+// test login 5 is used for checkout tests
+ module.exports.user5 = {                    
+    email: 'turkey@me.com', 
+    password: 'stuffing', 
+    id: 892,
+    first_name: 'Turkey', 
+    last_name: 'Dinner'
+ };
+
+
+
+ // test login 6 since tests run synchronously and carts must have unique user_id
+// test login 6 is used for checkout tests
+ module.exports.user6 = {                   
+    email: 'pumpkin@me.com', 
+    password: 'orangeAndRound', 
+    id: 893,
+    first_name: 'Pumpkin', 
+    last_name: 'Pie', 
+    primary_address_id: 492, 
+    primary_payment_id: 299
+ };
+
+
+
+ // test registration for user that does not exist in database
+ // for checkout tests
+ module.exports.testRegister2 = {
+    email: 'yellow@me.com', 
+    password: 'cyanOrTeal',
+    first_name: 'Yellow',
+    last_name: 'Color'
+ };

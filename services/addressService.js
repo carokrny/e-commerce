@@ -113,8 +113,8 @@ module.exports.deleteAddress = async (data) => {
         await checkAddress(data);
 
         // check if address is primary address of user
-        const user = User.findById(data.user_id);
-        if (user.primary_address_id === data.address_id) {
+        const user = await User.findById(data.user_id);
+        if (user.primary_address_id === parseInt(data.address_id)) {
             // if so, update primary_address_id to be null
             await User.update({ ...user, primary_address_id: null });
         }

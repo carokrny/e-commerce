@@ -1,7 +1,7 @@
 const app = require('../app');
 const request = require('supertest');
 const session = require('supertest-session');
-const { testLogin, testRegister, userId, product } = require('./testData');
+const { user, testRegister, product } = require('./testData');
 const User = require('../models/UserModel');
 const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
@@ -38,6 +38,7 @@ describe('Auth endpoints', () => {
                     .expect(201);
                 expect(res.body).toBeDefined();
                 expect(res.body.user).toBeDefined();
+                expect(res.body.user.email).toEqual(testRegister.email);
                 expect(res.body.token).toBeDefined();
             })
         }), 
@@ -47,7 +48,7 @@ describe('Auth endpoints', () => {
             it('should return a 409 error', (done) => {
                 request(app)
                     .post('/register')
-                    .send({ email: testLogin.email, password: testRegister.password})
+                    .send({ email: user.email, password: testRegister.password})
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(409)
@@ -85,6 +86,7 @@ describe('Auth endpoints', () => {
 
             afterEach(async () => {
                 if (cartId) {
+                    await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
                     await Cart.delete(cartId);
                     cartId = null;
                 }
@@ -101,27 +103,35 @@ describe('Auth endpoints', () => {
                         .set('Accept', 'application/json');
                     cartId = res1.body.cart.id;
 
-                    // register user account
+                    // add item to cart 
                     const res2 = await testSession
+                        .post(`/cart/item/${product.product_id}`)
+                        .send(product)
+                        .set('Authorization', null)
+                        .set('Accept', 'application/json');
+
+                    // register user account
+                    const res3 = await testSession
                         .post('/register')
                         .send(testRegister)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(201);
-                    expect(res2.body).toBeDefined();
-                    expect(res2.body.user).toBeDefined();
-                    expect(res2.body.token).toBeDefined();
-                    const token = res2.body.token;
+                    expect(res3.body).toBeDefined();
+                    expect(res3.body.user).toBeDefined();
+                    expect(res3.body.user.email).toEqual(testRegister.email);
+                    expect(res3.body.token).toBeDefined();
+                    const token = res3.body.token;
 
                     // read cart
-                    const res3 = await testSession
+                    const res4 = await testSession
                         .get(`/cart`)
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(200);
-                    expect(res3.body).toBeDefined();
-                    expect(res3.body.cart).toBeDefined();
-                    expect(res3.body.cart.id).toEqual(cartId);
+                    expect(res4.body).toBeDefined();
+                    expect(res4.body.cart).toBeDefined();
+                    expect(res4.body.cart.id).toEqual(cartId);
                 })
             }), 
 
@@ -137,6 +147,7 @@ describe('Auth endpoints', () => {
                         .expect(201);
                     expect(res1.body).toBeDefined();
                     expect(res1.body.user).toBeDefined();
+                    expect(res1.body.user.email).toEqual(testRegister.email);
                     expect(res1.body.token).toBeDefined();
                     const token = res1.body.token;
 
@@ -170,12 +181,14 @@ describe('Auth endpoints', () => {
             it ('should return user and attach a JWT', async () => {
                 const res = await request(app)
                     .post('/login')
-                    .send(testLogin)
+                    .send(user)
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(200);
                 expect(res.body).toBeDefined();
                 expect(res.body.user).toBeDefined();
+                expect(res.body.user.email).toEqual(user.email);
+                expect(res.body.user.id).toEqual(user.id);
                 expect(res.body.token).toBeDefined();
             })
         }),
@@ -185,7 +198,7 @@ describe('Auth endpoints', () => {
             it ('should return a 401 error', (done) => {
                 request(app)
                     .post('/login')
-                    .send({ email: testLogin.email, password: 'wrongPassword' })
+                    .send({ email: user.email, password: 'wrongPassword' })
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(401)
@@ -201,7 +214,7 @@ describe('Auth endpoints', () => {
             it ('should return a 401 error', (done) => {
                 request(app)
                     .post('/login')
-                    .send({ email: 'wrong@me.com', password: testLogin.password })
+                    .send({ email: 'wrong@me.com', password: user.password })
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(401)
@@ -232,18 +245,14 @@ describe('Auth endpoints', () => {
 
             var testSession;
             var cartId;
-            var cartItem;
 
             beforeEach(async () => {
                 testSession = session(app);
             }),
 
             afterEach(async () => {
-                if (cartItem) {
-                    await CartItem.delete({ ...cartItem });
-                    cartItem = null;
-                }
                 if (cartId) {
+                    await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
                     await Cart.delete(cartId);
                     cartId = null;
                 }
@@ -259,27 +268,36 @@ describe('Auth endpoints', () => {
                         .set('Accept', 'application/json');
                     cartId = res1.body.cart.id;
 
-                    // log into user account
+                    // add item to cart 
                     const res2 = await testSession
+                        .post(`/cart/item/${product.product_id}`)
+                        .send(product)
+                        .set('Authorization', null)
+                        .set('Accept', 'application/json');
+
+                    // log into user account
+                    const res3 = await testSession
                         .post('/login')
-                        .send(testLogin)
+                        .send(user)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(200);
-                    expect(res2.body).toBeDefined();
-                    expect(res2.body.user).toBeDefined();
-                    expect(res2.body.token).toBeDefined();
-                    const token = res2.body.token;
+                    expect(res3.body).toBeDefined();
+                    expect(res3.body.user).toBeDefined();
+                    expect(res3.body.user.email).toEqual(user.email);
+                    expect(res3.body.user.id).toEqual(user.id);
+                    expect(res3.body.token).toBeDefined();
+                    const token = res3.body.token;
 
                     // read cart
-                    const res3 = await testSession
+                    const res4 = await testSession
                         .get(`/cart`)
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(200);
-                    expect(res3.body).toBeDefined();
-                    expect(res3.body.cart).toBeDefined();
-                    expect(res3.body.cart.id).toEqual(cartId);
+                    expect(res4.body).toBeDefined();
+                    expect(res4.body.cart).toBeDefined();
+                    expect(res4.body.cart.id).toEqual(cartId);
                 })
             }),
 
@@ -287,10 +305,10 @@ describe('Auth endpoints', () => {
 
                 it('Should consolidate carts', async () => {
                     // create cart in database, from previous session
-                    const oldCart = await Cart.create(userId);
+                    const oldCart = await Cart.create(user.id);
 
                     // add item to cart from previous session
-                    const oldCartItem = await CartItem.create({ ...product, cart_id: oldCart.id });
+                    await CartItem.create({ ...product, cart_id: oldCart.id });
 
                     // --- new session ---
                     
@@ -303,17 +321,19 @@ describe('Auth endpoints', () => {
                     cartId = newCart.id;
 
                     // add same item to new session cart
-                    cartItem = await CartItem.create({ ...product, cart_id: newCart.id });
+                    await CartItem.create({ ...product, cart_id: newCart.id });
 
                     // log into user account
                     const res2 = await testSession
                         .post('/login')
-                        .send(testLogin)
+                        .send(user)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(200);
                     expect(res2.body).toBeDefined();
                     expect(res2.body.user).toBeDefined();
+                    expect(res2.body.user.email).toEqual(user.email);
+                    expect(res2.body.user.id).toEqual(user.id);
                     expect(res2.body.token).toBeDefined();
                     const token = res2.body.token;
 
@@ -337,12 +357,14 @@ describe('Auth endpoints', () => {
                     // log into user account
                     const res1 = await testSession
                         .post('/login')
-                        .send(testLogin)
+                        .send(user)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(200);
                     expect(res1.body).toBeDefined();
                     expect(res1.body.user).toBeDefined();
+                    expect(res1.body.user.email).toEqual(user.email);
+                    expect(res1.body.user.id).toEqual(user.id);
                     expect(res1.body.token).toBeDefined();
                     const token = res1.body.token;
 
@@ -364,7 +386,7 @@ describe('Auth endpoints', () => {
         beforeEach(async () => {
             const res = await request(app)
                     .post('/login')
-                    .send(testLogin);
+                    .send(user);
             token = res.body.token;
         })
         

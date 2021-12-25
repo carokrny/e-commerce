@@ -1,7 +1,6 @@
 const app = require('../app');
 const request = require('supertest');
-const { testLogin2, 
-        userId2, 
+const { user2, 
         addressPost, 
         addressPut,
         differentAddressId } = require('./testData');
@@ -15,7 +14,7 @@ describe ('Address endpoints', () => {
     beforeAll(async () => {
         const res = await request(app)
             .post('/login')
-            .send(testLogin2);
+            .send(user2);
         token = res.body.token;
     }),
 
@@ -36,7 +35,7 @@ describe ('Address endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.address).toBeDefined();
                     expect(res.body.address.id).toBeDefined();
-                    expect(res.body.address.user_id).toEqual(userId2);
+                    expect(res.body.address.user_id).toEqual(user2.id);
                     addressId = res.body.address.id;
                 })
             }), 
@@ -91,7 +90,7 @@ describe ('Address endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.address).toBeDefined();
                     expect(res.body.address.id).toEqual(addressId);
-                    expect(res.body.address.user_id).toEqual(userId2);
+                    expect(res.body.address.user_id).toEqual(user2.id);
                 })
             }), 
 
@@ -142,7 +141,7 @@ describe ('Address endpoints', () => {
                 expect(res.body.addresses).toBeDefined();
                 expect(res.body.addresses[0]).toBeDefined();
                 expect(res.body.addresses[0].id).toEqual(addressId);
-                expect(res.body.addresses[0].user_id).toEqual(userId2);
+                expect(res.body.addresses[0].user_id).toEqual(user2.id);
             })
         }),
 
@@ -179,7 +178,7 @@ describe ('Address endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.address).toBeDefined();
                     expect(res.body.address.id).toEqual(addressId);
-                    expect(res.body.address.user_id).toEqual(userId2);
+                    expect(res.body.address.user_id).toEqual(user2.id);
                     expect(res.body.address.address1).toEqual(addressPost.address1);
                     expect(res.body.address.address2).toEqual(addressPut.address2);
                 })
@@ -198,7 +197,7 @@ describe ('Address endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.address).toBeDefined();
                     expect(res.body.address.id).toEqual(addressId);
-                    expect(res.body.address.user_id).toEqual(userId2);
+                    expect(res.body.address.user_id).toEqual(user2.id);
                     expect(res.body.address.address1).toEqual(addressPost.address1);
                     expect(res.body.address.address2).toEqual(addressPut.address2);
                     expect(res.body.address.telephone).not.toBeDefined();
@@ -249,7 +248,7 @@ describe ('Address endpoints', () => {
 
                     it ('Should delete and return the address', async () => {
                         // update address to be user's primary address
-                        var user = await User.findByEmail(testLogin2.email);
+                        var user = await User.findByEmail(user2.email);
                         await User.update({ ...user, primary_address_id: addressId });
 
                         const res = await request(app)
@@ -261,12 +260,12 @@ describe ('Address endpoints', () => {
                         expect(res.body).toBeDefined();
                         expect(res.body.address).toBeDefined();
                         expect(res.body.address.id).toEqual(addressId);
-                        expect(res.body.address.user_id).toEqual(userId2);
+                        expect(res.body.address.user_id).toEqual(user2.id);
                         expect(res.body.address.address1).toEqual(addressPost.address1);
                         expect(res.body.address.address2).toEqual(addressPut.address2);
 
                         // verify that primary_address_id has been reset to null
-                        user = await User.findByEmail(testLogin2.email);
+                        user = await User.findByEmail(user2.email);
                         expect(user.primary_address_id).toEqual(null);
                     })
                 })

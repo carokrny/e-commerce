@@ -1,6 +1,6 @@
 const app = require('../app');
 const request = require('supertest');
-const { testLogin, userId, userAccountPut } = require('./testData');
+const { user, userAccountPut } = require('./testData');
 
 describe ('Account endpoints', () => {
 
@@ -9,7 +9,7 @@ describe ('Account endpoints', () => {
     beforeAll(async () => {
         const res = await request(app)
             .post('/login')
-            .send(testLogin);
+            .send(user);
         token = res.body.token;
     }),
 
@@ -26,8 +26,8 @@ describe ('Account endpoints', () => {
                     .expect(200);
                 expect(res.body).toBeDefined();
                 expect(res.body.user).toBeDefined();
-                expect(res.body.user.id).toEqual(userId);
-                expect(res.body.user.email).toEqual(testLogin.email);
+                expect(res.body.user.id).toEqual(user.id);
+                expect(res.body.user.email).toEqual(user.email);
             })
         }),
 
@@ -61,8 +61,8 @@ describe ('Account endpoints', () => {
                     .expect(200);
                 expect(res.body).toBeDefined();
                 expect(res.body.user).toBeDefined();
-                expect(res.body.user.id).toEqual(userId);
-                expect(res.body.user.email).toEqual(testLogin.email);
+                expect(res.body.user.id).toEqual(user.id);
+                expect(res.body.user.email).toEqual(user.email);
                 expect(res.body.user.first_name).toEqual(userAccountPut.first_name);
             })
         }),

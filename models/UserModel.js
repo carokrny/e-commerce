@@ -48,6 +48,8 @@ class User {
                                     pw_salt=$4, 
                                     first_name=$5, 
                                     last_name=$6, 
+                                    primary_address_id=$7,
+                                    primary_payment_id=$8,
                                     modified=now()
                                 WHERE id = $1
                                 RETURNING *`;
@@ -58,7 +60,9 @@ class User {
                             data.pw_hash, 
                             data.pw_salt, 
                             data.first_name, 
-                            data.last_name];
+                            data.last_name, 
+                            data.primary_address_id, 
+                            data.primary_payment_id];
             
             // make query
             const result = await db.query(statement, values);

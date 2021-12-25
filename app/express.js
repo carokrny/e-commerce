@@ -1,5 +1,6 @@
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const pool = require('../db/pool');
@@ -15,7 +16,10 @@ module.exports = (app) => {
     app.use(bodyParser.json());
 
     // parse incoming url-encoded req
-    app.use(bodyParser.urlencoded({extended: true}));
+    app.use(bodyParser.urlencoded({ extended: true }));
+
+    // helmet for added security on http headers
+    app.use(helmet());
 
     // trust first proxy for session
     app.set('trust proxy', 1);

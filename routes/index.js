@@ -1,6 +1,7 @@
 const homeRouter = require('./shopRoutes/home');
 const productsRouter = require('./shopRoutes/products');
 const cartRouter = require('./shopRoutes/cart');
+const checkoutRouter = require('./shopRoutes/checkout');
 const registerRouter = require('./authRoutes/register');
 const loginRouter = require('./authRoutes/login');
 const logoutRouter = require('./authRoutes/logout');
@@ -15,4 +16,5 @@ module.exports = (app) => {
     accountRouter(app);
     productsRouter(app);
     cartRouter(app);
+    checkoutRouter(app);
 }
