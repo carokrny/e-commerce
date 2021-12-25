@@ -1,16 +1,25 @@
 const httpError = require('http-errors');
+const validator = require('validator');
 const { genPassword, validPassword } = require('../lib/passwordUtils');
 const attachJWT = require('../lib/attachJWT');
 const cartConsolidator = require('../lib/cartConsolidator');
 const User = require('../models/UserModel');
 
+const validateInputs = (email, password) => {
+    if (email === null || 
+        password === null ||
+        !validator.isEmail(email) ||
+        //!validator.isStrongPassword(password) ||
+        password.length === 0) {
+        throw httpError(400, 'Email and password required.');
+    }
+}
+
 module.exports.register = async (data) => {
     try {
         // check for required inputs 
         const { email, password } = data;
-        if (email === null || password === null || email.length === 0 || password.length === 0) {
-            throw httpError(400, 'Email and password required.');
-        };
+        validateInputs(email, password);
         
         // pwObj contains salt and hash generated
         const pwObj = genPassword(data.password);
@@ -47,9 +56,7 @@ module.exports.login = async (data) => {
     try {
         // check for required inputs 
         const { email, password } = data;
-        if (email === null || password === null || email.length === 0 || password.length === 0) {
-            throw httpError(400, 'Email and password required.');
-        };
+        validateInputs(email, password);
         
         // check if user already exists
         const user = await User.findByEmail(data.email);
