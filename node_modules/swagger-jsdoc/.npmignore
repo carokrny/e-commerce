@@ -1,0 +1,7 @@
+.git*
+.js*
+circle.yml
+external.jsdoc
+example/
+jsdoc/
+test/

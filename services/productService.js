@@ -8,7 +8,7 @@ module.exports.getAll = async () => {
 
         // throw error if no products found 
         if(!products) {
-            throw httpError(404, 'Products not in category.');
+            throw httpError(404, 'No products.');
         }
 
         return { products };
@@ -39,7 +39,7 @@ module.exports.getCategory = async (category) => {
         const products = await Product.findByCategory(category);
 
         if(!products) {
-            throw httpError(404, 'Products not in category.');
+            throw httpError(404, 'No products in category.');
         }
 
         return { products };
@@ -49,7 +49,7 @@ module.exports.getCategory = async (category) => {
     }    
 } 
 
-module.exports.getSearch = async (query) => {         // NTS - won't scale well, come up with a better search
+module.exports.getSearch = async (query) => { 
     try {
         // return error if no queries
         if (!query) {

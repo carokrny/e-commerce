@@ -1,11 +1,11 @@
-const homeRouter = require('./shopRoutes/home');
-const productsRouter = require('./shopRoutes/products');
-const cartRouter = require('./shopRoutes/cart');
-const checkoutRouter = require('./shopRoutes/checkout');
-const registerRouter = require('./authRoutes/register');
-const loginRouter = require('./authRoutes/login');
-const logoutRouter = require('./authRoutes/logout');
-const accountRouter = require('./accountRoutes/account');
+const homeRouter = require('./shop/home');
+const productsRouter = require('./shop/products');
+const cartRouter = require('./shop/cart');
+const checkoutRouter = require('./shop/checkout');
+const registerRouter = require('./auth/register');
+const loginRouter = require('./auth/login');
+const logoutRouter = require('./auth/logout');
+const accountRouter = require('./account/account');
 
 
 module.exports = (app) => {

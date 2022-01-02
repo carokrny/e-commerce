@@ -27,7 +27,7 @@ const checkAddress = async (data) => {
 
         // check that address's user_id matches authenticated user_id
         if (address.user_id !== data.user_id) {
-            throw httpError(409, 'Address does not match user.')
+            throw httpError(403, 'Address does not match user.')
         }
 
         return address;

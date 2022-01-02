@@ -96,12 +96,12 @@ describe ('Address endpoints', () => {
 
             describe('Invalid user_id for the address', () => {
 
-                it ('Should return a 409 error', (done) => {
+                it ('Should return a 403 error', (done) => {
                     request(app)
                         .get(`/account/address/${differentAddressId}`)
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
-                        .expect(409)
+                        .expect(403)
                         .end((err, res) => {
                             if (err) return done(err);
                             return done();
@@ -206,13 +206,13 @@ describe ('Address endpoints', () => {
 
             describe('Invalid user_id for the address', () => {
 
-                it ('Should return a 409 error', (done) => {
+                it ('Should return a 403 error', (done) => {
                     request(app)
                         .put(`/account/address/${differentAddressId}`)
                         .send(addressPut)
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
-                        .expect(409)
+                        .expect(403)
                         .end((err, res) => {
                             if (err) return done(err);
                             return done();
@@ -273,12 +273,12 @@ describe ('Address endpoints', () => {
 
             describe('Invalid user_id for the address', () => {
 
-                it ('Should return a 409 error', (done) => {
+                it ('Should return a 403 error', (done) => {
                     request(app)
                         .delete(`/account/address/${differentAddressId}`)
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
-                        .expect(409)
+                        .expect(403)
                         .end((err, res) => {
                             if (err) return done(err);
                             return done();

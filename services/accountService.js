@@ -4,18 +4,51 @@ const User = require('../models/UserModel');
 const Address = require('../models/AddressModel');
 const Card = require('../models/CardModel');
 
-module.exports.getAccount = async (user_id) => {
+
+/** 
+ * Helper function to validate inputs and get user object 
+ */
+const checkUser = async (user_id) => {
     try {
+        // throw error if inputs invalid
+        if(!user_id) {
+            throw httpError(400, 'Invalid inputs.');
+        }
 
         // check if user exists
         const user = await User.findById(user_id);
+
+        // throw error if user does not exist
         if (!user) {
             throw httpError(404, 'User not found.');
         }
+
+        return user;
+
+    } catch(err) {
+        throw err;
+    }
+}
+
+/**
+ * Helper function to wipe password data before returning
+ */
+ const wipePassword = user => {
+    // delete password hash
+    delete user.pw_hash;
+    
+    // delete password salt
+    delete user.pw_salt;
+ }
+
+
+
+module.exports.getAccount = async (user_id) => {
+    try {
+        // check if user exists
+        const user = await checkUser(user_id);
         
-        // wipe password info before returning
-        delete user.pw_hash;
-        delete user.pw_salt;
+        wipePassword(user);
 
         return { user };
 
@@ -26,13 +59,8 @@ module.exports.getAccount = async (user_id) => {
 
 module.exports.putAccount = async (data) => {
     try {
-
         // check if user exists
-        const user = await User.findById(data.user_id);
-
-        if (!user) {
-            throw httpError(404, 'User not found.');
-        }
+        const user = await checkUser(data.user_id);
 
         // modify user with properties in data 
         for (const property in data) {
@@ -71,8 +99,7 @@ module.exports.putAccount = async (data) => {
         const updatedUser = await User.update(user);
 
         // wipe password info before returning
-        delete updatedUser.pw_hash;
-        delete updatedUser.pw_salt;
+        wipePassword(updatedUser);
 
         // return updated user;
         return { user: updatedUser };

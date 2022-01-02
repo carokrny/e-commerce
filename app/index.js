@@ -3,6 +3,7 @@ const app = express();
 const expressLoader = require('./express');
 const routeLoader = require('../routes');
 const passportLoader = require('./passport');
+const swaggerLoader = require('./swagger');
 
 // load express app 
 async function loadApp() {
@@ -21,6 +22,9 @@ async function loadApp() {
 
     // load routes without passport
     routeLoader(app);
+
+    // create API documentation with Swagger
+    swaggerLoader(app);
 
     // lastly, add custom error-handling middleware
     app.use((err, req, res, next) => {
