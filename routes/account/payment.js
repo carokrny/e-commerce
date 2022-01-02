@@ -21,20 +21,31 @@ module.exports = async (app) => {
     *         type: integer
     *       provider:
     *         type: string
+    *         example: 'Visa'
     *       card_type:
     *         type: string
+    *         example: 'debit'
     *       card_no:
     *         type: string
+    *         minLength: 16
+    *         maxLength: 16
+    *         example: '4000400040004000'
     *       expiry:
     *         type: string
+    *         format: date
     *       cvv:
     *         type: string
+    *         minLength: 3
+    *         maxLength: 3
+    *         example: '123'
     *       billing_address_id:
     *         type: integer
     *       created:
     *         type: string
+    *         format: date-time
     *       modified:
     *         type: string
+    *         format: date-time
     *
     */
 
@@ -65,16 +76,21 @@ module.exports = async (app) => {
     *         in: body
     *         required: true
     *         type: string
+    *         minLength: 16
+    *         maxLength: 16
     *       - name: expiry
     *         description: card expiration
     *         in: body
     *         required: true
     *         type: string
+    *         format: date
     *       - name: cvv
     *         description: card cvv
     *         in: body
     *         required: true
     *         type: string
+    *         minLength: 3
+    *         maxLength: 3
     *       - name: billing_address_id
     *         description: id of address associated with billing info
     *         in: body
@@ -122,7 +138,9 @@ module.exports = async (app) => {
     *       200:
     *         description: An array of Card objects.
     *         schema:
-    *           $ref: '#/definitions/Card'
+    *           type: array 
+    *           items: 
+    *             $ref: '#/definitions/Card'
     *       401: 
     *         description: User not authorized.
     *         schema:
@@ -221,16 +239,21 @@ module.exports = async (app) => {
     *         in: body
     *         required: false
     *         type: string
+    *         minLength: 16
+    *         maxLength: 16
     *       - name: expiry
     *         description: card expiration
     *         in: body
     *         required: false
     *         type: string
+    *         format: date
     *       - name: cvv
     *         description: card cvv
     *         in: body
     *         required: false
     *         type: string
+    *         minLength: 3
+    *         maxLength: 3
     *       - name: billing_address_id
     *         description: id of address associated with billing info
     *         in: body

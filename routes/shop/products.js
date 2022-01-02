@@ -17,6 +17,8 @@ module.exports = (app) => {
     *         type: string
     *       price:
     *         type: string
+    *         format: money
+    *         example: '$19.99'
     *       description:
     *         type: string
     *       in_stock:
@@ -25,8 +27,10 @@ module.exports = (app) => {
     *         type: string
     *       created:
     *         type: string
+    *         format: date-time
     *       modified:
     *         type: string
+    *         format: date-time
     *
     */
 

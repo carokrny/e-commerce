@@ -39,11 +39,13 @@ module.exports = (app) => {
     *         in: body
     *         required: true
     *         type: string
+    *         format: email
     *       - name: password
     *         description: user's password
     *         in: body
     *         required: true
     *         type: string
+    *         format: password
     *     responses:
     *       200:
     *         description: Object with a User object and a Bearer token object. 

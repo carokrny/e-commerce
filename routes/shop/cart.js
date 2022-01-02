@@ -22,8 +22,10 @@ module.exports = (app) => {
     *         type: integer
     *       created:
     *         type: string
+    *         format: date-time
     *       modified:
     *         type: string
+    *         format: date-time
     *   CartItem:
     *     type: object
     *     properties:
@@ -35,8 +37,10 @@ module.exports = (app) => {
     *         type: integer
     *       created:
     *         type: string
+    *         format: date-time
     *       modified:
     *         type: string
+    *         format: date-time
     *
     */
 

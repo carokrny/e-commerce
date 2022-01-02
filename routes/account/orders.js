@@ -17,6 +17,12 @@ module.exports = (app) => {
     *         type: integer
     *       status:
     *         type: string
+    *         enum: 
+    *           - pending
+    *           - shipped 
+    *           - delivered 
+    *           - canceled
+    *         example: 'pending'
     *       shipping_address_id:
     *         type: integer
     *       billing_address_id:
@@ -25,10 +31,14 @@ module.exports = (app) => {
     *         type: integer
     *       total:
     *         type: string
+    *         format: money
+    *         example: '$50.00'
     *       created:
     *         type: string
+    *         format: date-time
     *       modified:
     *         type: string
+    *         format: date-time
     *   OrderItem:
     *     type: object
     *     properties:
@@ -40,8 +50,10 @@ module.exports = (app) => {
     *         type: integer
     *       created:
     *         type: string
+    *         format: date-time
     *       modified:
     *         type: string
+    *         format: date-time
     *
     */
 
@@ -60,7 +72,9 @@ module.exports = (app) => {
     *       200:
     *         description: An array of Order objects.
     *         schema:
-    *           $ref: '#/definitions/Order'
+    *           type: array 
+    *           items: 
+    *             $ref: '#/definitions/Order'
     *       401: 
     *         description: User not authorized.
     *         schema:

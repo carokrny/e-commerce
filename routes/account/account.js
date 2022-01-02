@@ -22,18 +22,25 @@ module.exports = (app) => {
     *         type: integer
     *       email:
     *         type: string
+    *         format: email
     *       first_name:
     *         type: string
+    *         nullable: true
     *       last_name:
     *         type: string
-    *       created:
-    *         type: string
-    *       modified:
-    *         type: string
+    *         nullable: true
     *       primary_address_id:
     *         type: integer
+    *         nullable: true
     *       primary_payment_id:
     *         type: integer
+    *         nullable: true
+    *       created:
+    *         type: string
+    *         format: date-time
+    *       modified:
+    *         type: string
+    *         format: date-time
     *
     */
 
@@ -93,6 +100,7 @@ module.exports = (app) => {
     *         in: body
     *         required: false
     *         type: string
+    *         format: email
     *       - name: first_name
     *         description: user's first name
     *         in: body
@@ -108,6 +116,7 @@ module.exports = (app) => {
     *         in: body
     *         required: false
     *         type: string
+    *         format: password
     *       - name: primary_address_id
     *         description: id of user's primary address
     *         in: body

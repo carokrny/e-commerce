@@ -21,20 +21,32 @@ module.exports = (app) => {
     *         type: integer
     *       address1:
     *         type: string
+    *         example: '123 Easy St'
     *       address2:
     *         type: string
+    *         nullable: true
+    *         example: 'Apt 3'
     *       city:
     *         type: string
     *       state:
     *         type: string
+    *         minLength: 2
+    *         maxLength: 2
+    *         example: 'CA'
     *       zip:
     *         type: string
+    *         minLength: 5
+    *         maxLength: 10
+    *         example: '12345'
     *       country:
     *         type: string
+    *         example: 'United States'
     *       created:
     *         type: string
+    *         format: date-time
     *       modified:
     *         type: string
+    *         format: date-time
     *
     */
 
@@ -65,11 +77,19 @@ module.exports = (app) => {
     *         in: body
     *         required: true
     *         type: string
+    *       - name: state
+    *         description: state of user's address
+    *         required: true
+    *         type: string
+    *         minLength: 2
+    *         maxLength: 2
     *       - name: zip
     *         description: zip code of user's address
     *         in: body
     *         required: true
     *         type: string
+    *         minLength: 5
+    *         maxLength: 10
     *       - name: country
     *         description: country of user's address
     *         in: body
@@ -117,7 +137,9 @@ module.exports = (app) => {
     *       200:
     *         description: An array of Address objects.
     *         schema:
-    *           $ref: '#/definitions/Address'
+    *           type: array 
+    *           items: 
+    *             $ref: '#/definitions/Address'
     *       401: 
     *         description: User not authorized.
     *         schema:
@@ -216,11 +238,19 @@ module.exports = (app) => {
     *         in: body
     *         required: false
     *         type: string
+    *       - name: state
+    *         description: state of user's address
+    *         required: false
+    *         type: string
+    *         minLength: 2
+    *         maxLength: 2
     *       - name: zip
     *         description: zip code of user's address
     *         in: body
     *         required: false
     *         type: string
+    *         minLength: 5
+    *         maxLength: 10
     *       - name: country
     *         description: country of user's address
     *         in: body
