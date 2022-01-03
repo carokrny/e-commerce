@@ -4,7 +4,7 @@ const { login, register } = require('../../services/authService');
 const { getOneOrder } = require('../../services/orderService');
 const { getCart } = require('../../services/cartService');
 const { postShipping, postCheckout } = require('../../services/checkoutService');
-const { demiAuth, checkoutAuth } = require('../../lib/jwtAuth');
+const { demiAuth, checkoutAuth } = require('../../lib/customAuth/jwtAuth');
 
 module.exports = (app) => {
 

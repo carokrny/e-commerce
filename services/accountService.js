@@ -1,53 +1,17 @@
 const httpError = require('http-errors');
-const genPassword = require('../lib/passwordUtils').genPassword;
+const { genPassword } = require('../lib/customAuth/passwordUtils');
+const { wipePassword } = require('../lib/formatUtils');
+const { checkUser } = require('../lib/validatorUtils');
 const User = require('../models/UserModel');
 const Address = require('../models/AddressModel');
 const Card = require('../models/CardModel');
-
-
-/** 
- * Helper function to validate inputs and get user object 
- */
-const checkUser = async (user_id) => {
-    try {
-        // throw error if inputs invalid
-        if(!user_id) {
-            throw httpError(400, 'Invalid inputs.');
-        }
-
-        // check if user exists
-        const user = await User.findById(user_id);
-
-        // throw error if user does not exist
-        if (!user) {
-            throw httpError(404, 'User not found.');
-        }
-
-        return user;
-
-    } catch(err) {
-        throw err;
-    }
-}
-
-/**
- * Helper function to wipe password data before returning
- */
- const wipePassword = user => {
-    // delete password hash
-    delete user.pw_hash;
-    
-    // delete password salt
-    delete user.pw_salt;
- }
-
-
 
 module.exports.getAccount = async (user_id) => {
     try {
         // check if user exists
         const user = await checkUser(user_id);
         
+        // wipe password info before returning
         wipePassword(user);
 
         return { user };

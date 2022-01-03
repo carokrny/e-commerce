@@ -1,4 +1,5 @@
 const router = require('express').Router({ mergeParams : true });
+const { wipeCardData } = require('../../lib/formatUtils');
 const { postPayment, 
         getPayment,
         putPayment,
@@ -32,7 +33,7 @@ module.exports = async (app) => {
     *         example: '4000400040004000'
     *       expiry:
     *         type: string
-    *         format: date
+    *         format: 'MM/YYYY'
     *       cvv:
     *         type: string
     *         minLength: 3
@@ -116,6 +117,9 @@ module.exports = async (app) => {
             // await response 
             const response = await postPayment({ ...req.body, user_id: user_id });
 
+            // wipe sensitive data 
+            wipeCardData(response.payment);
+
             // send response to client 
             res.status(201).json(response);
         } catch(err) {
@@ -153,6 +157,9 @@ module.exports = async (app) => {
 
             // await response 
             const response = await getAllPayments(user_id);
+
+            // wipe sensitive data 
+            response.payments.forEach(payment => wipeCardData(payment));
 
             // send response to client
             res.status(200).json(response);
@@ -204,6 +211,9 @@ module.exports = async (app) => {
 
             // await response 
             const response = await getPayment({payment_id, user_id });
+
+            // wipe sensitive data 
+            wipeCardData(response.payment);
 
             // send response to client
             res.status(200).json(response);
@@ -290,6 +300,9 @@ module.exports = async (app) => {
                 user_id: user_id
             });
 
+            // wipe sensitive data 
+            wipeCardData(response.payment);
+
             // send response to client
             res.status(200).json(response);
         } catch(err) {
@@ -340,6 +353,9 @@ module.exports = async (app) => {
 
             // await response 
             const response = await deletePayment({ payment_id, user_id });
+
+            // wipe sensitive data 
+            wipeCardData(response.payment);
 
             // send response to client
             res.status(200).json(response);

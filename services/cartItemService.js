@@ -1,32 +1,8 @@
 const httpError = require('http-errors');
+const { checkCartItem } = require('../lib/validatorUtils');
 const CartItem = require('../models/CartItemModel');
 const Cart = require('../models/CartModel');
 const Product = require('../models/ProductModel');
-
-/*
- * Helper function to validate inputs and grab cartItem
- */
-const checkCartItem = async (data) => {
-    try {
-        // throw error if inputs invalid
-        if(!data.cart_id || !data.product_id) {
-            throw httpError(400, 'Invalid inputs.');
-        }
-
-        // find cart item
-        const cartItem = await CartItem.findOne(data);
-        
-        // throw error if not found
-        if (!cartItem) {
-            throw httpError(404, 'Cart item not found');
-        }
-
-        return cartItem;
-        
-    } catch(err) {
-        throw err;
-    }
-}
 
 module.exports.postCartItem = async (data) => {
     try {

@@ -1,25 +1,16 @@
 const httpError = require('http-errors');
-const validator = require('validator');
-const { genPassword, validPassword } = require('../lib/passwordUtils');
-const attachJWT = require('../lib/attachJWT');
+const attachJWT = require('../lib/customAuth/attachJWT');
+const { genPassword, validPassword } = require('../lib/customAuth/passwordUtils');
+const { wipePassword } = require('../lib/formatUtils');
+const { checkAuthInputs } = require('../lib/validatorUtils');
 const cartConsolidator = require('../lib/cartConsolidator');
 const User = require('../models/UserModel');
-
-const validateInputs = (email, password) => {
-    if (email === null || 
-        password === null ||
-        !validator.isEmail(email) ||
-        //!validator.isStrongPassword(password) ||
-        password.length === 0) {
-        throw httpError(400, 'Email and password required.');
-    }
-}
 
 module.exports.register = async (data) => {
     try {
         // check for required inputs 
         const { email, password } = data;
-        validateInputs(email, password);
+        checkAuthInputs(email, password);
         
         // pwObj contains salt and hash generated
         const pwObj = genPassword(data.password);
@@ -41,8 +32,7 @@ module.exports.register = async (data) => {
         await cartConsolidator(data.cart_id, newUser.id);
 
         // wipe password info before returning
-        delete newUser.pw_hash;
-        delete newUser.pw_salt;
+        wipePassword(newUser)
 
         // attach JWT
         return attachJWT(newUser);
@@ -56,7 +46,7 @@ module.exports.login = async (data) => {
     try {
         // check for required inputs 
         const { email, password } = data;
-        validateInputs(email, password);
+        checkAuthInputs(email, password);
         
         // check if user already exists
         const user = await User.findByEmail(data.email);
@@ -78,8 +68,7 @@ module.exports.login = async (data) => {
         await cartConsolidator(data.cart_id, user.id);
 
         // wipe password info before returning
-        delete user.pw_hash;
-        delete user.pw_salt;
+        wipePassword(user);
 
         // attach JWT and return user
         return attachJWT(user);

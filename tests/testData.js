@@ -76,7 +76,7 @@ module.exports.differentAddressId = 1;
  }
 
  module.exports.invalidCardPut = {
-    cvv: '1K3',
+    card_no: '12341234123412K3'
  }
 
  // to get an error on payment routes with wrong payment id

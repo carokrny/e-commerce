@@ -144,7 +144,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
                     expect(res.body.payment.user_id).toEqual(user.id);
-                    expect(res.body.payment.card_no).toEqual(cardPost.card_no);
+                    expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
                 })
             }), 
@@ -163,7 +163,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
                     expect(res.body.payment.user_id).toEqual(user.id);
-                    expect(res.body.payment.card_no).toEqual(cardPost.card_no);
+                    expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
                     expect(res.body.payment.telephone).not.toBeDefined();
                 })
@@ -183,10 +183,9 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
                     expect(res.body.payment.user_id).toEqual(user.id);
-                    expect(res.body.payment.card_no).toEqual(cardPost.card_no);
+                    expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
+                    expect(res.body.payment.card_no.slice(-4)).not.toEqual(invalidCardPut.card_no.slice(-4));
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
-                    expect(res.body.payment.cvv).toEqual(cardPost.cvv);
-                    expect(res.body.payment.cvv).not.toEqual(invalidCardPut.cvv);
                 })
             }),
 
@@ -228,7 +227,7 @@ describe ('Account payment method endpoints', () => {
                         expect(res.body.payment).toBeDefined();
                         expect(res.body.payment.id).toEqual(paymentId);
                         expect(res.body.payment.user_id).toEqual(user.id);
-                        expect(res.body.payment.card_no).toEqual(cardPost.card_no);
+                        expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                         expect(res.body.payment.provider).toEqual(cardPut.provider);
 
                         // verify that primary_payment_id has been reset to null

@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const cartItemsRouter = require('./cartItems');
 const { postCart, getCart } = require('../../services/cartService');
-const { demiAuth } = require('../../lib/jwtAuth');
+const { demiAuth } = require('../../lib/customAuth/jwtAuth');
 
 module.exports = (app) => {
 

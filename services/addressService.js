@@ -1,42 +1,7 @@
 const httpError = require('http-errors');
+const { checkAddress } = require('../lib/validatorUtils');
 const Address = require('../models/AddressModel');
 const User = require('../models/UserModel');
-
-/**
- * Helper function to check that:
- *      - valid input provided
- *      - address exists
- *      - address is associated with authenticated user
- * Otherwise throws error
- *
- * @param {Object} data data about address and user
- * @return {object} address
- */
-const checkAddress = async (data) => {
-    try {
-        // check for valid input
-        if (!data.address_id) {
-            throw httpError(400, 'Missing address id');
-        }
-
-        // find address by id
-        const address = await Address.findById(data.address_id);
-        if (!address) {
-            throw httpError(404, 'Address not found.');
-        }
-
-        // check that address's user_id matches authenticated user_id
-        if (address.user_id !== data.user_id) {
-            throw httpError(403, 'Address does not match user.')
-        }
-
-        return address;
-
-    } catch(err) {
-        throw err;
-    }
-}
-
 
 module.exports.postAddress = async (data) => {
     try {  
@@ -112,8 +77,10 @@ module.exports.deleteAddress = async (data) => {
     try {
         await checkAddress(data);
 
-        // check if address is primary address of user
+        // grab user assocaited with address
         const user = await User.findById(data.user_id);
+
+        // check if address is primary address of user
         if (user.primary_address_id === parseInt(data.address_id)) {
             // if so, update primary_address_id to be null
             await User.update({ ...user, primary_address_id: null });

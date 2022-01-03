@@ -1,6 +1,6 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const validPassword = require('../lib/passwordUtils').validPassword;
+const validPassword = require('../lib/customAuth/passwordUtils').validPassword;
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 const fs = require('fs');

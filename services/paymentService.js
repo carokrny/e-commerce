@@ -1,60 +1,7 @@
 const httpError = require('http-errors');
+const { checkPayment, eachCharIsNum } = require('../lib/validatorUtils');
 const Card = require('../models/CardModel');
 const User = require('../models/UserModel');
-
-/**
- * Helper function to check that:
- *      - valid input provided
- *      - payment method exists
- *      - payment method is associated with authenticated user
- * Otherwise throws error
- *
- * @param {Object} data data about payment method and user
- * @return {object} payment method
- */
-const checkPayment = async (data) => {
-    try {
-        // check for valid input
-        if (!data.payment_id) {
-            throw httpError(400, 'Missing payment id');
-        }
-
-        // find payment by id
-        const payment = await Card.findById(data.payment_id);
-        if (!payment) {
-            throw httpError(404, 'Payment not found.');
-        }
-
-        // check that payment method's user_id matches authenticated user_id
-        if (payment.user_id !== data.user_id) {
-            throw httpError(409, 'Payment does not match user.')
-        }
-
-        return payment;
-
-    } catch(err) {
-        throw err;
-    }
-}
-
-/**
- * Helper function to check that every char in a string is a num
- * 
- * @param {String} str
- * @return {bool} True if each char is num
-*/
-const eachCharIsNum = (str) => {
-    const charCodeZero = "0".charCodeAt(0);
-    const charCodeNine = "9".charCodeAt(0);
-
-    for(let i = 0; i < str.length; i++) {
-        const charCode = str.charCodeAt(i);
-        if (charCode < charCodeZero || charCode > charCodeNine) {
-            return false;
-        }
-    }
-    return true;
-}
 
 module.exports.postPayment = async (data) => {
     try {  
@@ -149,7 +96,7 @@ module.exports.deletePayment = async (data) => {
 
         // delete payment method
         const deletedPayment = await Card.delete(data.payment_id);
-        
+
         return { payment: deletedPayment };
 
     } catch(err) {
