@@ -47,6 +47,8 @@ module.exports = async (app) => {
     *       modified:
     *         type: string
     *         format: date-time
+    *       isPrimaryPayment:
+    *         type: boolean
     *
     */
 
@@ -97,6 +99,11 @@ module.exports = async (app) => {
     *         in: body
     *         required: true
     *         type: integer
+    *       - name: isPrimaryPayment
+    *         description: whether this is user's primary payment method
+    *         in: body
+    *         required: false
+    *         type: boolean
     *     responses:
     *       201:
     *         description: A Card object.
@@ -269,6 +276,11 @@ module.exports = async (app) => {
     *         in: body
     *         required: false
     *         type: integer
+    *       - name: isPrimaryPayment
+    *         description: whether this is user's primary payment method
+    *         in: body
+    *         required: false
+    *         type: boolean
     *     responses:
     *       200:
     *         description: A Card object.

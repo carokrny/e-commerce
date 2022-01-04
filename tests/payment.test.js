@@ -38,6 +38,8 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toBeDefined();
                     expect(res.body.payment.user_id).toEqual(user.id);
+                    expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
+                    expect(res.body.payment.isPrimaryPayment).toEqual(cardPost.isPrimaryPayment);
                     paymentId = res.body.payment.id;
                 })
             }), 
@@ -93,6 +95,8 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
                     expect(res.body.payment.user_id).toEqual(user.id);
+                    expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
+                    expect(res.body.payment.isPrimaryPayment).toEqual(cardPost.isPrimaryPayment);
                 })
             }), 
 
@@ -146,6 +150,8 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment.user_id).toEqual(user.id);
                     expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
+                    expect(res.body.payment.isPrimaryPayment).toEqual(cardPut.isPrimaryPayment);
+                    expect(res.body.payment.isPrimaryPayment).not.toEqual(cardPost.isPrimaryPayment);
                 })
             }), 
 
@@ -165,6 +171,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment.user_id).toEqual(user.id);
                     expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
+                    expect(res.body.payment.isPrimaryPayment).toEqual(cardPut.isPrimaryPayment);
                     expect(res.body.payment.telephone).not.toBeDefined();
                 })
             }), 
@@ -213,10 +220,6 @@ describe ('Account payment method endpoints', () => {
                 describe('Payment is primary payment method', () => {
 
                     it ('Should delete and return the payment', async () => {
-                        // update payment to be user's primary payment
-                        var testUser = await User.findByEmail(user.email);
-                        await User.update({ ...testUser, primary_payment_id: paymentId });
-
                         const res = await request(app)
                             .delete(`/account/payment/${paymentId}`)
                             .set('Authorization', token)
@@ -229,6 +232,7 @@ describe ('Account payment method endpoints', () => {
                         expect(res.body.payment.user_id).toEqual(user.id);
                         expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                         expect(res.body.payment.provider).toEqual(cardPut.provider);
+                        expect(res.body.payment.isPrimaryPayment).toEqual(cardPut.isPrimaryPayment);
 
                         // verify that primary_payment_id has been reset to null
                         testUser = await User.findByEmail(user.email);

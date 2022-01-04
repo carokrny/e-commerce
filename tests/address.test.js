@@ -305,6 +305,4 @@ describe ('Address endpoints', () => {
             })
         })
     })
-
-
 })

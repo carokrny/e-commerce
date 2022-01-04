@@ -60,11 +60,13 @@ module.exports.differentAddressId = 1;
     card_no: '1234123412341234', 
     cvv: '123', 
     expiry: '2022-11-01', 
-    billing_address_id: 1
+    billing_address_id: 1, 
+    isPrimaryPayment: false,
  }
 
  module.exports.cardPut = {
-    provider: 'MasterCard'
+    provider: 'MasterCard', 
+    isPrimaryPayment: true
  }
 
  // Note billing_address_id is associated with user_id = 21

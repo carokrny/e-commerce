@@ -1,5 +1,6 @@
 const httpError = require('http-errors');
 const { checkPayment, eachCharIsNum } = require('../lib/validatorUtils');
+const { attachIsPrimaryPayment } = require('../lib/formatUtils');
 const Card = require('../models/CardModel');
 const User = require('../models/UserModel');
 
@@ -11,6 +12,7 @@ module.exports.postPayment = async (data) => {
                 cvv,
                 expiry,
                 billing_address_id,
+                isPrimaryPayment,
                 user_id } = data;
 
         // check for valid inputs 
@@ -28,6 +30,15 @@ module.exports.postPayment = async (data) => {
         // create payment
         const payment = await Card.create(data);
 
+        // if isPrimaryPayment, update User
+        if (isPrimaryPayment) {
+            // primary payment stored in User to prevent conflict
+            await User.updatePrimaryPaymentId({ id: user_id, primary_payment_id: payment.id });
+        }
+
+        // attach isPrimaryPayment 
+        payment.isPrimaryPayment = isPrimaryPayment ? isPrimaryPayment : false;
+
         return { payment };
 
     } catch(err) {
@@ -38,6 +49,12 @@ module.exports.postPayment = async (data) => {
 module.exports.getPayment = async (data) => {
     try {
         const payment = await checkPayment(data);
+
+        // primary payment stored in User to prevent conflict
+        const { primary_payment_id } = await User.findById(data.user_id);
+
+        // add boolean property indicating whether address is primary address
+        attachIsPrimaryPayment(payment, primary_payment_id);
 
         return { payment };
 
@@ -75,6 +92,17 @@ module.exports.putPayment = async (data) => {
 
         // update payment 
         const updatedPayment = await Card.update(payment);
+
+        // attach boolean property indicating whether payment is primary payment method
+        if (data.isPrimaryPayment) {
+            // update User if true
+            await User.updatePrimaryPaymentId({ id: data.user_id, primary_payment_id: updatedPayment.id });
+            updatedPayment.isPrimaryPayment = true;
+
+        } else {
+            updatedPayment.isPrimaryPayment = false;
+        }
+
         
         return { payment: updatedPayment };
 
@@ -85,17 +113,25 @@ module.exports.putPayment = async (data) => {
 
 module.exports.deletePayment = async (data) => {
     try {
-        await checkPayment(data);
+        const payment = await checkPayment(data);
 
-        // check if payment is primary payment of user
-        const user = await User.findById(data.user_id);
-        if (user.primary_payment_id === parseInt(data.payment_id)) {
+        // grab user assocaited with payment
+        const { primary_payment_id } = await User.findById(data.user_id);
+
+        // attach info if payment is primary payment method
+        attachIsPrimaryPayment(payment, primary_payment_id);
+
+        // check if payment is primary payment method of user
+        if (payment.isPrimaryPayment) {
             // if so, update primary_payment_id to be null
-            await User.update({ ...user, primary_payment_id: null });
+            await User.updatePrimaryPaymentId({ id: data.user_id, primary_payment_id: null });
         }
 
         // delete payment method
         const deletedPayment = await Card.delete(data.payment_id);
+
+        // add boolean property indicating whether payment is primary payment
+        attachIsPrimaryPayment(deletedPayment, primary_payment_id);
 
         return { payment: deletedPayment };
 
@@ -108,6 +144,14 @@ module.exports.getAllPayments = async (user_id) => {
     try {
         // find payment methods assocaited with user_id
         const payments = await Card.findByUserId(user_id);
+
+        // primary payment stored in User to prevent conflict
+        const { primary_payment_id } = await User.findById(user_id);
+
+        // add boolean property indicating whether payment is primary payment
+        payments.forEach(payment => {
+            attachIsPrimaryPayment(payment, primary_payment_id);
+        });
 
         return { payments };
 

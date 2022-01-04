@@ -30,10 +30,11 @@ module.exports.postAddress = async (data) => {
 
         // if isPrimaryAddress, update User
         if (isPrimaryAddress) {
+            // primary payment stored in User to avoid conflict
             await User.updatePrimaryAddressId({ id: user_id, primary_address_id: address.id });
         }
 
-        // attach primary address
+        // attach isPrimaryAddress
         address.isPrimaryAddress = isPrimaryAddress ? isPrimaryAddress : false;
 
         return { address };
