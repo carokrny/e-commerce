@@ -117,16 +117,6 @@ module.exports = (app) => {
     *         required: false
     *         type: string
     *         format: password
-    *       - name: primary_address_id
-    *         description: id of user's primary address
-    *         in: body
-    *         required: false
-    *         type: integer
-    *       - name: primary_payment_id
-    *         description: id of user's primary payment method
-    *         in: body
-    *         required: false
-    *         type: integer
     *     responses:
     *       200:
     *         description: A User object

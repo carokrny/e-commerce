@@ -70,9 +70,9 @@ describe ('Account endpoints', () => {
                     expect(res.body.user.email).toEqual(user.email);
                     expect(res.body.user.first_name).toEqual(userAccountPut.first_name);
                 })
-            }),
+            })
             
-            describe('Put that updates primary_address_id', () => {
+            /*describe('Put that updates primary_address_id', () => {
 
                 var address; 
 
@@ -140,9 +140,9 @@ describe ('Account endpoints', () => {
                         expect(res.body.user.primary_address_id).toEqual(address.id);
                     })
                 })
-            }), 
+            }), */
 
-            describe('Put that updates primary_payment_id', () => {
+            /*describe('Put that updates primary_payment_id', () => {
 
                 var address; 
                 var card;
@@ -225,7 +225,7 @@ describe ('Account endpoints', () => {
                         expect(res.body.user.primary_payment_id).toEqual(card.id);
                     })
                 })
-            })
+            })*/
         }),
 
         describe('Invalid token', () => {
