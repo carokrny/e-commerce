@@ -1,16 +1,18 @@
 const httpError = require('http-errors');
 const { checkAddress } = require('../lib/validatorUtils');
+const { attachIsPrimaryAddress } = require('../lib/formatUtils');
 const Address = require('../models/AddressModel');
 const User = require('../models/UserModel');
 
 module.exports.postAddress = async (data) => {
     try {  
         const { address1, 
-                address2,   // can be empty
+                address2,               // can be null
                 city, 
                 state,
                 zip,
                 country,
+                isPrimaryAddress,        // can be null
                 user_id } = data;
 
         // check for valid inputs 
@@ -26,6 +28,14 @@ module.exports.postAddress = async (data) => {
         // create address
         const address = await Address.create(data);
 
+        // if isPrimaryAddress, update User
+        if (isPrimaryAddress) {
+            await User.updatePrimaryAddressId({ id: user_id, primary_address_id: address.id });
+        }
+
+        // attach primary address
+        address.isPrimaryAddress = isPrimaryAddress ? isPrimaryAddress : false;
+
         return { address };
 
     } catch(err) {
@@ -35,7 +45,14 @@ module.exports.postAddress = async (data) => {
 
 module.exports.getAddress = async (data) => {
     try {
+        // validate inputs and grab address
         const address = await checkAddress(data);
+
+        // primary address stored in User to prevent conflict
+        const { primary_address_id } = await User.findById(data.user_id);
+
+        // add boolean property indicating whether address is primary address
+        attachIsPrimaryAddress(address, primary_address_id);
 
         return { address };
 
@@ -46,6 +63,7 @@ module.exports.getAddress = async (data) => {
 
 module.exports.putAddress = async (data) => {
     try {
+        // validate inputs and grab address
         const address = await checkAddress(data);
 
         // modify address with properties in data 
@@ -66,6 +84,16 @@ module.exports.putAddress = async (data) => {
         // update address 
         const updatedAddress = await Address.update(address);
 
+        // attach boolean property indicating whether address is primary address
+        if (data.isPrimaryAddress) {
+            // update User if true
+            await User.updatePrimaryAddressId({ id: data.user_id, primary_address_id: updatedAddress.id });
+            updatedAddress.isPrimaryAddress = true;
+
+        } else {
+            updatedAddress.isPrimaryAddress = false;
+        }
+
         return { address: updatedAddress };
 
     } catch(err) {
@@ -75,19 +103,26 @@ module.exports.putAddress = async (data) => {
 
 module.exports.deleteAddress = async (data) => {
     try {
-        await checkAddress(data);
+        // validate inputs and grab address
+        const address = await checkAddress(data);
 
         // grab user assocaited with address
-        const user = await User.findById(data.user_id);
+        const { primary_address_id } = await User.findById(data.user_id);
+
+        // attach info if address is primary address
+        attachIsPrimaryAddress(address, primary_address_id);
 
         // check if address is primary address of user
-        if (user.primary_address_id === parseInt(data.address_id)) {
+        if (address.isPrimaryAddress) {
             // if so, update primary_address_id to be null
-            await User.update({ ...user, primary_address_id: null });
+            await User.updatePrimaryAddressId({ id: data.user_id, primary_address_id: null });
         }
 
         // delete address
         const deletedAddress = await Address.delete(data.address_id);
+
+        // add boolean property indicating whether address is primary address
+        attachIsPrimaryAddress(deletedAddress, primary_address_id);
         
         return { address: deletedAddress };
 
@@ -100,6 +135,14 @@ module.exports.getAllAddresses = async (user_id) => {
     try {
         // find addresses assocaited with user_id
         const addresses = await Address.findByUserId(user_id);
+
+        // primary address stored in User to prevent conflict
+        const { primary_address_id } = await User.findById(user_id);
+
+        // add boolean property indicating whether address is primary address
+        addresses.forEach(address => {
+            attachIsPrimaryAddress(address, primary_address_id);
+        });
 
         return { addresses };
 

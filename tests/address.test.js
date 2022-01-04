@@ -36,6 +36,8 @@ describe ('Address endpoints', () => {
                     expect(res.body.address).toBeDefined();
                     expect(res.body.address.id).toBeDefined();
                     expect(res.body.address.user_id).toEqual(user2.id);
+                    expect(res.body.address.address1).toEqual(addressPost.address1);
+                    expect(res.body.address.isPrimaryAddress).toEqual(addressPost.isPrimaryAddress);
                     addressId = res.body.address.id;
                 })
             }), 
@@ -91,6 +93,8 @@ describe ('Address endpoints', () => {
                     expect(res.body.address).toBeDefined();
                     expect(res.body.address.id).toEqual(addressId);
                     expect(res.body.address.user_id).toEqual(user2.id);
+                    expect(res.body.address.address1).toEqual(addressPost.address1);
+                    expect(res.body.address.isPrimaryAddress).toEqual(addressPost.isPrimaryAddress);
                 })
             }), 
 
@@ -181,6 +185,9 @@ describe ('Address endpoints', () => {
                     expect(res.body.address.user_id).toEqual(user2.id);
                     expect(res.body.address.address1).toEqual(addressPost.address1);
                     expect(res.body.address.address2).toEqual(addressPut.address2);
+                    expect(res.body.address.address1).toEqual(addressPost.address1);
+                    expect(res.body.address.isPrimaryAddress).toEqual(addressPut.isPrimaryAddress);
+                    expect(res.body.address.isPrimaryAddress).not.toEqual(addressPost.isPrimaryAddress);
                 })
             }), 
 
@@ -247,10 +254,6 @@ describe ('Address endpoints', () => {
                 describe('Address is primary address', () => {
 
                     it ('Should delete and return the address', async () => {
-                        // update address to be user's primary address
-                        var user = await User.findByEmail(user2.email);
-                        await User.update({ ...user, primary_address_id: addressId });
-
                         const res = await request(app)
                             .delete(`/account/address/${addressId}`)
                             .set('Authorization', token)

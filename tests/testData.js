@@ -41,11 +41,13 @@ module.exports.addressPost = {
     city: 'San Francisco', 
     state: 'CA', 
     zip: '94103', 
-    country: 'United States'
+    country: 'United States', 
+    isPrimaryAddress: false
 }
 
 module.exports.addressPut = {
-    address2: 'Apt 5'
+    address2: 'Apt 5', 
+    isPrimaryAddress: true
 }
 
 // to get an error on address routes with wrong address id

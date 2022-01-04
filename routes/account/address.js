@@ -47,6 +47,8 @@ module.exports = (app) => {
     *       modified:
     *         type: string
     *         format: date-time
+    *       isPrimaryAddress:
+    *         type: boolean
     *
     */
 
@@ -95,6 +97,11 @@ module.exports = (app) => {
     *         in: body
     *         required: true
     *         type: string
+    *       - name: isPrimaryAddress
+    *         description: whether this is user's primary address
+    *         in: body
+    *         required: false
+    *         type: boolean
     *     responses:
     *       201:
     *         description: An Address object.
@@ -256,6 +263,11 @@ module.exports = (app) => {
     *         in: body
     *         required: false
     *         type: string
+    *       - name: isPrimaryAddress
+    *         description: whether this is user's primary address
+    *         in: body
+    *         required: false
+    *         type: boolean
     *     responses:
     *       200:
     *         description: An Address object.
