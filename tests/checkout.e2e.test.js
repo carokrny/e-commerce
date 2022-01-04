@@ -19,15 +19,6 @@ const Card = require('../models/CardModel');
 
 describe('Checkout flow end-to-end tests', () => {
 
-    // One for empty cart fail with user auth'ed 
-    // X One for empty cart fail with user sign in 
-    // One with user register, go through full checkout 
-    // One with user login, go through full checkout 
-    // X One with user already logged in, go through full checkout
-    // ''                   , user uses saved address for shipping and billing
-    // ''                   , user uses saved payment method
-
-
     var token;      
     var cartId;       
     var orderId;                     
@@ -134,7 +125,7 @@ describe('Checkout flow end-to-end tests', () => {
                     .expect('Location', '/checkout/payment');
                 expect(res3.body).toBeDefined();
 
-                // post payment and billing information, be redirected to summary
+                // post payment and billing information, be redirected to confirmation
                 const res4 = await testSession
                     .post(`/checkout/payment`)
                     .send({ ...addressPost, 
@@ -144,12 +135,12 @@ describe('Checkout flow end-to-end tests', () => {
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
-                    .expect('Location', '/checkout/order-summary');
+                    .expect('Location', '/checkout/order/confirmation');
                 expect(res4.body).toBeDefined();
 
-                // get order summary 
+                // get order confirmation 
                 const res = await testSession
-                    .get(`/checkout/order-summary`)
+                    .get(`/checkout/order/confirmation`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(200);
@@ -221,7 +212,7 @@ describe('Checkout flow end-to-end tests', () => {
                     .expect('Location', '/checkout/payment');
                 expect(res3.body).toBeDefined();
 
-                // post payment and billing information, be redirected to summary
+                // post payment and billing information, be redirected to confirmation
                 const res4 = await testSession
                     .post(`/checkout/payment`)
                     .send({ address_id: user.primary_address_id, 
@@ -231,12 +222,12 @@ describe('Checkout flow end-to-end tests', () => {
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
-                    .expect('Location', '/checkout/order-summary');
+                    .expect('Location', '/checkout/order/confirmation');
                 expect(res4.body).toBeDefined();
 
-                // get order summary 
+                // get order confirmation 
                 const res = await testSession
-                    .get(`/checkout/order-summary`)
+                    .get(`/checkout/order/confirmation`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(200);
@@ -300,18 +291,18 @@ describe('Checkout flow end-to-end tests', () => {
                     .set('Accept', 'application/json');
                 expect(res1.body).toBeDefined();
                 
-                // access checkout, redirect to login
+                // access checkout, redirect to auth
                 const res2 = await testSession
                     .get(`/checkout`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(302)
-                    .expect('Location', '/checkout/login-register');
+                    .expect('Location', '/checkout/auth');
                 expect(res2.body).toBeDefined();
 
                 // logs in, redirect to shipping
                 const res3 = await testSession
-                    .post(`/checkout/login`)
+                    .post(`/checkout/auth/login`)
                     .send(user6)
                     .set('Accept', 'application/json') 
                     .expect(302)
@@ -331,7 +322,7 @@ describe('Checkout flow end-to-end tests', () => {
                     .expect('Location', '/checkout/payment');
                 expect(res4.body).toBeDefined();
 
-                // post payment and billing information, be redirected to summary
+                // post payment and billing information, be redirected to confirmation
                 const res5 = await testSession
                     .post(`/checkout/payment`)
                     .send({ ...addressPost, 
@@ -341,12 +332,12 @@ describe('Checkout flow end-to-end tests', () => {
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
-                    .expect('Location', '/checkout/order-summary');
+                    .expect('Location', '/checkout/order/confirmation');
                 expect(res5.body).toBeDefined();
 
-                // get order summary 
+                // get order confirmation 
                 const res = await testSession
-                    .get(`/checkout/order-summary`)
+                    .get(`/checkout/order/confirmation`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(200);
@@ -381,18 +372,18 @@ describe('Checkout flow end-to-end tests', () => {
                     .set('Accept', 'application/json');
                 expect(res1.body).toBeDefined();
                 
-                // access checkout, redirect to login-register
+                // access checkout, redirect to auth
                 const res2 = await testSession
                     .get(`/checkout`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(302)
-                    .expect('Location', '/checkout/login-register');
+                    .expect('Location', '/checkout/auth');
                 expect(res2.body).toBeDefined();
 
                 // registers, redirect to shipping
                 const res3 = await testSession
-                    .post(`/checkout/register`)
+                    .post(`/checkout/auth/register`)
                     .send(testRegister2)
                     .set('Accept', 'application/json') 
                     .expect(302)
@@ -412,7 +403,7 @@ describe('Checkout flow end-to-end tests', () => {
                     .expect('Location', '/checkout/payment');
                 expect(res4.body).toBeDefined();
 
-                // post payment and billing information, be redirected to summary
+                // post payment and billing information, be redirected to confirmation
                 const res5 = await testSession
                     .post(`/checkout/payment`)
                     .send({ ...addressPost, 
@@ -422,12 +413,12 @@ describe('Checkout flow end-to-end tests', () => {
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
-                    .expect('Location', '/checkout/order-summary');
+                    .expect('Location', '/checkout/order/confirmation');
                 expect(res5.body).toBeDefined();
 
-                // get order summary 
+                // get order confirmation 
                 const res = await testSession
-                    .get(`/checkout/order-summary`)
+                    .get(`/checkout/order/confirmation`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(200);

@@ -99,11 +99,11 @@ describe ('Checkout endpoints', () => {
             })
         }),
 
-        describe('GET \'/checkout/login-register\'', () => {
+        describe('GET \'/checkout/auth\'', () => {
 
             it('Should return a valid response', async () => {
                 const res = await testSession
-                    .get(`/checkout/login-register`)
+                    .get(`/checkout/auth`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(200);
@@ -111,11 +111,11 @@ describe ('Checkout endpoints', () => {
             })
         }),
 
-        describe('POST \'/checkout/login\'', () => {
+        describe('POST \'/checkout/auth/login\'', () => {
 
             it('Should return a valid response', async () => {
                 const res = await testSession
-                    .post(`/checkout/login`)
+                    .post(`/checkout/auth/login`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
@@ -124,11 +124,11 @@ describe ('Checkout endpoints', () => {
             })
         }),
 
-        describe('POST \'/checkout/register\'', () => {
+        describe('POST \'/checkout/auth/register\'', () => {
 
             it('Should return a valid response', async () => {
                 const res = await testSession
-                    .post(`/checkout/register`)
+                    .post(`/checkout/auth/register`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
@@ -331,7 +331,7 @@ describe ('Checkout endpoints', () => {
 
             describe('Send valid inputs', () => {
 
-                it('Should succeed and redirect to /order-summary', async () => {
+                it('Should succeed and redirect to /order/confirmation', async () => {
                     const res = await testSession
                         .post(`/checkout/payment`)
                         .send({ ...addressPost, 
@@ -341,13 +341,13 @@ describe ('Checkout endpoints', () => {
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(302)
-                        .expect('Location', '/checkout/order-summary');
+                        .expect('Location', '/checkout/order/confirmation');
                     expect(res.body).toBeDefined();
                 })
             })
         })
 
-        describe('GET \'/checkout/order-summary\'', () => {
+        describe('GET \'/checkout/order/confirmation\'', () => {
             
             describe('Order completes before accessing page', () => {
 
@@ -374,7 +374,7 @@ describe ('Checkout endpoints', () => {
 
                 it('Should return order information', async () => {
                     const res = await testSession
-                        .get(`/checkout/order-summary`)
+                        .get(`/checkout/order/confirmation`)
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(200);
@@ -397,7 +397,7 @@ describe ('Checkout endpoints', () => {
 
                 it('Should return a 400 error', async () => {
                     const res = await testSession
-                        .get(`/checkout/order-summary`)
+                        .get(`/checkout/order/confirmation`)
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(400);
@@ -450,22 +450,22 @@ describe ('Checkout endpoints', () => {
 
         describe('GET \'/checkout/\'', () => {
 
-            it('Should redirect to \'/checkout/login-register\'', async () => {
+            it('Should redirect to \'/checkout/auth\'', async () => {
                 const res = await testSession
                     .get(`/checkout`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(302)
-                    .expect('Location', '/checkout/login-register');
+                    .expect('Location', '/checkout/auth');
                 expect(res.body).toBeDefined();
             })
         }),
 
-        describe('GET \'/checkout/login-register\'', () => {
+        describe('GET \'/checkout/auth\'', () => {
 
             it('Should return a valid response', async () => {
                 const res = await testSession
-                    .get(`/checkout/login-register`)
+                    .get(`/checkout/auth`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(200);
@@ -473,43 +473,43 @@ describe ('Checkout endpoints', () => {
             })
         }),
 
-        describe('POST \'/checkout/login\'', () => {
+        describe('POST \'/checkout/auth/login\'', () => {
 
             describe('email and password entered, but password incorrect', () => {
                 
-                it('should redirect to /login-register', async () => {
+                it('should redirect to /auth', async () => {
                     const res = await testSession
-                        .post(`/checkout/login`)
+                        .post(`/checkout/auth/login`)
                         .send({ email: user4.email, password: 'wrongPassword' })
                         .set('Accept', 'application/json')
                         .expect(302)
-                        .expect('Location', '/checkout/login-register');
+                        .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
                 })
             }),
 
             describe('email and password entered, but email incorrect', () => {
                 
-                it('should redirect to /login-register', async () => {
+                it('should redirect to /auth', async () => {
                     const res = await testSession
-                        .post(`/checkout/login`)
+                        .post(`/checkout/auth/login`)
                         .send({ email: 'wrong@me.com', password: user4.password })
                         .set('Accept', 'application/json')
                         .expect(302)
-                        .expect('Location', '/checkout/login-register');
+                        .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
                 })
             }), 
 
             describe('email and/or password missing', () => {
                 
-                it('should redirect to /login-register', async () => {
+                it('should redirect to /auth', async () => {
                     const res = await testSession
-                        .post(`/checkout/login`)
+                        .post(`/checkout/auth/login`)
                         .send({ email: null, password: null })
                         .set('Accept', 'application/json')
                         .expect(302)
-                        .expect('Location', '/checkout/login-register');
+                        .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
                 })
             }), 
@@ -518,7 +518,7 @@ describe ('Checkout endpoints', () => {
             
                 it('should log in user and redirect to shipping', async () => {
                     const res = await testSession
-                        .post(`/checkout/login`)
+                        .post(`/checkout/auth/login`)
                         .send(user4)
                         .set('Accept', 'application/json') 
                         .expect(302)
@@ -528,43 +528,43 @@ describe ('Checkout endpoints', () => {
             })
         }),
 
-        describe('POST \'/checkout/register\'', () => {
+        describe('POST \'/checkout/auth/register\'', () => {
 
             describe('email and/or password is null', () => {
                 
-                it('should redirect to /login-register', async () => {
+                it('should redirect to /auth', async () => {
                     const res = await testSession
-                        .post(`/checkout/register`)
+                        .post(`/checkout/auth/register`)
                         .send({ email: null, password: null })
                         .set('Accept', 'application/json')
                         .expect(302)
-                        .expect('Location', '/checkout/login-register');
+                        .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
                 })
             }), 
 
             describe('email and/or password is empty string', () => {
                 
-                it('should redirect to /login-register', async () => {
+                it('should redirect to /auth', async () => {
                     const res = await testSession
-                        .post(`/checkout/register`)
+                        .post(`/checkout/auth/register`)
                         .send({ email: "", password: "" })
                         .set('Accept', 'application/json')
                         .expect(302)
-                        .expect('Location', '/checkout/login-register');
+                        .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
                 })
             }), 
 
             describe('email already in use', () => {
                 
-                it('should redirect to /login-register', async () => {
+                it('should redirect to /auth', async () => {
                     const res = await testSession
-                        .post(`/checkout/register`)
+                        .post(`/checkout/auth/register`)
                         .send({ email: user3.email, password: testRegister.password })
                         .set('Accept', 'application/json')
                         .expect(302)
-                        .expect('Location', '/checkout/login-register');
+                        .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
                 })
             }), 
@@ -573,7 +573,7 @@ describe ('Checkout endpoints', () => {
             
                 it('should log in user and redirect to shipping', async () => {
                     const res = await testSession
-                        .post(`/checkout/register`)
+                        .post(`/checkout/auth/register`)
                         .send(testRegister)
                         .set('Accept', 'application/json') 
                         .expect(302)
@@ -643,11 +643,11 @@ describe ('Checkout endpoints', () => {
             })
         }),
 
-        describe('GET \'/checkout/order-summary\'', () => {
+        describe('GET \'/checkout/order/confirmation\'', () => {
 
             it('Should redirect to \'/cart\'', async () => {
                 const res = await testSession
-                    .get(`/checkout//order-summary`)
+                    .get(`/checkout/order/confirmation`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(302)
