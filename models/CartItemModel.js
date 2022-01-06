@@ -11,9 +11,20 @@ class CartItem {
     async create(data) {
         try {
             // pg statement
-            const statement = `INSERT INTO cart_items (cart_id, product_id, quantity)
-                                VALUES ($1, $2, $3)
-                                RETURNING *`;
+            const statement = `WITH new_cart_item AS (
+                                    INSERT INTO cart_items (cart_id, product_id, quantity)
+                                    VALUES ($1, $2, $3)
+                                    RETURNING *
+                                )
+                                SELECT 
+	                                new_cart_item.*, 
+                                    products.name,
+                                    products.price * new_cart_item.quantity AS "total_price", 
+                                    products.description,
+                                    products.in_stock
+                                FROM new_cart_item 
+                                JOIN products 
+	                                ON new_cart_item.product_id = products.id`;
             
             // pg values 
             const values = [data.cart_id, data.product_id, data.quantity]
@@ -41,10 +52,21 @@ class CartItem {
     async update(data) {
         try {
             // pg statement
-            const statement = `UPDATE cart_items  
-                                SET quantity=$3, modified=now()
-                                WHERE cart_id=$1 AND product_id=$2
-                                RETURNING *`;
+            const statement = `WITH updated AS (
+                                    UPDATE cart_items  
+	                                SET quantity=$3, modified=now()
+	                                WHERE cart_id=$1 AND product_id=$2 
+                                    RETURNING *
+                                )
+                                SELECT 
+	                                updated.*, 
+                                    products.name,
+                                    products.price * updated.quantity AS "total_price", 
+                                    products.description,
+                                    products.in_stock
+                                FROM updated 
+                                JOIN products 
+	                                ON updated.product_id = products.id`;
             
             // pg values
             const values = [data.cart_id, data.product_id, data.quantity];
@@ -72,9 +94,20 @@ class CartItem {
     async findInCart(cart_id) {
         try {
             // pg statement
-            const statement = `SELECT * 
-                                FROM cart_items 
-                                WHERE cart_id = $1`;
+            const statement = `WITH cart AS (
+                                    SELECT * 
+                                    FROM cart_items 
+                                    WHERE cart_id = $1
+                                )
+                                SELECT 
+	                                cart.*, 
+                                    products.name,
+                                    products.price * cart.quantity AS "total_price", 
+                                    products.description,
+                                    products.in_stock
+                                FROM cart 
+                                JOIN products 
+	                                ON cart.product_id = products.id;`;
 
             // pg values
             const values = [cart_id];
@@ -102,9 +135,17 @@ class CartItem {
     async findOne(data) {
         try {
             // pg statement
-            const statement = `SELECT * 
+            const statement = `SELECT
+                                    cart_items.*, 
+                                    products.name,
+                                    products.price * cart_items.quantity AS "total_price", 
+                                    products.description,
+                                    products.in_stock
                                 FROM cart_items 
-                                WHERE cart_id = $1 AND product_id = $2`;
+                                JOIN products 
+	                                ON cart_items.product_id = products.id
+                                WHERE cart_id = $1 
+                                    AND product_id = $2`;
             
             // pg values
             const values = [data.cart_id, data.product_id];
@@ -132,9 +173,20 @@ class CartItem {
     async delete(data) {
         try {
             // pg statement
-            const statement = `DELETE FROM cart_items  
-                                WHERE cart_id=$1 AND product_id=$2
-                                RETURNING *`;
+            const statement = `WITH deleted_item AS (
+                                    DELETE FROM cart_items  
+                                    WHERE cart_id=$1 AND product_id=$2
+                                    RETURNING *
+                                )
+                                SELECT 
+	                                deleted_item.*, 
+                                    products.name,
+                                    products.price * deleted_item.quantity AS "total_price", 
+                                    products.description,
+                                    products.in_stock
+                                FROM deleted_item 
+                                JOIN products 
+	                                ON deleted_item.product_id = products.id;`;
             
             // pg values
             const values = [data.cart_id, data.product_id];
