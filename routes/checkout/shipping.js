@@ -24,10 +24,10 @@ module.exports = (app) => {
     *         schema:
     *           type: object
     *           properties: 
-    *               addresses:
-    *                 type: array
-    *                 items: 
-    *                   $ref: '#/definitions/Address'
+    *             addresses:
+    *               type: array
+    *               items: 
+    *                 $ref: '#/definitions/Address'
     *       302:
     *         description: |
     *           Redirects to /cart if user is not authorized
@@ -52,7 +52,10 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Checkout
-    *     description: User selects existing address for shipping or creates new address
+    *     description: |
+    *       User selects existing address for shipping or creates new address
+    *       Send either (a) address_id of address for shipping 
+    *       Or (b) post a new address
     *     produces:
     *       - application/json
     *     security: 

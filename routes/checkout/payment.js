@@ -24,10 +24,10 @@ module.exports = (app) => {
     *         schema:
     *           type: object
     *           properties: 
-    *               payments:
-    *                 type: array
-    *                 items: 
-    *                   $ref: '#/definitions/Payment'
+    *             payments:
+    *               type: array
+    *               items: 
+    *                 $ref: '#/definitions/Payment'
     *       302:
     *         description: |
     *           Redirects to /cart if user is not authorized
@@ -52,7 +52,10 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Checkout
-    *     description: User provides billing and payment info.
+    *     description: |
+    *       User provides billing and payment info.
+    *       Send either (a) payment_id and address_id of existing payment method and billing address, respectively
+    *       Or (b) post new payment and address objects instead
     *     produces:
     *       - application/json
     *     security: 
