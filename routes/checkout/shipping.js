@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { postShipping } = require('../../services/checkoutService');
+const { getAllAddresses } = require('../../services/addressService');
 const { checkoutAuth } = require('../../lib/customAuth/jwtAuth');
 
 module.exports = (app) => {
@@ -12,20 +13,37 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Checkout
-    *     description: Returns shipping info forms
+    *     description: Returns info for user to select shipping address
     *     produces:
     *       - application/json
     *     security: 
     *       - Bearer: []
     *     responses:
     *       200:
-    *         description: Shipping info form.
+    *         description: Info about user's saved addresses
+    *         schema:
+    *           type: object
+    *           properties: 
+    *               addresses:
+    *                 type: array
+    *                 items: 
+    *                   $ref: '#/definitions/Address'
     *       302:
-    *         description: Redirects to /cart if user is not authorized
+    *         description: |
+    *           Redirects to /cart if user is not authorized
     */ 
-    router.get('/', checkoutAuth, (req, res, next) => {
-        res.status(200).json(`Form to fill out shipping info goes here. 
-                            If primary_address_id !== null, automatically select it.`);
+    router.get('/', checkoutAuth, async (req, res, next) => {
+        try {
+            // grab user_id
+            const user_id = req.jwt.sub;
+
+            // get addresses
+            const response = await getAllAddresses(user_id);
+
+            res.status(200).json(response);
+        } catch(err) {
+            next(err);
+        }
     });
 
     /**
@@ -82,7 +100,10 @@ module.exports = (app) => {
     *         type: string
     *     responses:
     *       302: 
-    *         description: Redirects to /payment if shipping info input. Invalid inputs redirects to /shipping. Unauth user redirects to /cart.
+    *         description: |
+    *           Redirects to checkout/payment if shipping info input. 
+    *           Redirects to checkout/shipping if inputs invalid. 
+    *           Redirects to /cart if user not authenticated.
     */
     router.post('/', checkoutAuth, async (req, res, next) => {
         try {
@@ -92,8 +113,8 @@ module.exports = (app) => {
             // await response 
             const response = await postShipping({ ...req.body, user_id: user_id });
 
-            // attach address to session
-            req.session.shipping = response.shipping;
+            // attach shipping address to session
+            req.session.shipping_address_id = response.shipping.id;
 
             // redirect to get payment info 
             res.redirect('/checkout/payment');

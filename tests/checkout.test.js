@@ -146,6 +146,7 @@ describe ('Checkout endpoints', () => {
                     .set('Accept', 'application/json')
                     .expect(200);
                 expect(res.body).toBeDefined();
+                expect(res.body.addresses).toBeDefined();
             })
         }),
 
@@ -243,6 +244,7 @@ describe ('Checkout endpoints', () => {
                     .set('Accept', 'application/json')
                     .expect(200);
                 expect(res.body).toBeDefined();
+                expect(res.body.payments).toBeDefined();
             })
         }), 
 
@@ -331,7 +333,7 @@ describe ('Checkout endpoints', () => {
 
             describe('Send valid inputs', () => {
 
-                it('Should succeed and redirect to /order/confirmation', async () => {
+                it('Should succeed and redirect to /order', async () => {
                     const res = await testSession
                         .post(`/checkout/payment`)
                         .send({ ...addressPost, 
@@ -341,11 +343,95 @@ describe ('Checkout endpoints', () => {
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(302)
-                        .expect('Location', '/checkout/order/confirmation');
+                        .expect('Location', '/checkout/order');
                     expect(res.body).toBeDefined();
                 })
             })
-        })
+        }),
+
+        describe('GET \'/checkout/order/confirmation\'', () => {
+
+            describe('Session has valid inputs', () => {
+
+                beforeEach(async () => {
+                    // post shipping info
+                    const res = await testSession
+                        .post(`/checkout/shipping`)
+                        .send({ ...addressPost, 
+                            first_name: user3.first_name,
+                            last_name: user3.last_name })
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json');
+
+                    // post payment and billing info 
+                    const res2 = await testSession
+                        .post(`/checkout/payment`)
+                        .send({ ...addressPost, 
+                            ...cardPost,
+                            first_name: user3.first_name,
+                            last_name: user3.last_name })
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json');
+                }),
+
+                it('Should send a summary of the checkout', async () => {
+
+                    const res = await testSession
+                        .get(`/checkout/order`)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(200)
+                    expect(res.body).toBeDefined();
+                    expect(res.body.cart).toBeDefined();
+                    expect(res.body.shipping).toBeDefined();
+                    expect(res.body.billing).toBeDefined();
+                    expect(res.body.payment).toBeDefined();
+                    expect(res.body.cart.id).toEqual(cartId);
+                    expect(res.body.shipping.address1).toEqual(addressPost.address1);
+                    expect(res.body.billing.address1).toEqual(addressPost.address1);
+                    expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
+                })
+            })
+        }),
+
+        describe('POST \'/checkout/order\'', () => {
+            
+            describe('Session has valid inputs', () => {
+                
+                beforeEach(async () => {
+                    // post shipping info
+                    const res = await testSession
+                        .post(`/checkout/shipping`)
+                        .send({ ...addressPost, 
+                            first_name: user3.first_name,
+                            last_name: user3.last_name })
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json');
+
+                    // post payment and billing info 
+                    const res2 = await testSession
+                        .post(`/checkout/payment`)
+                        .send({ ...addressPost, 
+                            ...cardPost,
+                            first_name: user3.first_name,
+                            last_name: user3.last_name })
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json');
+                }),
+
+                it('Should redirect to order confirmation', async () => {
+                    const res = await testSession
+                        .post(`/checkout/order`)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(302)
+                        .expect('Location', '/checkout/order/confirmation');
+                    expect(res.body).toBeDefined();
+                })
+
+            })
+
+        }),
 
         describe('GET \'/checkout/order/confirmation\'', () => {
             
@@ -363,13 +449,19 @@ describe ('Checkout endpoints', () => {
                     
                     // post payment and billing info 
                     const res2 = await testSession
-                            .post(`/checkout/payment`)
-                            .send({ ...addressPost, 
-                                ...cardPost,
-                                first_name: user3.first_name,
-                                last_name: user3.last_name })
-                            .set('Authorization', token)
-                            .set('Accept', 'application/json');
+                        .post(`/checkout/payment`)
+                        .send({ ...addressPost, 
+                            ...cardPost,
+                            first_name: user3.first_name,
+                            last_name: user3.last_name })
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json');
+                    
+                    // post order
+                    const res3 = await testSession
+                        .post(`/checkout/order`)
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json');
                 }),
 
                 it('Should return order information', async () => {
@@ -642,6 +734,32 @@ describe ('Checkout endpoints', () => {
                 expect(res.body).toBeDefined();
             })
         }),
+
+        describe('GET \'/checkout/order\'', () => {
+
+            it('Should redirect to \'/cart\'', async () => {
+                const res = await testSession
+                    .get(`/checkout/order`)
+                    .set('Authorization', null)
+                    .set('Accept', 'application/json')
+                    .expect(302)
+                    .expect('Location', '/cart');
+                expect(res.body).toBeDefined();
+            })
+        }),
+
+        describe('POST \'/checkout/order/confirmation\'', () => {
+
+            it('Should redirect to \'/cart\'', async () => {
+                const res = await testSession
+                    .post(`/checkout/order`)
+                    .set('Authorization', null)
+                    .set('Accept', 'application/json')
+                    .expect(302)
+                    .expect('Location', '/cart');
+                expect(res.body).toBeDefined();
+            })
+        })
 
         describe('GET \'/checkout/order/confirmation\'', () => {
 

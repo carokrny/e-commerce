@@ -5,24 +5,9 @@ const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
 const Product = require('../models/ProductModel');
 
-module.exports.postOrder = async (data) => {
-    try {
-        // throw error if no cart_id
-        if(!data.cart_id) {
-            throw httpError(400, 'No cart identifier.');
-        }
-
-        // throw error if cart not found
-        const cart = await Cart.findById(data.cart_id);        
-        if (!cart) {
-            throw httpError(404, 'Cart not found.')
-        }
-
-        // find all items in cart
-        const cartItems = await CartItem.findInCart(data.cart_id);
-        if (!cartItems) {
-            throw httpError(404, 'Cart empty.')
-        }
+module.exports.postOrder = async (data) => {  
+    try { 
+        const { cart, cartItems } = data;
 
         // calculate order total 
         var total = 0;
@@ -39,8 +24,8 @@ module.exports.postOrder = async (data) => {
         // create an new order
         const newOrder = await Order.create({ 
             user_id: data.user_id,
-            shipping_address_id: data.shipping.address.id,
-            billing_address_id: data.billing.address.id, 
+            shipping_address_id: data.shipping.id,
+            billing_address_id: data.billing.id, 
             payment_id: data.payment.id, 
             total: total
         });
@@ -59,7 +44,7 @@ module.exports.postOrder = async (data) => {
         }
 
         // delete cart from database
-        const deletedCart = await Cart.delete(data.cart_id);
+        const deletedCart = await Cart.delete(cart.id);
 
         // ---------------------------------------------------------
         // --- charge Card associated with payment_id the total ----

@@ -46,6 +46,11 @@ module.exports = (app) => {
     *         required: true
     *         type: string
     *         format: password
+    *       - name: cart_id
+    *         description: ID associated with Cart
+    *         in: cookie
+    *         required: false
+    *         type: integer
     *     responses:
     *       200:
     *         description: Object with a User object and a Bearer token object. 

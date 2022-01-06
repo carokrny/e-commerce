@@ -119,7 +119,7 @@ class Address {
      * Returns all addresses associated with user_id in database, if exists
      *
      * @param {number} user_id the user's id to find address based on
-     * @return {Arrray|null} the addresses
+     * @return {Arrray} the addresses
      */
     async findByUserId(user_id) {
         try {
@@ -135,7 +135,7 @@ class Address {
             if (result.rows.length > 0) {
                 return result.rows;
             } else {
-                return null;
+                return [];
             }
         } catch(err) {
             throw new Error(err);

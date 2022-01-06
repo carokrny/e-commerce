@@ -1,5 +1,6 @@
 const router = require('express').Router();
-const { postCheckout } = require('../../services/checkoutService');
+const { postPayment } = require('../../services/checkoutService');
+const { getAllPayments } = require('../../services/paymentService');
 const { checkoutAuth } = require('../../lib/customAuth/jwtAuth');
 
 module.exports = (app) => {
@@ -12,29 +13,46 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Checkout
-    *     description: Returns payment and billing address info forms
+    *     description: info for user to select payment method
     *     produces:
     *       - application/json
     *     security: 
     *       - Bearer: []
     *     responses:
     *       200:
-    *         description: Payment and billing info info form.
+    *         description: Info about user's saved payment methods
+    *         schema:
+    *           type: object
+    *           properties: 
+    *               payments:
+    *                 type: array
+    *                 items: 
+    *                   $ref: '#/definitions/Payment'
     *       302:
-    *         description: Redirects to /cart if user is not authorized
+    *         description: |
+    *           Redirects to /cart if user is not authorized
     */ 
-    router.get('/', checkoutAuth, (req, res, next) => {
-        res.status(200).json(`Form to fill out payment info goes here. 
-                            If primary__id !== null, automatically select it.`);
+    router.get('/', checkoutAuth, async (req, res, next) => {
+        try {
+            // grab user_id
+            const user_id = req.jwt.sub;
+
+            // get addresses
+            const response = await getAllPayments(user_id);
+
+            res.status(200).json(response);
+        } catch(err) {
+            next(err);
+        }
     });
 
     /**
     * @swagger
-    * /checkout/shipping:
+    * /checkout/payment:
     *   post:
     *     tags:
     *       - Checkout
-    *     description: User selects existing address for billing or creates new address, user selects existing payment method or creates new one.
+    *     description: User provides billing and payment info.
     *     produces:
     *       - application/json
     *     security: 
@@ -112,32 +130,30 @@ module.exports = (app) => {
     *         type: string
     *     responses:
     *       302: 
-    *         description: Redirects to /order/confirmation if payment info input. Invalid inputs redirects to /payment. Unauth user redirects to /cart.
+    *         description: |
+    *           Redirects to checkout/order if payment info input. 
+    *           Redirects to checkout/payment if inputs invalid. 
+    *           Redirects to /cart if user not authenticated.
     */
     router.post('/', checkoutAuth, async (req, res, next) => {
         try {
-            // check that session has required cart and shipping info
-            if (req.session && req.session.cart_id && req.session.shipping) {
-                // grab data needed for checkout
-                const data = {
-                    ...req.body,
-                    user_id: req.jwt.sub,
-                    cart_id: req.session.cart_id,
-                    shipping: req.session.shipping,
-                };
+            // grab data needed for checkout
+            const data = {
+                ...req.body,
+                user_id: req.jwt.sub,
+            };
 
-                // await response 
-                const response = await postCheckout(data);
+            // await response 
+            const response = await postPayment(data);
 
-                req.session.order_id = response.order.id;
+            // attach billing info to session
+            req.session.billing_address_id = response.billing.id;
 
-                // redirect to get order confirmation  
-                res.redirect(`/checkout/order/confirmation`);
-            } else {
-                // redirect if required session info is missing
-                res.redirect('/cart/checkout');
-            }
+            // attach payment method to session
+            req.session.payment_id = response.payment.id;
 
+            // redirect to get order review  
+            res.redirect(`/checkout/order`);
         } catch(err) {
             if (err.status === 400) {
                 res.redirect('/checkout/payment');

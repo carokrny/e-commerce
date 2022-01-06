@@ -27,7 +27,9 @@ module.exports = (app) => {
     *         type: integer
     *     responses:
     *       302:
-    *         description: Redirects user to login/register if not logged in. Redirects to shipping if logged in.
+    *         description: |
+    *           Redirects to /checkout/auth if user not authenticated. 
+    *           Redirects to /checkout/shipping if user is authenticated.
     *       400: 
     *         description: Missing cart_id.
     *       404: 

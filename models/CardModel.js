@@ -120,7 +120,7 @@ class Card {
      * Returns all cards associated with user_id in database, if exists
      *
      * @param {number} user_id the user's id to find cards based on
-     * @return {Arrray|null} the cards
+     * @return {Arrray} the cards
      */
     async findByUserId(user_id) {
         try {
@@ -136,7 +136,7 @@ class Card {
             if (result.rows.length > 0) {
                 return result.rows;
             } else {
-                return null;
+                return [];
             }
         } catch(err) {
             throw new Error(err);
