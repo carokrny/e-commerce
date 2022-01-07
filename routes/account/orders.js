@@ -48,6 +48,16 @@ module.exports = (app) => {
     *         type: integer
     *       quantity: 
     *         type: integer
+    *       name:
+    *         type: string
+    *       total_price:
+    *         type: number
+    *         format: money
+    *         example: 19.99
+    *       description: 
+    *         type: string
+    *       in_stock:
+    *         type: boolean
     *       created:
     *         type: string
     *         format: date-time

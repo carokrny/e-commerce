@@ -107,7 +107,7 @@ class CartItem {
                                     products.in_stock
                                 FROM cart 
                                 JOIN products 
-	                                ON cart.product_id = products.id;`;
+	                                ON cart.product_id = products.id`;
 
             // pg values
             const values = [cart_id];
@@ -186,7 +186,7 @@ class CartItem {
                                     products.in_stock
                                 FROM deleted_item 
                                 JOIN products 
-	                                ON deleted_item.product_id = products.id;`;
+	                                ON deleted_item.product_id = products.id`;
             
             // pg values
             const values = [data.cart_id, data.product_id];

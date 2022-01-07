@@ -11,9 +11,20 @@ class OrderItem {
     async create(data) {
         try {
             // pg statement
-            const statement = `INSERT INTO order_items (order_id, product_id, quantity)
-                                VALUES ($1, $2, $3)
-                                RETURNING *`;
+            const statement = `WITH new_order_item AS (
+                                    INSERT INTO order_items (order_id, product_id, quantity)
+                                    VALUES ($1, $2, $3)
+                                    RETURNING *
+                                )
+                                SELECT 
+	                                new_order_item.*, 
+                                    products.name,
+                                    products.price * new_order_item.quantity AS "total_price", 
+                                    products.description,
+                                    products.in_stock
+                                FROM new_order_item 
+                                JOIN products 
+	                                ON new_order_item.product_id = products.id`;
             
             // pg values 
             const values = [data.order_id, data.product_id, data.quantity]
@@ -41,9 +52,20 @@ class OrderItem {
     async findInOrder(order_id) {
         try {
             // pg statement
-            const statement = `SELECT * 
-                                FROM order_items 
-                                WHERE order_id = $1`;
+            const statement = `WITH temporary_order AS (
+                                    SELECT * 
+                                    FROM order_items 
+                                    WHERE order_id = $1
+                                )
+                                SELECT 
+	                                temporary_order.*, 
+                                    products.name,
+                                    products.price * temporary_order.quantity AS "total_price", 
+                                    products.description,
+                                    products.in_stock
+                                FROM temporary_order 
+                                JOIN products 
+	                                ON temporary_order.product_id = products.id`;
 
             // pg values
             const values = [order_id];
@@ -71,9 +93,20 @@ class OrderItem {
     async delete(data) {
         try {
             // pg statement
-            const statement = `DELETE FROM order_items  
-                                WHERE order_id=$1 AND product_id=$2
-                                RETURNING *`;
+            const statement = `WITH deleted_item AS (
+                                    DELETE FROM order_items  
+                                    WHERE order_id=$1 AND product_id=$2
+                                    RETURNING *
+                                )
+                                SELECT 
+	                                deleted_item.*, 
+                                    products.name,
+                                    products.price * deleted_item.quantity AS "total_price", 
+                                    products.description,
+                                    products.in_stock
+                                FROM deleted_item 
+                                JOIN products 
+	                                ON deleted_item.product_id = products.id`;
             
             // pg values
             const values = [data.order_id, data.product_id];
