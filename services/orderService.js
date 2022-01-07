@@ -9,25 +9,13 @@ module.exports.postOrder = async (data) => {
     try { 
         const { cart, cartItems } = data;
 
-        // calculate order total 
-        var total = 0;
-        for (const cartItem of cartItems) {
-            // grab item product
-            const price = await Product.getPrice(cartItem.product_id);
-
-            // throw error if missing
-            if(!price) throw httpError(404, 'Product missing');
-
-            total += cartItem.quantity * price.price;
-        }
-
         // create an new order
         const newOrder = await Order.create({ 
             user_id: data.user_id,
             shipping_address_id: data.shipping.id,
             billing_address_id: data.billing.id, 
             payment_id: data.payment.id, 
-            total: total
+            total: cart.total
         });
 
         // iterate through cart items to create order items

@@ -20,6 +20,12 @@ module.exports = (app) => {
     *         type: integer
     *       user_id:
     *         type: integer
+    *       total: 
+    *         type: number
+    *         format: money
+    *         example: 19.99
+    *       num_items:
+    *         type: integer
     *       created:
     *         type: string
     *         format: date-time

@@ -11,9 +11,28 @@ class Cart {
     async create(user_id) {
         try {
             // pg statement
-            const statement = `INSERT INTO carts (user_id)
-                                VALUES ($1)
-                                RETURNING *`;
+            const statement = `WITH items AS (
+	                                SELECT 
+                                        cart_items.cart_id, 
+  	                                    SUM(cart_items.quantity) AS "num_items",
+  	                                    SUM(products.price * cart_items.quantity) AS "total"
+                                    FROM cart_items 
+                                    JOIN products 
+                                        ON cart_items.product_id = products.id
+                                    WHERE cart_items.cart_id = $1
+                                    GROUP BY cart_items.cart_id
+                                ), new_cart AS (
+                                    INSERT INTO carts (user_id)
+                                    VALUES ($1)
+                                    RETURNING *
+                                )
+                                SELECT
+	                                new_cart.*,
+                                    CASE WHEN items.total IS NULL THEN 0.00 ELSE items.total END,
+                                    CASE WHEN items.num_items IS NULL THEN 0 ELSE items.num_items::integer END  
+                                FROM new_cart
+                                LEFT JOIN items
+	                                ON new_cart.id = items.cart_id`;
             
             // make query
             const result = await db.query(statement, [user_id]);
@@ -38,10 +57,31 @@ class Cart {
     async update(data) {
         try {
             // pg statement
-            const statement = `UPDATE carts  
-                                SET user_id=$2, modified=now()
-                                WHERE id = $1
-                                RETURNING *`;
+            const statement = `WITH items AS (
+	                                SELECT 
+                                        cart_items.cart_id, 
+  	                                    SUM(cart_items.quantity) AS "num_items",
+  	                                    SUM(products.price * cart_items.quantity) AS "total"
+                                    FROM cart_items 
+                                    JOIN products 
+                                        ON cart_items.product_id = products.id
+                                    WHERE cart_items.cart_id = $1
+                                    GROUP BY cart_items.cart_id
+                                ), updated_cart AS (
+                                    UPDATE carts  
+                                    SET 
+                                        user_id = $2, 
+                                        modified = now()
+                                    WHERE id = $1
+                                    RETURNING *
+                                )
+                                SELECT
+	                                updated_cart.*,
+                                    CASE WHEN items.total IS NULL THEN 0.00 ELSE items.total END,
+                                    CASE WHEN items.num_items IS NULL THEN 0 ELSE items.num_items::integer END  
+                                FROM updated_cart
+                                LEFT JOIN items
+	                                ON updated_cart.id = items.cart_id`;
             
             // pg values
             const values = [data.id, data.user_id];
@@ -69,7 +109,25 @@ class Cart {
     async findById(id) {
         try {
             // pg statement
-            const statement = `SELECT * FROM carts WHERE id = $1`;
+            const statement = `WITH items AS (
+	                                SELECT 
+                                        cart_items.cart_id, 
+                                        SUM(cart_items.quantity) AS "num_items",
+  	                                    SUM(products.price * cart_items.quantity) AS "total"
+                                    FROM cart_items 
+                                    JOIN products 
+                                        ON cart_items.product_id = products.id
+                                    WHERE cart_items.cart_id = $1
+                                    GROUP BY cart_items.cart_id
+                                )
+                                SELECT
+	                                carts.*,
+                                    CASE WHEN items.total IS NULL THEN 0.00 ELSE items.total END,
+                                    CASE WHEN items.num_items IS NULL THEN 0 ELSE items.num_items::integer END
+                                FROM carts
+                                LEFT JOIN items
+	                                ON carts.id = items.cart_id
+                                WHERE carts.id = $1`;
 
             // make query
             const result = await db.query(statement, [id]);
@@ -81,6 +139,7 @@ class Cart {
                 return null;
             }
         } catch(err) {
+            console.error(err.stack)
             throw new Error(err);
         }
     }
@@ -94,7 +153,25 @@ class Cart {
     async findByUserId(user_id) {
         try {
             // pg statement
-            const statement = `SELECT * FROM carts WHERE user_id = $1`;
+            const statement = `WITH items AS (
+	                                SELECT 
+                                        cart_items.cart_id, 
+                                        SUM(cart_items.quantity) AS "num_items",
+  	                                    SUM(products.price * cart_items.quantity) AS "total"
+                                    FROM cart_items 
+                                    JOIN products 
+                                        ON cart_items.product_id = products.id
+                                    WHERE cart_items.cart_id = $1
+                                    GROUP BY cart_items.cart_id
+                                )
+                                SELECT
+	                                carts.*,
+                                    CASE WHEN items.total IS NULL THEN 0.00 ELSE items.total END,
+                                    CASE WHEN items.num_items IS NULL THEN 0 ELSE items.num_items::integer END
+                                FROM carts
+                                LEFT JOIN items
+	                                ON carts.id = items.cart_id
+                                WHERE carts.user_id = $1`;
 
             // make query
             const result = await db.query(statement, [user_id]);
@@ -119,9 +196,28 @@ class Cart {
     async delete(id) {
         try {
             // pg statement
-            const statement = `DELETE FROM carts
-                                WHERE id=$1
-                                RETURNING *`;
+            const statement = `WITH items AS (
+	                                SELECT 
+                                        cart_items.cart_id, 
+  	                                    SUM(cart_items.quantity) AS "num_items",
+  	                                    SUM(products.price * cart_items.quantity) AS "total"
+                                    FROM cart_items 
+                                    JOIN products 
+                                        ON cart_items.product_id = products.id
+                                    WHERE cart_items.cart_id = $1
+                                    GROUP BY cart_items.cart_id
+                                ), deleted_cart AS (
+                                    DELETE FROM carts
+                                    WHERE id=$1
+                                    RETURNING *
+                                )
+                                SELECT
+	                                deleted_cart.*,
+                                    CASE WHEN items.total IS NULL THEN 0.00 ELSE items.total END,
+                                    CASE WHEN items.num_items IS NULL THEN 0 ELSE items.num_items::integer END  
+                                FROM deleted_cart
+                                LEFT JOIN items
+	                                ON deleted_cart.id = items.cart_id`;
             
             // make query
             const result = await db.query(statement, [id]);
