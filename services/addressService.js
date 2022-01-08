@@ -13,14 +13,18 @@ module.exports.postAddress = async (data) => {
                 zip,
                 country,
                 isPrimaryAddress,        // can be null
+                first_name, 
+                last_name,
                 user_id } = data;
 
         // check for valid inputs 
-        if (address1 === null   || address1.length === 0 || 
-            city === null       || city.length === 0    ||
-            state === null      || state.length === 0   ||
-            zip === null        || zip.length === 0     ||
-            country === null    || country.length === 0 ||
+        if (address1 === null   || address1.length === 0    || 
+            city === null       || city.length === 0        ||
+            state === null      || state.length === 0       ||
+            zip === null        || zip.length === 0         ||
+            country === null    || country.length === 0     ||
+            first_name === null || first_name.length === 0  ||
+            last_name === null  || last_name.length === 0   ||
             user_id === null) {
                 throw httpError(400, 'Invalid inputs');
         }
@@ -69,12 +73,14 @@ module.exports.putAddress = async (data) => {
 
         // modify address with properties in data 
         for (const property in data) {
-            if (property === "address1" ||  
-                property === "address2" || 
-                property === "city" ||
-                property === "state" ||
-                property === "zip" ||
-                property === "country") {
+            if (property === "address1"     ||  
+                property === "address2"     || 
+                property === "city"         ||
+                property === "state"        ||
+                property === "zip"          ||
+                property === "country"      ||
+                property === "first_name"   ||
+                property === "last_name") {
                 // check that value is truthy not an empty string
                 if (data[property] && data[property].length > 0) {
                     address[property] = data[property];

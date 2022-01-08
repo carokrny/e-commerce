@@ -61,45 +61,46 @@ module.exports = (app) => {
     *     security: 
     *       - Bearer: []
     *     parameters:
-    *       - name: first_name
-    *         description: user's first name
-    *         in: body
-    *         required: true
-    *         type: string
-    *       - name: last_name
-    *         description: user's last name
-    *         in: body
-    *         required: true
-    *         type: string
+    
     *       - name: address_id
-    *         description: id of existing address
+    *         description: id of existing address for billing
     *         in: body
     *         required: false
     *         type: integer
     *       - name: address1
-    *         description: first line of user's new address
+    *         description: first line of new address for billing
     *         in: body
     *         required: false
     *         type: string
     *       - name: address2
-    *         description: second line of user's new address
+    *         description: second line of new address for billing
     *         in: body
     *         required: false
     *         type: string
     *       - name: city
-    *         description: city of user's new address
+    *         description: city of new address for billing
     *         in: body
     *         required: false
     *         type: string
     *       - name: zip
-    *         description: zip code of user's new address
+    *         description: zip code of new address for billing
     *         in: body
     *         required: false
     *         type: string
     *       - name: country
-    *         description: country of user's new address
+    *         description: country of new address for billing
     *         in: body
     *         required: false
+    *         type: string
+    *       - name: first_name
+    *         description: first name of new address for billing
+    *         in: body
+    *         required: true
+    *         type: string
+    *       - name: last_name
+    *         description: last name of new address for billing
+    *         in: body
+    *         required: true
     *         type: string
     *       - name: payment_id
     *         description: id of existing payment
@@ -107,27 +108,27 @@ module.exports = (app) => {
     *         required: false
     *         type: integer
     *       - name: provider
-    *         description: new card's provider (e.g., Visa)
+    *         description: provider (e.g., Visa) for new payemnt
     *         in: body
     *         required: false
     *         type: string
     *       - name: card_type
-    *         description: type of new card (e.g., credit, debit)
+    *         description: type (e.g., credit, debit) for new payemnt
     *         in: body
     *         required: false
     *         type: string
     *       - name: card_no
-    *         description: new card number
+    *         description: card number for new payemnt
     *         in: body
     *         required: false
     *         type: string
     *       - name: expiry
-    *         description: new card expiration
+    *         description: card expiration for new payemnt
     *         in: body
     *         required: false
     *         type: string
     *       - name: cvv
-    *         description: new card cvv
+    *         description: cvv for new payemnt
     *         in: body
     *         required: false
     *         type: string

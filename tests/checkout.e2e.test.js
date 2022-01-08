@@ -210,7 +210,9 @@ describe('Checkout flow E2E', () => {
                 // create address
                 const address = await Address.create({ 
                         ...addressPost, 
-                        user_id: user5.id 
+                        user_id: user5.id, 
+                        first_name: user5.first_name,
+                        last_name: user5.last_name
                     });
                 
                 // create payment
@@ -257,9 +259,7 @@ describe('Checkout flow E2E', () => {
                 // post shipping information, be redirected to payment
                 const res4 = await testSession
                     .post(`/checkout/shipping`)
-                    .send({ address_id: shippingAddressId, 
-                        first_name: user.first_name,
-                        last_name: user.last_name })
+                    .send({ address_id: shippingAddressId })
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
@@ -286,9 +286,7 @@ describe('Checkout flow E2E', () => {
                 const res6 = await testSession
                     .post(`/checkout/payment`)
                     .send({ address_id: billingAddressId, 
-                        payment_id: paymentId,
-                        first_name: user.first_name,
-                        last_name: user.last_name })
+                        payment_id: paymentId })
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)

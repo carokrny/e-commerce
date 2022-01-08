@@ -41,6 +41,10 @@ module.exports = (app) => {
     *       country:
     *         type: string
     *         example: 'United States'
+    *       first_name: 
+    *         type: string
+    *       last_name:
+    *         type: string
     *       created:
     *         type: string
     *         format: date-time
@@ -94,6 +98,16 @@ module.exports = (app) => {
     *         maxLength: 10
     *       - name: country
     *         description: country of user's address
+    *         in: body
+    *         required: true
+    *         type: string
+    *       - name: first_name
+    *         description: first name of address recipient
+    *         in: body
+    *         required: true
+    *         type: string
+    *       - name: last_name
+    *         description: last name of address recipient
     *         in: body
     *         required: true
     *         type: string
@@ -263,6 +277,16 @@ module.exports = (app) => {
     *         in: body
     *         required: false
     *         type: string
+    *       - name: first_name
+    *         description: first name of address recipient
+    *         in: body
+    *         required: true
+    *         type: string
+    *       - name: last_name
+    *         description: last name of address recipient
+    *         in: body
+    *         required: true
+    *         type: strings
     *       - name: isPrimaryAddress
     *         description: whether this is user's primary address
     *         in: body

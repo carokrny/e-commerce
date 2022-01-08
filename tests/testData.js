@@ -17,7 +17,9 @@
     email: 'mascara@me.com', 
     password: 'secret',
     id: 21,
-    order_id: 7
+    order_id: 7, 
+    first_name: 'Sam', 
+    last_name: 'Mister'
  };
 
 // test product for entering into carts and orders
@@ -94,7 +96,9 @@ module.exports.differentPaymentId = 162;
  module.exports.user2 = {
     email: 'john@me.com', 
     password: 'abc123', 
-    id: 130
+    id: 130, 
+    first_name: 'John', 
+    last_name: 'Doe'
  };
 
 

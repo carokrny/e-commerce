@@ -27,7 +27,9 @@ describe ('Address endpoints', () => {
                 it ('Should create a new address', async () => {
                     const res = await request(app)
                         .post('/account/address')
-                        .send(addressPost)
+                        .send({ ...addressPost, 
+                            first_name: user2.first_name,
+                            last_name: user2.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
@@ -47,7 +49,10 @@ describe ('Address endpoints', () => {
                 it ('Should return a 400 error', (done) => {
                     request(app)
                         .post('/account/address')
-                        .send({ ...addressPost, country: null })
+                        .send({ ...addressPost,
+                            country: null,
+                            first_name: user2.first_name,
+                            last_name: user2.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(400)
@@ -64,7 +69,9 @@ describe ('Address endpoints', () => {
             it ('Should return 401 error', (done) => {
                 request(app)
                     .post('/account/address')
-                    .send(addressPost)
+                    .send({ ...addressPost, 
+                            first_name: user2.first_name,
+                            last_name: user2.last_name })
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(401)

@@ -6,15 +6,6 @@ const { getCart } = require('./cartService');
 
 module.exports.postShipping = async (data) => {
     try {
-        const { first_name, 
-                last_name } = data;
-            
-        // check for valid name inputs 
-        if (!first_name || !first_name.length ||
-            !last_name || !last_name.length) {
-                throw httpError(400, 'Invalid inputs');
-        }
-
         var shipping = null;
 
         // fetch address if it already exists
@@ -24,10 +15,6 @@ module.exports.postShipping = async (data) => {
             // otherwise create new address for shipping
             shipping = await postAddress(data);
         }
-        
-        // attach names to shipping address
-        shipping.address.first_name = first_name;
-        shipping.address.last_name = last_name;
 
         return { shipping: shipping.address };
         
@@ -41,15 +28,6 @@ module.exports.postPayment = async (data) => {
 
         // -----------Handle Billing Address----------------
 
-        const { first_name, 
-                last_name } = data;
-            
-        // check for valid name inputs 
-        if (!first_name || !first_name.length ||
-            !last_name || !last_name.length) {
-                throw httpError(400, 'Invalid inputs');
-        }
-
         var billing = null;
 
         // fetch address if it already exists
@@ -59,10 +37,6 @@ module.exports.postPayment = async (data) => {
             // otherwise create new address for billing
             billing = await postAddress(data);
         }
-
-        // attach names to billing address
-        billing.address.first_name = first_name;
-        billing.address.last_name = last_name;
 
         // -------------Handle Payment Method-----------------
         

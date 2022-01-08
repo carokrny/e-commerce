@@ -7,7 +7,6 @@ const Product = require('../models/ProductModel');
 
 module.exports.postOrder = async (data) => {  
     try { 
-        const { cart, cartItems } = data;
 
         // create an new order
         const newOrder = await Order.create({ 
@@ -15,8 +14,10 @@ module.exports.postOrder = async (data) => {
             shipping_address_id: data.shipping.id,
             billing_address_id: data.billing.id, 
             payment_id: data.payment.id, 
-            total: cart.total
+            total: data.cart.total
         });
+
+        const { cartItems } = data;
 
         // iterate through cart items to create order items
         var orderItems = []; 
@@ -32,7 +33,7 @@ module.exports.postOrder = async (data) => {
         }
 
         // delete cart from database
-        const deletedCart = await Cart.delete(cart.id);
+        const deletedCart = await Cart.delete(data.cart.id);
 
         // ---------------------------------------------------------
         // --- charge Card associated with payment_id the total ----

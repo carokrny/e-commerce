@@ -61,43 +61,42 @@ module.exports = (app) => {
     *     security: 
     *       - Bearer: []
     *     parameters:
-    *       - name: first_name
-    *         description: user's first name
-    *         in: body
-    *         required: true
-    *         type: string
-    *       - name: last_name
-    *         description: user's last name
-    *         in: body
-    *         required: true
-    *         type: string
     *       - name: address_id
     *         description: id of existing address
     *         in: body
     *         required: false
     *         type: integer
     *       - name: address1
-    *         description: first line of user's new address
+    *         description: first line of new address for shipping recipient
     *         in: body
     *         required: false
     *         type: string
     *       - name: address2
-    *         description: second line of user's new address
+    *         description: second line of new address for shipping recipient
     *         in: body
     *         required: false
     *         type: string
     *       - name: city
-    *         description: city of user's new address
+    *         description: city of new address for shipping recipient
     *         in: body
     *         required: false
     *         type: string
     *       - name: zip
-    *         description: zip code of user's new address
+    *         description: zip code of new address for shipping recipient
     *         in: body
     *         required: false
     *         type: string
     *       - name: country
-    *         description: country of user's new address
+    *         description: country of new address for shipping recipient
+    *         in: body
+    *         required: false
+    *         type: string
+    *       - name: first_name
+    *         description: first name of new address for shipping recipient
+    *         required: false
+    *         type: string
+    *       - name: last_name
+    *         description: last name of new address for shipping recipient
     *         in: body
     *         required: false
     *         type: string

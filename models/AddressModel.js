@@ -11,14 +11,17 @@ class Address {
     async create(data) {
         try {
             // pg statement
-            const statement = `INSERT INTO addresses (address1, 
+            const statement = `INSERT INTO addresses (
+                                    address1, 
                                     address2, 
                                     city, 
                                     state, 
                                     zip, 
                                     country,
+                                    first_name,
+                                    last_name,
                                     user_id)
-                                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                                 RETURNING *`;
 
             // pg values
@@ -28,6 +31,8 @@ class Address {
                             data.state, 
                             data.zip, 
                             data.country,
+                            data.first_name,
+                            data.last_name,
                             data.user_id];
             
             // make query
@@ -60,7 +65,9 @@ class Address {
                                     city=$4, 
                                     state=$5, 
                                     zip=$6, 
-                                    country=$7, 
+                                    country=$7,
+                                    first_name=$8,
+                                    last_name=$9, 
                                     modified=now()
                                 WHERE id = $1
                                 RETURNING *`;
@@ -72,7 +79,9 @@ class Address {
                             data.city, 
                             data.state, 
                             data.zip, 
-                            data.country];
+                            data.country,
+                            data.first_name,
+                            data.last_name];
             
             // make query
             const result = await db.query(statement, values);
