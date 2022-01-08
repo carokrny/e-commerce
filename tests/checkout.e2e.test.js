@@ -3,6 +3,7 @@ const request = require('supertest');
 const session = require('supertest-session');
 const { user5, 
         user6, 
+        user7,
         testRegister2,
         addressPost,
         cardPost, 
@@ -70,24 +71,24 @@ describe('Checkout flow E2E', () => {
 
     describe('User is logged in', () => {
 
-        beforeEach(async () => {
-            // create JWT for authentication 
-            const res = await request(app)
-                .post('/login')
-                .send(user5);
-            token = res.body.token;
-
-            testSession = session(app);
-
-            // create cart 
-            const res2 = await testSession
-                .post('/cart')
-                .set('Authorization', token)
-                .set('Accept', 'application/json');
-            cartId = res2.body.cart.id;
-        }),
-
         describe('Empty cart', () => {
+
+            beforeEach(async () => {
+                // create JWT for authentication 
+                const res = await request(app)
+                    .post('/login')
+                    .send(user5);
+                token = res.body.token;
+
+                testSession = session(app);
+
+                // create cart 
+                const res2 = await testSession
+                    .post('/cart')
+                    .set('Authorization', token)
+                    .set('Accept', 'application/json');
+                cartId = res2.body.cart.id;
+            }),
 
             it ('Should reject checkout flow with 404 error', async () => {
                 const res = await testSession
@@ -99,6 +100,23 @@ describe('Checkout flow E2E', () => {
         }),
 
         describe('Go through full checkout', () => {
+
+            beforeEach(async () => {
+                // create JWT for authentication 
+                const res = await request(app)
+                    .post('/login')
+                    .send(user5);
+                token = res.body.token;
+
+                testSession = session(app);
+
+                // create cart 
+                const res2 = await testSession
+                    .post('/cart')
+                    .set('Authorization', token)
+                    .set('Accept', 'application/json');
+                cartId = res2.body.cart.id;
+            }),
 
             it('Should successfully create order', async () => {
 
@@ -199,10 +217,27 @@ describe('Checkout flow E2E', () => {
 
         describe('Use primary address and payments saved to user', () => {
 
+            beforeEach(async () => {
+                // create JWT for authentication 
+                const res = await request(app)
+                    .post('/login')
+                    .send(user7);
+                token = res.body.token;
+
+                testSession = session(app);
+
+                // create cart 
+                const res2 = await testSession
+                    .post('/cart')
+                    .set('Authorization', token)
+                    .set('Accept', 'application/json');
+                cartId = res2.body.cart.id;
+            }),
+
             afterEach(async() => {
                 // reset user, remove primary payment and primary address
-                await User.updatePrimaryPaymentId({ id: user5.id, primary_payment_id: null });
-                await User.updatePrimaryAddressId({ id: user5.id, primary_address_id: null });
+                await User.updatePrimaryPaymentId({ id: user7.id, primary_payment_id: null });
+                await User.updatePrimaryAddressId({ id: user7.id, primary_address_id: null });
             }),
 
             it('Should successfully create order', async () => {
@@ -210,21 +245,21 @@ describe('Checkout flow E2E', () => {
                 // create address
                 const address = await Address.create({ 
                         ...addressPost, 
-                        user_id: user5.id, 
-                        first_name: user5.first_name,
-                        last_name: user5.last_name
+                        user_id: user7.id, 
+                        first_name: user7.first_name,
+                        last_name: user7.last_name
                     });
                 
                 // create payment
                 const card = await Card.create({ 
                         ...cardPost, 
                         billing_address_id: address.id,
-                        user_id: user5.id 
+                        user_id: user7.id 
                     });
 
                 // make primary address and payment;
-                await User.updatePrimaryPaymentId({ id: user5.id, primary_payment_id: card.id });
-                const user = await User.updatePrimaryAddressId({ id: user5.id, primary_address_id: address.id });
+                await User.updatePrimaryPaymentId({ id: user7.id, primary_payment_id: card.id });
+                const user = await User.updatePrimaryAddressId({ id: user7.id, primary_address_id: address.id });
 
                 // add an item to cart 
                 const res1 = await testSession

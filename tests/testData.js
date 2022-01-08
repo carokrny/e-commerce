@@ -139,7 +139,7 @@ module.exports.differentPaymentId = 162;
 
 
 
- // test login 6 since tests run synchronously and carts must have unique user_id
+// test login 6 since tests run synchronously and carts must have unique user_id
 // test login 6 is used for checkout tests
  module.exports.user6 = {                   
     email: 'pumpkin@me.com', 
@@ -149,6 +149,18 @@ module.exports.differentPaymentId = 162;
     last_name: 'Pie', 
     primary_address_id: 492, 
     primary_payment_id: 299
+ };
+
+
+
+// test login 7 since tests run synchronously and carts must have unique user_id
+// test login 7 is used for checkout tests
+ module.exports.user7 = {                   
+    email: 'pasta@me.com', 
+    password: 'marinara', 
+    id: 1813,
+    first_name: 'Pasta', 
+    last_name: 'Sauce', 
  };
 
 
