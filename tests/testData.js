@@ -61,7 +61,8 @@ module.exports.differentAddressId = 1;
     provider: 'Visa', 
     card_no: '4000056655665556', 
     cvv: '123', 
-    expiry: '2022-11-01', 
+    exp_month: 11,
+    exp_year: 2023, 
     billing_address_id: 1, 
     isPrimaryPayment: false,
  }
@@ -77,12 +78,14 @@ module.exports.differentAddressId = 1;
     provider: 'Visa', 
     card_no: '123412G412341234', 
     cvv: '123', 
-    expiry: '2022-11-01', 
+    exp_month: 12,
+    exp_year: 2020, 
     billing_address_id: 1
  }
 
  module.exports.invalidCardPut = {
-    card_no: '12341234123412K3'
+    exp_month: 11,
+    exp_year: 2020,           // date has passed
  }
 
  // to get an error on payment routes with wrong payment id

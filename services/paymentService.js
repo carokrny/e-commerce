@@ -1,5 +1,5 @@
 const httpError = require('http-errors');
-const { checkPayment, eachCharIsNum } = require('../lib/validatorUtils');
+const { checkPayment, eachCharIsNum, expDateIsValid } = require('../lib/validatorUtils');
 const { attachIsPrimaryPayment } = require('../lib/formatUtils');
 const Card = require('../models/CardModel');
 const User = require('../models/UserModel');
@@ -10,7 +10,8 @@ module.exports.postPayment = async (data) => {
                 provider,   
                 card_no, 
                 cvv,
-                expiry,
+                exp_month,
+                exp_year,
                 billing_address_id,
                 isPrimaryPayment,
                 user_id } = data;
@@ -19,10 +20,13 @@ module.exports.postPayment = async (data) => {
         if (provider === null            || provider.length === 0    || 
             card_no === null             || card_no.length !== 16    ||
             cvv === null                 || cvv.length !== 3         ||
-            expiry === null              || expiry.length !== 10     ||
+            exp_month === null           ||  
+            exp_year === null            ||
             billing_address_id === null  ||
             user_id === null             ||
-            !eachCharIsNum(card_no)      || !eachCharIsNum(cvv)
+            !eachCharIsNum(card_no)      || 
+            !eachCharIsNum(cvv)          ||
+            !expDateIsValid(exp_month, exp_year)
             ) {
                 throw httpError(400, 'Invalid inputs');
         }
@@ -69,24 +73,30 @@ module.exports.putPayment = async (data) => {
 
         // modify payment with properties in data 
         for (const property in data) {
-            if (property === "card_type" ||  
-                property === "provider" || 
-                property === "expiry" ||
-                property === "billing_address_id") {
-                // check that value is truthy not an empty string
-                if (data[property] && data[property].toString().length > 0) {
+            if ((property === "card_type"    ||  
+                property === "provider"     || 
+                property === "billing_address_id") &&
+                data[property] &&
+                data[property].toString().length > 0) {
                     payment[property] = data[property];
-                }
             } else if (property === "card_no" && 
                 data[property] && 
                 data[property].length === 16 &&
                 eachCharIsNum(data[property])) {
-                payment[property] = data[property];
+                    payment[property] = data[property];
             } else if (property === "cvv" && 
                 data[property] && 
                 data[property].length === 3 &&
                 eachCharIsNum(data[property])) {
-                payment[property] = data[property];
+                    payment[property] = data[property];
+            } else if (property === "exp_month" && 
+                data[property] &&
+                expDateIsValid(data[property], data.exp_year || payment.exp_year)) {
+                    payment[property] = data[property];                  
+            } else if (property === "exp_year" && 
+                data[property] &&
+                expDateIsValid(data.exp_month || payment.exp_month, data[property])) {
+                    payment[property] = data[property];     
             }
         }
 
@@ -102,8 +112,7 @@ module.exports.putPayment = async (data) => {
         } else {
             updatedPayment.isPrimaryPayment = false;
         }
-
-        
+  
         return { payment: updatedPayment };
 
     } catch(err) {

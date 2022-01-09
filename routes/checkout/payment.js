@@ -122,11 +122,16 @@ module.exports = (app) => {
     *         in: body
     *         required: false
     *         type: string
-    *       - name: expiry
-    *         description: card expiration for new payemnt
+    *       - name: exp_month
+    *         description: card expiration month
     *         in: body
     *         required: false
-    *         type: string
+    *         type: integer
+    *       - name: exp_year
+    *         description: card expiration year
+    *         in: body
+    *         required: false
+    *         type: integer
     *       - name: cvv
     *         description: cvv for new payemnt
     *         in: body

@@ -190,8 +190,8 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
                     expect(res.body.payment.user_id).toEqual(user.id);
-                    expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
-                    expect(res.body.payment.card_no.slice(-4)).not.toEqual(invalidCardPut.card_no.slice(-4));
+                    expect(res.body.payment.exp_year).toEqual(cardPost.exp_year);
+                    expect(res.body.payment.exp_year).not.toEqual(invalidCardPut.exp_year);
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
                 })
             }),

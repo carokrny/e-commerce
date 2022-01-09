@@ -54,8 +54,8 @@ module.exports.postOrder = async (data) => {
             card: {
                 name: data.billing.first_name + " " + data.billing.last_name,   
                 number: data.payment.card_no,
-                exp_month: parseInt(data.payment.expiry.slice(5,7)),  
-                exp_year: parseInt(data.payment.expiry.slice(0,4)),
+                exp_month: data.payment.exp_month,  
+                exp_year: data.payment.exp_year,
                 cvc: data.payment.cvv,
                 address_country: data.billing.country,
                 address_zip: data.billing.zip

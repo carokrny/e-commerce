@@ -16,10 +16,11 @@ class Card {
                                     provider, 
                                     card_no, 
                                     cvv, 
-                                    expiry, 
+                                    exp_month,
+                                    exp_year, 
                                     billing_address_id,
                                     user_id)
-                                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                                 RETURNING *`;
 
             // pg values
@@ -27,7 +28,8 @@ class Card {
                             data.provider, 
                             data.card_no, 
                             data.cvv, 
-                            data.expiry, 
+                            data.exp_month,
+                            data.exp_year, 
                             data.billing_address_id,
                             data.user_id];
             
@@ -60,8 +62,9 @@ class Card {
                                     provider=$3, 
                                     card_no=$4, 
                                     cvv=$5, 
-                                    expiry=$6, 
-                                    billing_address_id=$7, 
+                                    exp_month=$6,
+                                    exp_year=$7,
+                                    billing_address_id=$8, 
                                     modified=now()
                                 WHERE id = $1
                                 RETURNING *`;
@@ -72,7 +75,8 @@ class Card {
                             data.provider, 
                             data.card_no, 
                             data.cvv, 
-                            data.expiry, 
+                            data.exp_month,
+                            data.exp_year, 
                             data.billing_address_id];
             
             // make query

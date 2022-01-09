@@ -31,9 +31,10 @@ module.exports = async (app) => {
     *         minLength: 16
     *         maxLength: 16
     *         example: '4000400040004000'
-    *       expiry:
-    *         type: string
-    *         format: 'MM/YYYY'
+    *       exp_month:
+    *         type: integer
+    *       exp_year:
+    *         type: integer
     *       cvv:
     *         type: string
     *         minLength: 3
@@ -81,12 +82,20 @@ module.exports = async (app) => {
     *         type: string
     *         minLength: 16
     *         maxLength: 16
-    *       - name: expiry
-    *         description: card expiration
+    *       - name: exp_month
+    *         description: card expiration month
     *         in: body
     *         required: true
-    *         type: string
-    *         format: date
+    *         type: integer
+    *         minimum: 1
+    *         maximum: 12
+    *       - name: exp_year
+    *         description: card expiration year
+    *         in: body
+    *         required: true
+    *         type: integer
+    *         minimum: 2021
+    *         format: YYYY
     *       - name: cvv
     *         description: card cvv
     *         in: body
@@ -258,12 +267,16 @@ module.exports = async (app) => {
     *         type: string
     *         minLength: 16
     *         maxLength: 16
-    *       - name: expiry
-    *         description: card expiration
+    *       - name: exp_month
+    *         description: card expiration month
     *         in: body
     *         required: false
-    *         type: string
-    *         format: date
+    *         type: integer
+    *       - name: exp_year
+    *         description: card expiration year
+    *         in: body
+    *         required: false
+    *         type: integer
     *       - name: cvv
     *         description: card cvv
     *         in: body
