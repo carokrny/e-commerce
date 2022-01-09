@@ -3,7 +3,9 @@ const Order = require('../models/OrderModel');
 const OrderItem = require('../models/OrderItemModel');
 const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
-const Product = require('../models/ProductModel');
+const User = require('../models/UserModel');
+require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 module.exports.postOrder = async (data) => {  
     try { 
@@ -36,15 +38,62 @@ module.exports.postOrder = async (data) => {
         const deletedCart = await Cart.delete(data.cart.id);
 
         // ---------------------------------------------------------
-        // --- charge Card associated with payment_id the total ----
+        // ----- charge Card with payment_id using Stripe API ------
         // ---------------------------------------------------------
 
-        return {
-            order: newOrder, 
-            orderItems: orderItems,
-        };
+        /* 
+         * Keep stripe section atomized to be easily repleaced with 
+         * another payment processing api
+         */
         
+        // grab user to complete Stripe customer registration
+        const user = await User.findById(data.user_id);
+
+        // create cardToken to charge
+        const cardToken = await stripe.tokens.create({
+            card: {
+                name: data.billing.first_name + " " + data.billing.last_name,   
+                number: data.payment.card_no,
+                exp_month: parseInt(data.payment.expiry.slice(5,7)),  
+                exp_year: parseInt(data.payment.expiry.slice(0,4)),
+                cvc: data.payment.cvv,
+                address_country: data.billing.country,
+                address_zip: data.billing.zip
+            }
+        });
+        
+        // charge card with Stripe
+        const charge = await stripe.charges.create({
+            amount: Math.round(data.cart.total * 100),  // stripe charges in usd cents, round to avoid error
+            currency: "usd",
+            source: cardToken.id, 
+            receipt_email: user.email
+        });
+
+        if (charge.status === "succeeded") {
+            return {
+                order: newOrder, 
+                orderItems: orderItems,
+            }
+        } else {
+            // delete each order item
+            for (const orderItem of orderItems) {
+                // delete order item from database
+                await OrderItem.delete(orderItem);
+            }
+
+            // delete the order 
+            await Order.delete(newOrder);
+
+            // throw error
+            throw httpError(400, 'Error processing payment.');
+        }
+        // ---------------------------------------------------------
+        // ----------------- end charge section --------------------
+        // ---------------------------------------------------------
+
     } catch(err) {
+        console.error(err.stack);
         throw err;
     }
 }

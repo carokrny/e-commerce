@@ -38,7 +38,7 @@ module.exports.postPayment = async (data) => {
             billing = await postAddress(data);
         }
 
-        // -------------Handle Payment Method-----------------
+        // -------------Handle Payment Method----------------
         
         var payment = null;
 
@@ -53,7 +53,7 @@ module.exports.postPayment = async (data) => {
             });
         }
 
-        // -------------Return data-----------------
+        // -----------------Return data----------------------
 
         return {
             billing: billing.address,

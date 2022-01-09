@@ -59,7 +59,7 @@ module.exports.differentAddressId = 1;
  module.exports.cardPost = {
     card_type: 'debit', 
     provider: 'Visa', 
-    card_no: '1234123412341234', 
+    card_no: '4000056655665556', 
     cvv: '123', 
     expiry: '2022-11-01', 
     billing_address_id: 1, 
