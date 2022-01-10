@@ -10,13 +10,56 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 module.exports.postOrder = async (data) => {  
     try { 
 
+        // ---------------------------------------------------------
+        // ----- charge Card with payment_id using Stripe API ------
+        // ---------------------------------------------------------
+
+        /* 
+         * Keep stripe section atomized to be easily repleaced with 
+         * another payment processing api
+         */
+
+        // create cardToken to charge
+        const cardToken = await stripe.tokens.create({
+            card: {
+                name: data.billing.first_name + " " + data.billing.last_name,   
+                number: data.payment.card_no,
+                exp_month: data.payment.exp_month,  
+                exp_year: data.payment.exp_year,
+                cvc: data.payment.cvv,
+                address_line1: data.billing.address1,
+                address_line2: data.billing.address2,
+                address_city: data.billing.city,
+                address_state: data.billing.state,
+                address_zip: data.billing.zip,
+                address_country: data.billing.country,
+            }
+        });
+        
+        // charge card with Stripe
+        const charge = await stripe.charges.create({
+            amount: Math.round(data.cart.total * 100),  // stripe charges in usd cents, round to avoid error
+            currency: "usd",
+            source: cardToken.id, 
+        });
+
+        if (!charge.status === "succeeded") {
+            // throw error
+            throw httpError(400, 'Error processing payment.');
+        }
+
+        // ---------------------------------------------------------
+        // ----------------- end charge section --------------------
+        // ---------------------------------------------------------
+
         // create an new order
         const newOrder = await Order.create({ 
             user_id: data.user_id,
             shipping_address_id: data.shipping.id,
             billing_address_id: data.billing.id, 
             payment_id: data.payment.id, 
-            total: data.cart.total
+            amount_charged: data.cart.total, 
+            stripe_charge_id: charge.id
         });
 
         const { cartItems } = data;
@@ -37,60 +80,11 @@ module.exports.postOrder = async (data) => {
         // delete cart from database
         const deletedCart = await Cart.delete(data.cart.id);
 
-        // ---------------------------------------------------------
-        // ----- charge Card with payment_id using Stripe API ------
-        // ---------------------------------------------------------
-
-        /* 
-         * Keep stripe section atomized to be easily repleaced with 
-         * another payment processing api
-         */
-        
-        // grab user to complete Stripe customer registration
-        const user = await User.findById(data.user_id);
-
-        // create cardToken to charge
-        const cardToken = await stripe.tokens.create({
-            card: {
-                name: data.billing.first_name + " " + data.billing.last_name,   
-                number: data.payment.card_no,
-                exp_month: data.payment.exp_month,  
-                exp_year: data.payment.exp_year,
-                cvc: data.payment.cvv,
-                address_country: data.billing.country,
-                address_zip: data.billing.zip
-            }
-        });
-        
-        // charge card with Stripe
-        const charge = await stripe.charges.create({
-            amount: Math.round(data.cart.total * 100),  // stripe charges in usd cents, round to avoid error
-            currency: "usd",
-            source: cardToken.id, 
-            receipt_email: user.email
-        });
-
-        if (charge.status === "succeeded") {
-            return {
-                order: newOrder, 
-                orderItems: orderItems,
-            }
-        } else {
-            // delete each order item
-            for (const orderItem of orderItems) {
-                // delete order item from database
-                await OrderItem.delete(orderItem);
-            }
-
-            // delete the order 
-            await Order.delete(newOrder);
-
-            // throw error
-            throw httpError(400, 'Error processing payment.');
+        return {
+            order: newOrder,
+            orderItems: orderItems
         }
-        // ---------------------------------------------------------
-        // ----------------- end charge section --------------------
-        // ---------------------------------------------------------
+        
 
     } catch(err) {
         console.error(err.stack);

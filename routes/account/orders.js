@@ -29,10 +29,14 @@ module.exports = (app) => {
     *         type: integer
     *       payment_id:
     *         type: integer
-    *       total:
-    *         type: string
+    *       amount_charged:
+    *         type: number
     *         format: money
-    *         example: '$50.00'
+    *         example: 19.99
+    *       stripe_charge_id:
+    *         type: integer
+    *       num_items:
+    *         type: integer
     *       created:
     *         type: string
     *         format: date-time

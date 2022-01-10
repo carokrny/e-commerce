@@ -15,8 +15,9 @@ class Order {
                                     shipping_address_id, 
                                     billing_address_id, 
                                     payment_id, 
-                                    total)
-                                VALUES ($1, $2, $3, $4, $5)
+                                    amount_charged, 
+                                    stripe_charge_id)
+                                VALUES ($1, $2, $3, $4, $5, $6)
                                 RETURNING *`;
 
             // ph values 
@@ -24,7 +25,8 @@ class Order {
                             data.shipping_address_id, 
                             data.billing_address_id, 
                             data.payment_id, 
-                            data.total]
+                            data.amount_charged, 
+                            data.stripe_charge_id]
             
             // make query
             const result = await db.query(statement, values);
