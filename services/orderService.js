@@ -80,6 +80,9 @@ module.exports.postOrder = async (data) => {
         // delete cart from database
         const deletedCart = await Cart.delete(data.cart.id);
 
+        // attach num_items to newOrder 
+        newOrder.num_items = data.cart.num_items;
+
         return {
             order: newOrder,
             orderItems: orderItems
