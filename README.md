@@ -65,7 +65,7 @@
 
 
 ## Setup
-To run locally, first install node_modules
+To run locally, first install node_modules:
 
 ```
 npm install
