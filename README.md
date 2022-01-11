@@ -65,7 +65,13 @@
 
 
 ## Setup
-To run locally, first create public/private key pair: 
+To run locally, first install node_modules
+
+```
+npm install
+```
+
+Then create public/private key pair: 
 
 ```
 node genKeyPair
