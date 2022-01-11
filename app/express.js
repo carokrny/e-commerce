@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
-const pool = require('../db/pool');
+const pool = require('../db/config');
 
 require('dotenv').config();
 

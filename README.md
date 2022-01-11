@@ -136,6 +136,7 @@ Project is: _in progress_
 
 Room for improvement:
 - Encryption of data in database
+- Add more indexes to the database for faster queries
 
 To do:
 - Allow guest checkout flow

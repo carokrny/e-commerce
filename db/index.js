@@ -1,5 +1,5 @@
 "use strict";
-const pool = require('./pool');
+const pool = require('./config');
 
 // export query
 module.exports = {
