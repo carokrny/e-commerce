@@ -46,7 +46,7 @@ CREATE TABLE "addresses" (
 CREATE TABLE "cards" (
   "id" SERIAL PRIMARY KEY,
   "user_id" int NOT NULL,
-  "card_type" card_types NOT NULL DEFAULT (credit),
+  "card_type" card_types NOT NULL DEFAULT ('credit'),
   "provider" varchar(20) NOT NULL,
   "card_no" varchar(16) NOT NULL,
   "cvv" varchar(3) NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE "cards" (
 CREATE TABLE "orders" (
   "id" SERIAL PRIMARY KEY,
   "user_id" int NOT NULL,
-  "status" order_status NOT NULL DEFAULT (pending),
+  "status" order_status NOT NULL DEFAULT ('pending'),
   "shipping_address_id" int NOT NULL,
   "billing_address_id" int NOT NULL,
   "payment_id" int NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE "order_items" (
   "quantity" int NOT NULL DEFAULT 1,
   "created" timestamp NOT NULL DEFAULT (now()),
   "modified" timestamp NOT NULL DEFAULT (now()),
-  "PRIMARY" "KEY(order_id, product_id)"
+  PRIMARY KEY ("order_id", "product_id")
 );
 
 CREATE TABLE "products" (
@@ -85,7 +85,7 @@ CREATE TABLE "products" (
   "price" numeric NOT NULL,
   "description" text NOT NULL,
   "category" categories NOT NULL,
-  "in_stock" boolean NOT NULL DEFAULT false,
+  "in_stock" boolean NOT NULL DEFAULT 'false',
   "created" timestamp NOT NULL DEFAULT (now()),
   "modified" timestamp NOT NULL DEFAULT (now())
 );
@@ -103,7 +103,7 @@ CREATE TABLE "cart_items" (
   "quantity" int NOT NULL DEFAULT 1,
   "created" timestamp NOT NULL DEFAULT (now()),
   "modified" timestamp NOT NULL DEFAULT (now()),
-  "PRIMARY" "KEY(cart_id, product_id)"
+  "PRIMARY" "TABKEY(cart_id, product_id)"
 );
 
 CREATE TABLE "session" (

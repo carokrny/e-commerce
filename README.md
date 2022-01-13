@@ -70,9 +70,16 @@ To run locally, first install node_modules and generate RSA Key Pair:
 ```
 npm install
 ```
-Will also run `install ` script of `package.json`, which will generate an RSA key pair in a .env file.
+Will also run `install ` script of `package.json`, which will generate an RSA key pair in a `.env` file.
 
-Add the following fields with respective values to the .env file: 
+Open a PostgreSQL database of your choice. Schema with tables is located in `db/init.sql`. E.g., generate tables by running:
+```
+cd db
+cat init.sql | psql -h [PGHOST] -U [PGUSER] -d [PGDATABASE] -w [PGPASSWORD]
+ ```
+Where 'PGHOST', 'PGUSER', 'PGDATABASE', and 'PGPASSWORD' are your respective Postgres host, user, database, and password values.
+
+Add the following fields with respective values to the `.env` file: 
 
 ``` 
 # Postgres Database
