@@ -1,6 +1,6 @@
 # E-Commerce Backend 
 > Backend API for an e-commerce site built with Node.js/Express and Postgres.
-> Live demo [_here_](https://www.example.com). 
+> Live API docs [_here_](https://crk-e-commerce.herokuapp.com/api-docs/). 
 
 ## Table of Contents
 * [General Info](#general-information)
@@ -129,7 +129,7 @@ The project handles various endpoints a user may need to access while online sho
 - checkout flow and charging payments with Stripe
 - order summaries accessed through user account
 
-View full API [_here_](https://www.example.com).
+View live API documentation [_here_](https://crk-e-commerce.herokuapp.com/api-docs/).
 
 ## Project Status
 Project is: _in progress_ 
