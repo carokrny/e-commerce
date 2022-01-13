@@ -1,5 +1,4 @@
 const { Pool, types } = require('pg');
-//const { connectionString, isProduction } = require('./config');
 require('dotenv').config();
 
 // Heroku sets NODE_ENV to 'production'
@@ -16,7 +15,7 @@ types.setTypeParser(1700, function(val) {
 // instantiate pool 
 const pool = new Pool({
     connectionString: isProduction ? process.env.DATABASE_URL : devConfig,
-    ssl: isProduction
+    ssl: isProduction ? { rejectUnauthorized: false } : false
 });
 
 module.exports = pool;
