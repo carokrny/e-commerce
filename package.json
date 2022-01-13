@@ -4,7 +4,9 @@
   "description": "e-commerce backend project ",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "install": "node lib/customAuth/genKeyPair.js",
+    "start": "node index.js"
   },
   "author": "Carolyn Kearney",
   "license": "ISC",
@@ -40,5 +42,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]
+  }, 
+  "engines": {
+    "node": "14.x"
   }
 }

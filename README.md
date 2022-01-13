@@ -56,7 +56,7 @@
 ## Features
 - User accounts that allow users to store addresses and payment methods, and set a primary address and primary payment method
 - Custom hashing function for passwords
-- Custom authentication middleware using secure JWT
+- Custom RSA authentication middleware using secure JWT
 - Persistent carts that consolidate when user logs-in/registers so shopping data is not lost
 - Shopping routes that allow shoppers to browse by category or search for products
 - Checkout route that provides a review page before placing order
@@ -65,19 +65,14 @@
 
 
 ## Setup
-To run locally, first install node_modules:
+To run locally, first install node_modules and generate RSA Key Pair:
 
 ```
 npm install
 ```
+Will also run `install ` script of `package.json`, which will generate an RSA key pair in a .env file.
 
-Then create public/private key pair: 
-
-```
-node genKeyPair
-```
-
-Then create a .env file with the following fields: 
+Add the following fields with respective values to the .env file: 
 
 ``` 
 # Postgres Database
@@ -92,20 +87,14 @@ PORT=
 SESSION_SECRET=
 
 # Node.js 
-NODE_ENV='development'
+NODE_ENV=
 
 # Stripe key pair 
 STRIPE_PUBLIC_KEY=
 STRIPE_SECRET_KEY=
-
-# RSA key pair 
-PRIV_KEY=
-PUB_KEY=
 ```
 Create an account with Stripe to generate a key pair. 
 Can use a test key pair for development that will not charge cards.
-
-The RSA key pair should contain or point to the key pair generated in the first step.
 
 Then run the app: 
 
