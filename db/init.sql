@@ -103,7 +103,7 @@ CREATE TABLE "cart_items" (
   "quantity" int NOT NULL DEFAULT 1,
   "created" timestamp NOT NULL DEFAULT (now()),
   "modified" timestamp NOT NULL DEFAULT (now()),
-  "PRIMARY" "TABKEY(cart_id, product_id)"
+  PRIMARY KEY("cart_id", "product_id")
 );
 
 CREATE TABLE "session" (
