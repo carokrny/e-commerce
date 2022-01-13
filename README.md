@@ -76,7 +76,7 @@ Open a PostgreSQL database of your choice. Schema with tables is located in `db/
 ```
 cd db
 cat init.sql | psql -h [PGHOST] -U [PGUSER] -d [PGDATABASE] -w [PGPASSWORD]
- ```
+```
 Where 'PGHOST', 'PGUSER', 'PGDATABASE', and 'PGPASSWORD' are your respective Postgres host, user, database, and password values.
 
 Add the following fields with respective values to the `.env` file: 
