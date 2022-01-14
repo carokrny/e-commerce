@@ -4,7 +4,6 @@ const helmet = require('helmet');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const pool = require('../db/config');
-
 require('dotenv').config();
 
 module.exports = (app) => {
@@ -21,7 +20,7 @@ module.exports = (app) => {
     // helmet for added security on http headers
     app.use(helmet());
 
-    // trust first proxy for session
+    // trust first proxy for session cookie secure
     app.set('trust proxy', 1);
 
     // enable session for persistent cart
@@ -35,7 +34,8 @@ module.exports = (app) => {
         saveUninitialized: true, 
         cookie: {
             maxAge: 1000 * 60 * 60 * 24, // 1 day
-            secure: 'auto'
+            secure: process.env.NODE_ENV === 'production',
+            httpOnly: true
         }
     }));
 
