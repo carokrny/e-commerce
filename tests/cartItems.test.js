@@ -1,8 +1,8 @@
 const app = require('../app');
 const request = require('supertest');
 const session = require('supertest-session');
-const { user2, 
-        product, 
+const { user3 } = require('./testData').users;
+const { product, 
         updatedProduct } = require('./testData');
 const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
@@ -11,15 +11,15 @@ describe ('Cart endpoints', () => {
 
     describe('Valid JWT', () => {
 
-        var token;
-        var cartId;
-        var testSession;
+        let token;
+        let cartId;
+        let testSession;
 
         beforeAll(async () => {
             // create JWT for authentication 
             const res = await request(app)
                 .post('/login')
-                .send(user2);
+                .send(user3);
             token = res.body.token;
 
             testSession = session(app);
@@ -167,8 +167,8 @@ describe ('Cart endpoints', () => {
 
     describe('Invalid JWT', () => {
 
-        var testSession;
-        var cartId;
+        let testSession;
+        let cartId;
 
         beforeAll(async () => {
             testSession = session(app);

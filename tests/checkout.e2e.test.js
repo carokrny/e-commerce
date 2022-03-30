@@ -1,10 +1,10 @@
 const app = require('../app');
 const request = require('supertest');
 const session = require('supertest-session');
-const { user5, 
-        user6, 
-        user7,
-        testRegister2,
+const { user6, 
+        user7, 
+        user8 } = require('./testData').users;
+const { testRegister2,
         addressPost,
         cardPost, 
         product } = require('./testData');
@@ -20,13 +20,13 @@ const Card = require('../models/CardModel');
 
 describe('Checkout flow E2E', () => {
 
-    var token;      
-    var cartId;       
-    var orderId;                     
-    var testSession;
-    var paymentId;
-    var shippingAddressId;
-    var billingAddressId;
+    let token;      
+    let cartId;       
+    let orderId;                     
+    let testSession;
+    let paymentId;
+    let shippingAddressId;
+    let billingAddressId;
 
     afterEach(async() => {
         if (cartId) {
@@ -66,7 +66,9 @@ describe('Checkout flow E2E', () => {
     }),
 
     afterAll(async() => {
-        await User.deleteByEmail(testRegister2.email);
+        try {
+            await User.deleteByEmail(testRegister2.email);
+        } catch(e) {}
     }),
 
     describe('User is logged in', () => {
@@ -77,7 +79,7 @@ describe('Checkout flow E2E', () => {
                 // create JWT for authentication 
                 const res = await request(app)
                     .post('/login')
-                    .send(user5);
+                    .send(user6);
                 token = res.body.token;
 
                 testSession = session(app);
@@ -105,7 +107,7 @@ describe('Checkout flow E2E', () => {
                 // create JWT for authentication 
                 const res = await request(app)
                     .post('/login')
-                    .send(user5);
+                    .send(user6);
                 token = res.body.token;
 
                 testSession = session(app);
@@ -141,8 +143,8 @@ describe('Checkout flow E2E', () => {
                 const res3 = await testSession
                     .post(`/checkout/shipping`)
                     .send({ ...addressPost, 
-                        first_name: user5.first_name,
-                        last_name: user5.last_name })
+                        first_name: user6.first_name,
+                        last_name: user6.last_name })
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
@@ -154,8 +156,8 @@ describe('Checkout flow E2E', () => {
                     .post(`/checkout/payment`)
                     .send({ ...addressPost, 
                         ...cardPost,
-                        first_name: user5.first_name,
-                        last_name: user5.last_name })
+                        first_name: user6.first_name,
+                        last_name: user6.last_name })
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
@@ -204,7 +206,7 @@ describe('Checkout flow E2E', () => {
                 expect(res7.body.order.shipping_address_id).toBeDefined();
                 expect(res7.body.order.billing_address_id).toBeDefined();
                 expect(res7.body.order.user_id).toBeDefined();
-                expect(res7.body.order.user_id).toEqual(user5.id);
+                expect(res7.body.order.user_id).toEqual(user6.id);
                 expect(res7.body.orderItems).toBeDefined();
                 expect(res7.body.orderItems[0]).toBeDefined();
                 expect(res7.body.orderItems[0].product_id).toEqual(product.product_id);
@@ -221,7 +223,7 @@ describe('Checkout flow E2E', () => {
                 // create JWT for authentication 
                 const res = await request(app)
                     .post('/login')
-                    .send(user7);
+                    .send(user8);
                 token = res.body.token;
 
                 testSession = session(app);
@@ -236,8 +238,8 @@ describe('Checkout flow E2E', () => {
 
             afterEach(async() => {
                 // reset user, remove primary payment and primary address
-                await User.updatePrimaryPaymentId({ id: user7.id, primary_payment_id: null });
-                await User.updatePrimaryAddressId({ id: user7.id, primary_address_id: null });
+                await User.updatePrimaryPaymentId({ id: user8.id, primary_payment_id: null });
+                await User.updatePrimaryAddressId({ id: user8.id, primary_address_id: null });
             }),
 
             it('Should successfully create order', async () => {
@@ -245,21 +247,21 @@ describe('Checkout flow E2E', () => {
                 // create address
                 const address = await Address.create({ 
                         ...addressPost, 
-                        user_id: user7.id, 
-                        first_name: user7.first_name,
-                        last_name: user7.last_name
+                        user_id: user8.id, 
+                        first_name: user8.first_name,
+                        last_name: user8.last_name
                     });
                 
                 // create payment
                 const card = await Card.create({ 
                         ...cardPost, 
                         billing_address_id: address.id,
-                        user_id: user7.id 
+                        user_id: user8.id 
                     });
 
                 // make primary address and payment;
-                await User.updatePrimaryPaymentId({ id: user7.id, primary_payment_id: card.id });
-                const user = await User.updatePrimaryAddressId({ id: user7.id, primary_address_id: address.id });
+                await User.updatePrimaryPaymentId({ id: user8.id, primary_payment_id: card.id });
+                const user = await User.updatePrimaryAddressId({ id: user8.id, primary_address_id: address.id });
 
                 // add an item to cart 
                 const res1 = await testSession
@@ -405,7 +407,7 @@ describe('Checkout flow E2E', () => {
             })
         }),
 
-        describe('User logs in, go through full checkout', () => {
+        describe('User logs in, goes through full checkout', () => {
 
             it('Should successfully create order', async () => {
 
@@ -429,7 +431,7 @@ describe('Checkout flow E2E', () => {
                 // logs in, redirect to shipping
                 const res3 = await testSession
                     .post(`/checkout/auth/login`)
-                    .send(user6)
+                    .send(user7)
                     .set('Accept', 'application/json') 
                     .expect(302)
                     .expect('Location', '/checkout/shipping');
@@ -440,8 +442,8 @@ describe('Checkout flow E2E', () => {
                 const res4 = await testSession
                     .post(`/checkout/shipping`)
                     .send({ ...addressPost, 
-                        first_name: user6.first_name,
-                        last_name: user6.last_name })
+                        first_name: user7.first_name,
+                        last_name: user7.last_name })
                     .set('Authorization', token)    
                     .set('Accept', 'application/json')
                     .expect(302)
@@ -453,8 +455,8 @@ describe('Checkout flow E2E', () => {
                     .post(`/checkout/payment`)
                     .send({ ...addressPost, 
                         ...cardPost,
-                        first_name: user6.first_name,
-                        last_name: user6.last_name })
+                        first_name: user7.first_name,
+                        last_name: user7.last_name })
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(302)
@@ -503,7 +505,7 @@ describe('Checkout flow E2E', () => {
                 expect(res8.body.order.shipping_address_id).toBeDefined();
                 expect(res8.body.order.billing_address_id).toBeDefined();
                 expect(res8.body.order.user_id).toBeDefined();
-                expect(res8.body.order.user_id).toEqual(user6.id);
+                expect(res8.body.order.user_id).toEqual(user7.id);
                 expect(res8.body.orderItems).toBeDefined();
                 expect(res8.body.orderItems[0]).toBeDefined();
                 expect(res8.body.orderItems[0].product_id).toEqual(product.product_id);

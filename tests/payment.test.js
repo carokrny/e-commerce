@@ -1,25 +1,35 @@
 const app = require('../app');
 const request = require('supertest');
-const { user, 
-        cardPost, 
+const { user1 } = require('./testData').users;
+const { cardPost, 
         cardPut,
         invalidCardPost, 
         invalidCardPut,
         differentPaymentId } = require('./testData');
 const User = require('../models/UserModel');
+const Card = require('../models/CardModel');
 
 describe ('Account payment method endpoints', () => {
 
     describe('Valid JWT', () => {
 
-        var token;
-        var paymentId;
+        let token;
+        let paymentId;
 
         beforeAll(async () => {
             const res = await request(app)
                 .post('/login')
-                .send(user);
+                .send(user1);
             token = res.body.token;
+        }),
+
+        afterAll(async () => {
+            // tear down 
+            if(paymentId) {
+                try {
+                    await Card.delete(paymentId);
+                } catch(e) {}
+            }
         }),
 
         describe('POST \'/account/payment\'', () => {
@@ -37,7 +47,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toBeDefined();
-                    expect(res.body.payment.user_id).toEqual(user.id);
+                    expect(res.body.payment.user_id).toEqual(user1.id);
                     expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                     expect(res.body.payment.isPrimaryPayment).toEqual(cardPost.isPrimaryPayment);
                     paymentId = res.body.payment.id;
@@ -94,7 +104,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
-                    expect(res.body.payment.user_id).toEqual(user.id);
+                    expect(res.body.payment.user_id).toEqual(user1.id);
                     expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                     expect(res.body.payment.isPrimaryPayment).toEqual(cardPost.isPrimaryPayment);
                 })
@@ -128,7 +138,7 @@ describe ('Account payment method endpoints', () => {
                 expect(res.body).toBeDefined();
                 expect(res.body.payments).toBeDefined();
                 expect(res.body.payments[0]).toBeDefined();
-                expect(res.body.payments[0].user_id).toEqual(user.id);
+                expect(res.body.payments[0].user_id).toEqual(user1.id);
             })
         }), 
 
@@ -147,7 +157,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
-                    expect(res.body.payment.user_id).toEqual(user.id);
+                    expect(res.body.payment.user_id).toEqual(user1.id);
                     expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
                     expect(res.body.payment.isPrimaryPayment).toEqual(cardPut.isPrimaryPayment);
@@ -168,7 +178,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
-                    expect(res.body.payment.user_id).toEqual(user.id);
+                    expect(res.body.payment.user_id).toEqual(user1.id);
                     expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
                     expect(res.body.payment.isPrimaryPayment).toEqual(cardPut.isPrimaryPayment);
@@ -189,7 +199,7 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.id).toEqual(paymentId);
-                    expect(res.body.payment.user_id).toEqual(user.id);
+                    expect(res.body.payment.user_id).toEqual(user1.id);
                     expect(res.body.payment.exp_year).toEqual(cardPost.exp_year);
                     expect(res.body.payment.exp_year).not.toEqual(invalidCardPut.exp_year);
                     expect(res.body.payment.provider).toEqual(cardPut.provider);
@@ -229,13 +239,13 @@ describe ('Account payment method endpoints', () => {
                         expect(res.body).toBeDefined();
                         expect(res.body.payment).toBeDefined();
                         expect(res.body.payment.id).toEqual(paymentId);
-                        expect(res.body.payment.user_id).toEqual(user.id);
+                        expect(res.body.payment.user_id).toEqual(user1.id);
                         expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                         expect(res.body.payment.provider).toEqual(cardPut.provider);
                         expect(res.body.payment.isPrimaryPayment).toEqual(cardPut.isPrimaryPayment);
 
                         // verify that primary_payment_id has been reset to null
-                        testUser = await User.findByEmail(user.email);
+                        testUser = await User.findByEmail(user1.email);
                         expect(testUser.primary_payment_id).toEqual(null);
                     })
                 })
@@ -260,7 +270,7 @@ describe ('Account payment method endpoints', () => {
 
     describe('Invalid JWT', () => {
 
-        var paymentId;
+        let paymentId;
 
         describe('POST \'/account/payment\'', () => {
 

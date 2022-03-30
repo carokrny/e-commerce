@@ -64,7 +64,7 @@ CREATE TABLE "orders" (
   "shipping_address_id" int NOT NULL,
   "billing_address_id" int NOT NULL,
   "payment_id" int NOT NULL,
-  "stripe_charge_id" int NOT NULL,
+  "stripe_charge_id" varchar(32) NOT NULL,
   "amount_charged" numeric NOT NULL,
   "created" timestamp NOT NULL DEFAULT (now()),
   "modified" timestamp NOT NULL DEFAULT (now())
@@ -127,7 +127,7 @@ ALTER TABLE "orders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 ALTER TABLE "orders" ADD FOREIGN KEY ("shipping_address_id") REFERENCES "addresses" ("id");
 
 ALTER TABLE "orders" ADD FOREIGN KEY ("billing_address_id") REFERENCES "addresses" ("id");
-
+ 
 ALTER TABLE "orders" ADD FOREIGN KEY ("payment_id") REFERENCES "cards" ("id");
 
 ALTER TABLE "order_items" ADD FOREIGN KEY ("order_id") REFERENCES "orders" ("id");

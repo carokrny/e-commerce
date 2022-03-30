@@ -1,15 +1,16 @@
 const app = require('../app');
 const request = require('supertest');
-const { user } = require('./testData');
+const { user1 } = require('./testData').users;
+const { order1 } = require('./testData').orders;
 
 describe ('Orders endpoints', () => {
 
-    var token;
+    let token;
 
     beforeAll(async () => {
         const res = await request(app)
             .post('/login')
-            .send(user);
+            .send(user1);
         token = res.body.token;
     }),
 
@@ -52,7 +53,7 @@ describe ('Orders endpoints', () => {
 
             it ('Should return order info', async () => {
                 const res = await request(app)
-                    .get(`/account/orders/${user.order_id}`)
+                    .get(`/account/orders/${order1.id}`)
                     .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
@@ -60,7 +61,7 @@ describe ('Orders endpoints', () => {
                 expect(res.body).toBeDefined();
                 expect(res.body.order).toBeDefined();
                 expect(res.body.orderItems).toBeDefined();
-                expect(res.body.order.id).toEqual(user.order_id);
+                expect(res.body.order.id).toEqual(order1.id);
             })
         }),
 

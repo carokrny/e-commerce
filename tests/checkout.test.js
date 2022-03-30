@@ -1,9 +1,9 @@
 const app = require('../app');
 const request = require('supertest');
 const session = require('supertest-session');
-const { user3, 
-        user4, 
-        testRegister,
+const { user4, 
+        user5  } = require('./testData').users;
+const { testRegister,
         addressPost,
         cardPost, 
         product } = require('./testData');
@@ -19,15 +19,15 @@ describe ('Checkout endpoints', () => {
 
     describe('Valid JWT', () => {
 
-        var token;             
-        var cartId;                       
-        var testSession;
+        let token;             
+        let cartId;                       
+        let testSession;
 
         beforeEach(async () => {
             // create JWT for authentication 
             const res = await request(app)
                 .post('/login')
-                .send(user3);
+                .send(user4);
             token = res.body.token;
 
             testSession = session(app);
@@ -60,7 +60,7 @@ describe ('Checkout endpoints', () => {
             }
 
             // tear down new orders 
-            const orders = await Order.findByUserId(user3.id);
+            const orders = await Order.findByUserId(user4.id);
             if (orders) {
                 for (const order of orders) {
                     // all orders have same one item
@@ -70,7 +70,7 @@ describe ('Checkout endpoints', () => {
             }
 
             // tear down new payment methods 
-            const cards = await Card.findByUserId(user3.id);
+            const cards = await Card.findByUserId(user4.id);
             if (cards) {
                 for (const card of cards) {
                     await Card.delete(card.id);
@@ -78,7 +78,7 @@ describe ('Checkout endpoints', () => {
             }
 
             // tear down new addresses 
-            const addresses = await Address.findByUserId(user3.id);
+            const addresses = await Address.findByUserId(user4.id);
             if (addresses) {
                 for (const address of addresses) {
                     await Address.delete(address.id)
@@ -191,8 +191,8 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/shipping`)
                         .send({ ...addressPost,
                             address1: null, 
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(302)
@@ -208,8 +208,8 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/shipping`)
                         .send({ ...addressPost,
                             address1: "", 
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(302)
@@ -224,8 +224,8 @@ describe ('Checkout endpoints', () => {
                     const res = await testSession
                         .post(`/checkout/shipping`)
                         .send({ ...addressPost, 
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(302)
@@ -255,8 +255,8 @@ describe ('Checkout endpoints', () => {
                 const res = await testSession
                     .post(`/checkout/shipping`)
                     .send({ ...addressPost, 
-                        first_name: user3.first_name,
-                        last_name: user3.last_name })
+                        first_name: user4.first_name,
+                        last_name: user4.last_name })
                     .set('Authorization', token)
                     .set('Accept', 'application/json');
             }),
@@ -303,8 +303,8 @@ describe ('Checkout endpoints', () => {
                         .send({ ...addressPost,
                             address1: null, 
                             ...cardPost,
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(302)
@@ -321,8 +321,8 @@ describe ('Checkout endpoints', () => {
                         .send({ ...addressPost,
                             address1: "", 
                             ...cardPost,
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(302)
@@ -338,8 +338,8 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/payment`)
                         .send({ ...addressPost, 
                             ...cardPost,
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(302)
@@ -358,8 +358,8 @@ describe ('Checkout endpoints', () => {
                     const res = await testSession
                         .post(`/checkout/shipping`)
                         .send({ ...addressPost, 
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json');
 
@@ -368,8 +368,8 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/payment`)
                         .send({ ...addressPost, 
                             ...cardPost,
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json');
                 }),
@@ -403,8 +403,8 @@ describe ('Checkout endpoints', () => {
                     const res = await testSession
                         .post(`/checkout/shipping`)
                         .send({ ...addressPost, 
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json');
 
@@ -413,8 +413,8 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/payment`)
                         .send({ ...addressPost, 
                             ...cardPost,
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json');
                 }),
@@ -442,8 +442,8 @@ describe ('Checkout endpoints', () => {
                     const res = await testSession
                         .post(`/checkout/shipping`)
                         .send({ ...addressPost, 
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json');
                     
@@ -452,8 +452,8 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/payment`)
                         .send({ ...addressPost, 
                             ...cardPost,
-                            first_name: user3.first_name,
-                            last_name: user3.last_name })
+                            first_name: user4.first_name,
+                            last_name: user4.last_name })
                         .set('Authorization', token)
                         .set('Accept', 'application/json');
                     
@@ -476,7 +476,7 @@ describe ('Checkout endpoints', () => {
                     expect(res.body.order.shipping_address_id).toBeDefined();
                     expect(res.body.order.billing_address_id).toBeDefined();
                     expect(res.body.order.user_id).toBeDefined();
-                    expect(res.body.order.user_id).toEqual(user3.id);
+                    expect(res.body.order.user_id).toEqual(user4.id);
                     expect(res.body.orderItems).toBeDefined();
                     expect(res.body.orderItems[0]).toBeDefined();
                     expect(res.body.orderItems[0].product_id).toEqual(product.product_id);
@@ -501,9 +501,9 @@ describe ('Checkout endpoints', () => {
 
     describe('Invalid JWT', () => {
 
-        var cartId;
-        var testSession;
-        var newUserEmail;
+        let cartId;
+        let testSession;
+        let newUserEmail;
 
         beforeEach(async () => {
             testSession = session(app);
@@ -572,7 +572,7 @@ describe ('Checkout endpoints', () => {
                 it('should redirect to /auth', async () => {
                     const res = await testSession
                         .post(`/checkout/auth/login`)
-                        .send({ email: user4.email, password: 'wrongPassword' })
+                        .send({ email: user5.email, password: 'wrongPassword' })
                         .set('Accept', 'application/json')
                         .expect(302)
                         .expect('Location', '/checkout/auth');
@@ -585,7 +585,7 @@ describe ('Checkout endpoints', () => {
                 it('should redirect to /auth', async () => {
                     const res = await testSession
                         .post(`/checkout/auth/login`)
-                        .send({ email: 'wrong@me.com', password: user4.password })
+                        .send({ email: 'wrong@me.com', password: user5.password })
                         .set('Accept', 'application/json')
                         .expect(302)
                         .expect('Location', '/checkout/auth');
@@ -611,7 +611,7 @@ describe ('Checkout endpoints', () => {
                 it('should log in user and redirect to shipping', async () => {
                     const res = await testSession
                         .post(`/checkout/auth/login`)
-                        .send(user4)
+                        .send(user5)
                         .set('Accept', 'application/json') 
                         .expect(302)
                         .expect('Location', '/checkout/shipping');
@@ -653,7 +653,7 @@ describe ('Checkout endpoints', () => {
                 it('should redirect to /auth', async () => {
                     const res = await testSession
                         .post(`/checkout/auth/register`)
-                        .send({ email: user3.email, password: testRegister.password })
+                        .send({ email: user4.email, password: testRegister.password })
                         .set('Accept', 'application/json')
                         .expect(302)
                         .expect('Location', '/checkout/auth');
@@ -695,8 +695,8 @@ describe ('Checkout endpoints', () => {
                 const res = await testSession
                     .post(`/checkout/shipping`)
                     .send({ ...addressPost, 
-                        first_name: user4.first_name,
-                        last_name: user4.last_name })
+                        first_name: user5.first_name,
+                        last_name: user5.last_name })
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(302)
@@ -725,8 +725,8 @@ describe ('Checkout endpoints', () => {
                     .post(`/checkout/shipping`)
                     .send({ ...addressPost, 
                         ...cardPost,
-                        first_name: user4.first_name,
-                        last_name: user4.last_name })
+                        first_name: user5.first_name,
+                        last_name: user5.last_name })
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(302)

@@ -88,9 +88,7 @@ module.exports.postOrder = async (data) => {
             orderItems: orderItems
         }
         
-
     } catch(err) {
-        console.error(err.stack);
         throw err;
     }
 }

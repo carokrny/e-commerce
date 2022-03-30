@@ -1,19 +1,19 @@
 const app = require('../app');
 const request = require('supertest');
-const { user, 
-        userAccountPut } = require('./testData');
+const { user1 } = require('./testData').users;
+const { userAccountPut } = require('./testData');
 const User = require('../models/UserModel');
 const Address = require('../models/AddressModel');
 const Card = require('../models/CardModel');
 
 describe ('Account endpoints', () => {
 
-    var token;
+    let token;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         const res = await request(app)
             .post('/login')
-            .send(user);
+            .send(user1);
         token = res.body.token;
     }),
 
@@ -30,8 +30,8 @@ describe ('Account endpoints', () => {
                     .expect(200);
                 expect(res.body).toBeDefined();
                 expect(res.body.user).toBeDefined();
-                expect(res.body.user.id).toEqual(user.id);
-                expect(res.body.user.email).toEqual(user.email);
+                expect(res.body.user.id).toEqual(user1.id);
+                expect(res.body.user.email).toEqual(user1.email);
             })
         }),
 
@@ -67,8 +67,8 @@ describe ('Account endpoints', () => {
                         .expect(200);
                     expect(res.body).toBeDefined();
                     expect(res.body.user).toBeDefined();
-                    expect(res.body.user.id).toEqual(user.id);
-                    expect(res.body.user.email).toEqual(user.email);
+                    expect(res.body.user.id).toEqual(user1.id);
+                    expect(res.body.user.email).toEqual(user1.email);
                     expect(res.body.user.first_name).toEqual(userAccountPut.first_name);
                 })
             })
