@@ -24,22 +24,22 @@ const initTestData = async () => {
     console.log('\nAdding test data to database table. Please wait...')
 
     for (const u in users) {
-        // generate salt and hash of PW
-        const hashedPW = genPassword(users[u].password);
-
-        // pg statement
-        const statement = `INSERT INTO users (id, email, first_name, last_name, pw_hash, pw_salt) 
-                        VALUES ($1, $2, $3, $4, $5, $6)`;
-
-        // pg values
-        const values = [ users[u].id,
-                        users[u].email, 
-                        users[u].first_name, 
-                        users[u].last_name,
-                        hashedPW.hash, 
-                        hashedPW.salt ];
-
         try {
+            // generate salt and hash of PW
+            const hashedPW = await genPassword(users[u].password);
+
+            // pg statement
+            const statement = `INSERT INTO users (id, email, first_name, last_name, pw_hash, pw_salt) 
+                            VALUES ($1, $2, $3, $4, $5, $6)`;
+
+            // pg values
+            const values = [ users[u].id,
+                            users[u].email, 
+                            users[u].first_name, 
+                            users[u].last_name,
+                            hashedPW.hash, 
+                            hashedPW.salt ];
+
             // make query
             await db.query(statement, values);
         } catch(e) {

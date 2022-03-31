@@ -13,6 +13,7 @@
   "author": "Carolyn Kearney",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "connect-pg-simple": "^7.0.0",
     "cookie-parser": "^1.4.6",

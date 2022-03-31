@@ -13,7 +13,7 @@ module.exports.register = async (data) => {
         checkAuthInputs(email, password);
         
         // pwObj contains salt and hash generated
-        const pwObj = genPassword(data.password);
+        const pwObj = await genPassword(data.password);
 
         // check if user already exists
         const user = await User.findByEmail(data.email);
@@ -57,7 +57,7 @@ module.exports.login = async (data) => {
         };
 
         // validate password
-        const isValid = validPassword(data.password, user.pw_hash, user.pw_salt);
+        const isValid = await validPassword(data.password, user.pw_hash, user.pw_salt);
 
         // reject if password not valid
         if (!isValid) {

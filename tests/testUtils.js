@@ -4,7 +4,6 @@
 const app = require('../app');
 const request = require('supertest');
 const { faker } = require('@faker-js/faker');
-const { genPassword } = require('../lib/customAuth/passwordUtils');
 const User = require('../models/UserModel');
 
 
