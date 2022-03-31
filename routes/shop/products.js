@@ -21,6 +21,8 @@ module.exports = (app) => {
     *         example: 19.99
     *       description:
     *         type: string
+    *       quantity: 
+    *         type: integer
     *       in_stock:
     *         type: boolean
     *       category:

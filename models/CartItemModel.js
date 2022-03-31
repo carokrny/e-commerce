@@ -21,7 +21,7 @@ class CartItem {
                                     products.name,
                                     products.price * new_cart_item.quantity AS "total_price", 
                                     products.description,
-                                    products.in_stock
+                                    products.quantity > 0 AS "in_stock"
                                 FROM new_cart_item 
                                 JOIN products 
 	                                ON new_cart_item.product_id = products.id`;
@@ -63,7 +63,7 @@ class CartItem {
                                     products.name,
                                     products.price * updated.quantity AS "total_price", 
                                     products.description,
-                                    products.in_stock
+                                    products.quantity > 0 AS "in_stock"
                                 FROM updated 
                                 JOIN products 
 	                                ON updated.product_id = products.id`;
@@ -104,7 +104,7 @@ class CartItem {
                                     products.name,
                                     products.price * cart.quantity AS "total_price", 
                                     products.description,
-                                    products.in_stock
+                                    products.quantity > 0 AS "in_stock"
                                 FROM cart 
                                 JOIN products 
 	                                ON cart.product_id = products.id`;
@@ -140,7 +140,7 @@ class CartItem {
                                     products.name,
                                     products.price * cart_items.quantity AS "total_price", 
                                     products.description,
-                                    products.in_stock
+                                    products.quantity > 0 AS "in_stock"
                                 FROM cart_items 
                                 JOIN products 
 	                                ON cart_items.product_id = products.id
@@ -183,7 +183,7 @@ class CartItem {
                                     products.name,
                                     products.price * deleted_item.quantity AS "total_price", 
                                     products.description,
-                                    products.in_stock
+                                    products.quantity > 0 AS "in_stock"
                                 FROM deleted_item 
                                 JOIN products 
 	                                ON deleted_item.product_id = products.id`;

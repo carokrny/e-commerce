@@ -7,7 +7,7 @@ const { users } = require('./index');
  *         node tests/testData/removeAllData.js
  */
 const removeAllData = async () => {
-    console.log('Removing ALL data from associated tables in database.')
+    console.log('Removing ALL data from associated tables in database...')
 
     /**
      * First, update primary address and primary payment of user7 to enable 
@@ -52,6 +52,8 @@ const removeAllData = async () => {
     } catch(e) {
         console.log('Error removing all data.')
     }
+
+    console.log('Done!');
 }
 
 // run function 

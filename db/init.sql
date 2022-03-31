@@ -85,7 +85,7 @@ CREATE TABLE "products" (
   "price" numeric NOT NULL,
   "description" text NOT NULL,
   "category" categories NOT NULL,
-  "in_stock" boolean NOT NULL DEFAULT 'false',
+  "quantity" int NOT NULL DEFAULT 0,
   "created" timestamp NOT NULL DEFAULT (now()),
   "modified" timestamp NOT NULL DEFAULT (now())
 );

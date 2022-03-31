@@ -24,7 +24,7 @@ module.exports.getById = async (id) => {
 
         // throw error if no product found
         if(!product) {
-            throw httpError(404, 'Product not found');
+            throw httpError(404, 'Product not found.');
         }
 
         return { product };

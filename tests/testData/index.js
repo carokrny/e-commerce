@@ -112,7 +112,7 @@ const products = {
       name:'T-Shirt',
       price: 19.99,
       description: 'Pima cotton unisex t-shirt',
-      in_stock: true,
+      quantity: 1000,
       category: 'tops'
    }, 
    product2: {
@@ -120,7 +120,7 @@ const products = {
       name:'Pants',
       price: 39.99,
       description: 'Fitted twill pants',
-      in_stock: true,
+      quantity: 1000,
       category: 'bottoms'
    },
    product3: {
@@ -128,7 +128,7 @@ const products = {
       name:'Jacket',
       price: 54.99,
       description: 'Structured jacket for layering',
-      in_stock: false,
+      quantity: 1000,
       category: 'tops'
    }
 }

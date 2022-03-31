@@ -21,7 +21,7 @@ class OrderItem {
                                     products.name,
                                     products.price * new_order_item.quantity AS "total_price", 
                                     products.description,
-                                    products.in_stock
+                                    products.quantity > 0 AS "in_stock"
                                 FROM new_order_item 
                                 JOIN products 
 	                                ON new_order_item.product_id = products.id`;
@@ -62,7 +62,7 @@ class OrderItem {
                                     products.name,
                                     products.price * temporary_order.quantity AS "total_price", 
                                     products.description,
-                                    products.in_stock
+                                    products.quantity > 0 AS "in_stock"
                                 FROM temporary_order 
                                 JOIN products 
 	                                ON temporary_order.product_id = products.id`;
@@ -103,7 +103,7 @@ class OrderItem {
                                     products.name,
                                     products.price * deleted_item.quantity AS "total_price", 
                                     products.description,
-                                    products.in_stock
+                                    products.quantity > 0 AS "in_stock"
                                 FROM deleted_item 
                                 JOIN products 
 	                                ON deleted_item.product_id = products.id`;
