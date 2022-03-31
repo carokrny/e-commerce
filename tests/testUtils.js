@@ -15,7 +15,8 @@ const User = require('../models/UserModel');
 const createUser = () => {
     const first_name = faker.name.firstName();
     const last_name = faker.name.lastName();
-    const password = faker.random.alphaNumeric(10);
+    // password with minimum eight characters, at least one uppercase letter, one lowercase letter and one number
+    const password = faker.internet.password(20, true, /"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"/)
     const email = `${first_name}_${last_name}@me.com`;
 
     return {

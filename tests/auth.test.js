@@ -199,7 +199,7 @@ describe('Auth endpoints', () => {
             it ('should return a 401 error', (done) => {
                 request(app)
                     .post('/login')
-                    .send({ email: user1.email, password: 'wrongPassword' })
+                    .send({ email: user1.email, password: 'wrongPassw0rd' })
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(401)

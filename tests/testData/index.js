@@ -10,7 +10,7 @@ const users = {
    // used in account, payment, auth, orders, and cart tests
    user1: {
       email: 'mascara@me.com', 
-      password: 'secret',
+      password: '9UPQ?y-j',
       id: 1,
       first_name: 'Sam', 
       last_name: 'Mister'
@@ -19,7 +19,7 @@ const users = {
    // static test user for assignment to a static cart
    user2: {
       email: 'blue@colors.com', 
-      password: 'green', 
+      password: 'uV69dQeu', 
       id: 2, 
       first_name: 'Blue', 
       last_name: 'Color'
@@ -28,7 +28,7 @@ const users = {
    // test login 3 is used for cartItems and address tests
    user3: {
       email: 'john@me.com', 
-      password: 'abc123', 
+      password: 'R1JxNrQz', 
       id: 3, 
       first_name: 'John', 
       last_name: 'Doe'
@@ -37,7 +37,7 @@ const users = {
    // test login 4 is used for checkout tests
    user4: {
       email: 'arugula@me.com', 
-      password: 'lettuce', 
+      password: 'zjcl5E29', 
       id: 4, 
       first_name: 'Arugula', 
       last_name: 'Salad'
@@ -46,7 +46,7 @@ const users = {
    // test login 5 is used for checkout tests
    user5: {
       email: 'coffee@me.com', 
-      password: 'sugarAndCream', 
+      password: 'zx3ZFudK', 
       id: 5,
       first_name: 'Coffee', 
       last_name: 'Cup'
@@ -55,7 +55,7 @@ const users = {
    // test login 6 is used for checkout e2e tests
    user6: {                    
       email: 'turkey@me.com', 
-      password: 'stuffing', 
+      password: 'zQAXD2vT', 
       id: 6,
       first_name: 'Turkey', 
       last_name: 'Dinner'
@@ -64,7 +64,7 @@ const users = {
    // test login 7 is used for checkout e2e tests
    user7: {                   
       email: 'pumpkin@me.com', 
-      password: 'orangeAndRound', 
+      password: 'Wzv3Tmdu', 
       id: 7,
       first_name: 'Pumpkin', 
       last_name: 'Pie', 
@@ -75,7 +75,7 @@ const users = {
    // test login 8 is used for checkout e2e tests
    user8: {                   
       email: 'pasta@me.com', 
-      password: 'marinara', 
+      password: 'wgjNn4SI', 
       id: 8,
       first_name: 'Pasta', 
       last_name: 'Sauce', 
@@ -85,7 +85,7 @@ const users = {
 // test registration for user that does not exist in database
 const testRegister = {
     email: 'orange@me.com', 
-    password: 'purple',
+    password: '5Co0c4SC',
     first_name: 'Orange',
    last_name: 'Color'
  };
@@ -94,7 +94,7 @@ const testRegister = {
 // for checkout e2e tests
 const testRegister2 = {
    email: 'yellow@me.com', 
-   password: 'cyanOrTeal',
+   password: 'bgZqJa1z',
    first_name: 'Yellow',
    last_name: 'Color'
 };

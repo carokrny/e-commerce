@@ -41,11 +41,11 @@ module.exports = (app) => {
     *         type: string
     *         format: email
     *       - name: password
-    *         description: user's password
+    *         description: user's password (minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 0)
     *         in: body
     *         required: true
     *         type: string
-    *         format: email
+    *         format: password
     *       - name: cart_id
     *         description: ID associated with Cart
     *         in: cookie
