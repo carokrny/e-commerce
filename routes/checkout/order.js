@@ -24,22 +24,26 @@ module.exports = (app) => {
     *         description: user's shopping cart id
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: shipping_address_id
     *         description: shipping address id
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: billing_address_id
     *         description: billing address id
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: payment_id
     *         description: payment method info id
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *     responses:
     *       200:
     *         description: Review of cart, payment method, billing & shipping addresses.
@@ -108,22 +112,26 @@ module.exports = (app) => {
     *         description: user's shopping cart id
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: shipping_address_id
     *         description: shipping address id
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: billing_address_id
     *         description: billing address id
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: payment_id
     *         description: payment method info id
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *     responses:
     *       200:
     *         description: Summary of cart, payment method, billing & shipping addresses.

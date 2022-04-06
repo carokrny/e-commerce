@@ -61,82 +61,101 @@ module.exports = (app) => {
     *     security: 
     *       - Bearer: []
     *     parameters:
-    
     *       - name: address_id
     *         description: id of existing address for billing
     *         in: body
     *         required: false
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: address1
     *         description: first line of new address for billing
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/address1'
     *       - name: address2
     *         description: second line of new address for billing
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/address2'
     *       - name: city
     *         description: city of new address for billing
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/city'
+    *       - name: state
+    *         description: state of user's address for billing
+    *         in: body
+    *         required: false
+    *         schema: 
+    *           $ref: '#/components/schemas/state'
     *       - name: zip
     *         description: zip code of new address for billing
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/zip'
     *       - name: country
     *         description: country of new address for billing
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/country'
     *       - name: first_name
     *         description: first name of new address for billing
-    *         in: body
-    *         required: true
-    *         type: string
+    *         required: false
+    *         schema: 
+    *           $ref: '#/components/schemas/first_name'
     *       - name: last_name
     *         description: last name of new address for billing
     *         in: body
-    *         required: true
-    *         type: string
+    *         required: false
+    *         schema: 
+    *           $ref: '#/components/schemas/last_name'
     *       - name: payment_id
     *         description: id of existing payment
     *         in: body
     *         required: false
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: provider
     *         description: provider (e.g., Visa) for new payemnt
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/provider'
     *       - name: card_type
     *         description: type (e.g., credit, debit) for new payemnt
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/card_type'
     *       - name: card_no
     *         description: card number for new payemnt
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/card_no'
     *       - name: exp_month
     *         description: card expiration month
     *         in: body
     *         required: false
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/exp_month'
     *       - name: exp_year
     *         description: card expiration year
     *         in: body
     *         required: false
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/exp_month'
     *       - name: cvv
     *         description: cvv for new payemnt
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/cvv'
     *     responses:
     *       302: 
     *         description: |

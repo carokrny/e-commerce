@@ -7,67 +7,82 @@ module.exports = (app) => {
 
     /**
     * @swagger
-    * definition:
+    * components:
+    *   schemas:
+    *     status:
+    *       type: string
+    *       enum: 
+    *         - pending
+    *         - shipped 
+    *         - delivered 
+    *         - canceled
+    *       example: 'pending'
+    *     price:
+    *       type: number
+    *       format: money
+    *       example: 19.99
+    *     num_products: 
+    *       type: integer
+    *       minimum: 1
+    *       example: 3
+    *     product_name: 
+    *       type: string
+    *       pattern: ^[A-Za-z0-9 '#:_-]*$
+    *       example: 'socks'
+    *     product_description:
+    *       type: string
+    *       pattern: ^[A-Za-z0-9 '#:_-]*$
+    *       example: 'luxurious item imported from Italy'
+    *     in_stock: 
+    *       type: boolean 
+    *       example: true
+    * definitions:
     *   Order:
     *     type: object
     *     properties:
     *       id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       user_id:
-    *         type: integer
-    *       status:
-    *         type: string
-    *         enum: 
-    *           - pending
-    *           - shipped 
-    *           - delivered 
-    *           - canceled
-    *         example: 'pending'
+    *         $ref: '#/components/schemas/id'
     *       shipping_address_id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       billing_address_id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       payment_id:
-    *         type: integer
-    *       amount_charged:
-    *         type: number
-    *         format: money
-    *         example: 19.99
+    *         $ref: '#/components/schemas/id'
     *       stripe_charge_id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
+    *       status:
+    *         $ref: '#/components/schemas/status'
+    *       amount_charged:
+    *         $ref: '#/components/schemas/price'
     *       num_items:
-    *         type: integer
+    *         $ref: '#/components/schemas/num_products'
     *       created:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *       modified:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *   OrderItem:
     *     type: object
     *     properties:
     *       order_id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       product_id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       quantity: 
-    *         type: integer
+    *         $ref: '#/components/schemas/num_products'
     *       name:
-    *         type: string
+    *         $ref: '#/components/schemas/product_name'
     *       total_price:
-    *         type: number
-    *         format: money
-    *         example: 19.99
+    *         $ref: '#/components/schemas/price'
     *       description: 
-    *         type: string
+    *         $ref: '#/components/schemas/product_description'
     *       in_stock:
-    *         type: boolean
+    *         $ref: '#/components/schemas/in_stock'
     *       created:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *       modified:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *
     */
 
@@ -92,7 +107,7 @@ module.exports = (app) => {
     *       401: 
     *         description: User not authorized.
     *         schema:
-    *           $ref: '#/components/responses/UnauthorizedError'
+    *           $ref: '#/responses/UnauthorizedError'
     */ 
     router.get('/all', async (req, res ,next) => {
         try {
@@ -109,6 +124,12 @@ module.exports = (app) => {
     /**
     * @swagger
     * /account/orders/{order_id}:
+    *   parameters:
+    *     - in: path 
+    *       name: order_id
+    *       description: ID of order
+    *       required: true
+    *       type: string
     *   get:
     *     tags:
     *       - Account
@@ -117,12 +138,6 @@ module.exports = (app) => {
     *       - application/json
     *     security: 
     *       - Bearer: []
-    *     parameters:
-    *       - name: order_id
-    *         description: ID of order
-    *         in: path
-    *         required: true
-    *         type: string
     *     responses:
     *       200:
     *         description: An Order object.
@@ -130,10 +145,12 @@ module.exports = (app) => {
     *           $ref: '#/definitions/Order'
     *       400: 
     *         description: Missing order_id.
+    *         schema:
+    *           $ref: '#/responses/InputsError'
     *       401: 
     *         description: User not authorized.
     *         schema:
-    *           $ref: '#/components/responses/UnauthorizedError'
+    *           $ref: '#/responses/UnauthorizedError'
     *       403: 
     *         description: User not associated with specified order_id.
     *       404: 

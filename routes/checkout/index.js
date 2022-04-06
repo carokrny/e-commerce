@@ -24,7 +24,8 @@ module.exports = (app) => {
     *         description: ID associated with Cart
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *     responses:
     *       302:
     *         description: |
@@ -32,6 +33,8 @@ module.exports = (app) => {
     *           Redirects to /checkout/shipping if user is authenticated.
     *       400: 
     *         description: Missing cart_id.
+    *         schema: 
+    *           $ref: '#/responses/InputsError'
     *       404: 
     *         description: Cart associated with cart_id doesn't exist or is empty.
     */ 

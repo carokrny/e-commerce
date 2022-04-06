@@ -38,19 +38,20 @@ module.exports = (app) => {
     *         description: user's email
     *         in: body
     *         required: true
-    *         type: string
-    *         format: email
+    *         schema: 
+    *           $ref: '#/components/schemas/email'
     *       - name: password
     *         description: user's password
     *         in: body
     *         required: true
-    *         type: string
-    *         format: password
+    *         schema: 
+    *           $ref: '#/components/schemas/password'
     *       - name: cart_id
     *         description: ID associated with Cart
     *         in: cookie
     *         required: false
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *     responses:
     *       200:
     *         description: Object with a User object and a Bearer token object. 

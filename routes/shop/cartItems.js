@@ -22,17 +22,20 @@ module.exports = (app) => {
     *         description: ID associated with Cart
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: product_id
     *         description: ID assocaited with Product
     *         in: path
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: quantity
     *         description: quantity of product being added to Cart
     *         in: body
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/num_products'
     *     responses:
     *       201:
     *         description: A CartItem object.
@@ -40,6 +43,8 @@ module.exports = (app) => {
     *           $ref: '#/definitions/CartItem'
     *       400: 
     *         description: Invalid inputs.
+    *         schema: 
+    *           $ref: '#/responses/InputsError'
     *       404: 
     *         description: Cart or Product not found.
     */
@@ -73,12 +78,14 @@ module.exports = (app) => {
     *         description: ID associated with Cart
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: product_id
     *         description: ID assocaited with Product
     *         in: path
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *     responses:
     *       200:
     *         description: A CartItem object.
@@ -86,6 +93,8 @@ module.exports = (app) => {
     *           $ref: '#/definitions/CartItem'
     *       400: 
     *         description: Invalid inputs.
+    *         schema: 
+    *           $ref: '#/responses/InputsError'
     *       404: 
     *         description: Cart item not found.
     */
@@ -118,17 +127,20 @@ module.exports = (app) => {
     *         description: ID associated with Cart
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: product_id
     *         description: ID assocaited with Product
     *         in: path
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: quantity
     *         description: quantity of product in added to Cart
     *         in: body
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/num_products'
     *     responses:
     *       200:
     *         description: A CartItem object.
@@ -136,6 +148,8 @@ module.exports = (app) => {
     *           $ref: '#/definitions/CartItem'
     *       400: 
     *         description: Invalid inputs.
+    *         schema: 
+    *           $ref: '#/responses/InputsError'
     *       404: 
     *         description: Cart item not found.
     */
@@ -169,12 +183,14 @@ module.exports = (app) => {
     *         description: ID associated with Cart
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: product_id
     *         description: ID assocaited with Product
     *         in: path
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *     responses:
     *       200:
     *         description: A CartItem object.
@@ -182,6 +198,8 @@ module.exports = (app) => {
     *           $ref: '#/definitions/CartItem'
     *       400: 
     *         description: Invalid inputs.
+    *         schema: 
+    *           $ref: '#/responses/InputsError'
     *       404: 
     *         description: Cart item not found.
     */

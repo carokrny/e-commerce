@@ -22,7 +22,7 @@ module.exports = (app) => {
     *       401: 
     *         description: User not authorized to access route.
     *         schema:
-    *           $ref: '#/components/responses/UnauthorizedError'
+    *           $ref: '#/responses/UnauthorizedError'
     */
     router.post('/', isAuth, (req, res, next) => {
         delete req.jwt;

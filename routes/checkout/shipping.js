@@ -65,41 +65,55 @@ module.exports = (app) => {
     *         description: id of existing address
     *         in: body
     *         required: false
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: address1
     *         description: first line of new address for shipping recipient
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/address1'
     *       - name: address2
     *         description: second line of new address for shipping recipient
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/address2'
     *       - name: city
     *         description: city of new address for shipping recipient
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/city'
+    *       - name: state
+    *         description: state of user's address for shipping recipient
+    *         in: body
+    *         required: false
+    *         schema: 
+    *           $ref: '#/components/schemas/state'
     *       - name: zip
     *         description: zip code of new address for shipping recipient
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/zip'
     *       - name: country
     *         description: country of new address for shipping recipient
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/country'
     *       - name: first_name
     *         description: first name of new address for shipping recipient
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/first_name'
     *       - name: last_name
     *         description: last name of new address for shipping recipient
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/last_name'
     *     responses:
     *       302: 
     *         description: |

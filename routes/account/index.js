@@ -14,33 +14,43 @@ module.exports = (app) => {
 
     /**
     * @swagger
-    * definition:
+    * components:
+    *   schemas:
+    *     email:
+    *       type: string
+    *       format: email
+    *       example: 'user@example.com'
+    *     password: 
+    *       type: string
+    *       format: password
+    *       minLength: 8
+    *       pattern: ^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$
+    *       example: 'str0ngPassw!rd'
+    *     nullable_id:
+    *       type: integer
+    *       nullable: true
+    *       minimum: 1
+    *       example: 125
+    * definitions:
     *   User:
     *     type: object
     *     properties:
     *       id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       email:
-    *         type: string
-    *         format: email
+    *         $ref: '#/components/schemas/email'
     *       first_name:
-    *         type: string
-    *         nullable: true
+    *         $ref: '#/components/schemas/first_name'
     *       last_name:
-    *         type: string
-    *         nullable: true
+    *         $ref: '#/components/schemas/last_name'
     *       primary_address_id:
-    *         type: integer
-    *         nullable: true
+    *         $ref: '#/components/schemas/nullable_id'
     *       primary_payment_id:
-    *         type: integer
-    *         nullable: true
+    *         $ref: '#/components/schemas/nullable_id'
     *       created:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *       modified:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *
     */
 
@@ -64,7 +74,7 @@ module.exports = (app) => {
     *       401: 
     *         description: User not authorized.
     *         schema:
-    *           $ref: '#/components/responses/UnauthorizedError'
+    *           $ref: '#/responses/UnauthorizedError'
     *       404: 
     *         description: A User with the id was not found.
     */
@@ -99,24 +109,26 @@ module.exports = (app) => {
     *         description: user's email
     *         in: body
     *         required: false
-    *         type: string
-    *         format: email
+    *         schema: 
+    *           $ref: '#/components/schemas/email'
     *       - name: first_name
     *         description: user's first name
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/first_name'
     *       - name: last_name
     *         description: user's last name
     *         in: body
     *         required: false
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/last_name'
     *       - name: password
     *         description: user's password
     *         in: body
     *         required: false
-    *         type: string
-    *         format: password
+    *         schema: 
+    *           $ref: '#/components/schemas/password'
     *     responses:
     *       200:
     *         description: A User object
@@ -125,7 +137,7 @@ module.exports = (app) => {
     *       401: 
     *         description: User not authorized to access route.
     *         schema:
-    *           $ref: '#/components/responses/UnauthorizedError'
+    *           $ref: '#/responses/UnauthorizedError'
     *       404: 
     *         description: A User with the ID was not found.
     */

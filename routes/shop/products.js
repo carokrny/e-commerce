@@ -7,32 +7,34 @@ module.exports = (app) => {
 
     /**
     * @swagger
-    * definition:
+    * components:
+    *   schemas:
+    *     category:
+    *       type: string
+    *       pattern: ^[A-Za-z0-9 '#:_-]*$
+    *       example: 'accessories'
+    * definitions:
     *   Product:
     *     type: object
     *     properties:
     *       id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       name:
-    *         type: string
+    *         $ref: '#/components/schemas/product_name'
     *       price:
-    *         type: number
-    *         format: money
-    *         example: 19.99
+    *         $ref: '#/components/schemas/price'
     *       description:
-    *         type: string
+    *         $ref: '#/components/schemas/product_description'
     *       quantity: 
-    *         type: integer
+    *         $ref: '#/components/schemas/num_products'
     *       in_stock:
-    *         type: boolean
+    *         $ref: '#/components/schemas/in_stock'
     *       category:
-    *         type: string
+    *         $ref: '#/components/schemas/category'
     *       created:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *       modified:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *
     */
 
@@ -74,7 +76,8 @@ module.exports = (app) => {
     *         description: search query
     *         in: query
     *         required: true
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/category'
     *     responses:
     *       200:
     *         description: An array of Product objects.
@@ -82,6 +85,8 @@ module.exports = (app) => {
     *           $ref: '#/definitions/Product'
     *       400: 
     *         description: Missing query.
+    *         schema: 
+    *           $ref: '#/responses/InputsError'
     *       404: 
     *         description: No products matching search query.
     */ 
@@ -109,7 +114,8 @@ module.exports = (app) => {
     *         description: ID of product
     *         in: path
     *         required: true
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *     responses:
     *       200:
     *         description: A Product object.
@@ -142,7 +148,8 @@ module.exports = (app) => {
     *         description: category to filter products
     *         in: path
     *         required: true
-    *         type: string
+    *         schema: 
+    *           $ref: '#/components/schemas/category'
     *     responses:
     *       200:
     *         description: An array of Product objects.

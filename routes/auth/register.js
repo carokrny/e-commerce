@@ -38,19 +38,20 @@ module.exports = (app) => {
     *         description: user's email
     *         in: body
     *         required: true
-    *         type: string
-    *         format: email
+    *         schema: 
+    *           $ref: '#/components/schemas/email'
     *       - name: password
-    *         description: user's password (minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 0)
+    *         description: user's password
     *         in: body
     *         required: true
-    *         type: string
-    *         format: password
+    *         schema: 
+    *           $ref: '#/components/schemas/password'
     *       - name: cart_id
     *         description: ID associated with Cart
     *         in: cookie
     *         required: false
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *     responses:
     *       200:
     *         description: Object with a User object and a Bearer token object.
@@ -65,8 +66,12 @@ module.exports = (app) => {
     *               type: string
     *       400: 
     *         description: Email or password missing.
+    *         schema:
+    *           $ref: '#/responses/InputsError'
     *       401: 
     *         description: Incorrect email or password.
+    *         schema:
+    *           $ref: '#/responses/UnauthorizedError'
     *       409: 
     *         description: Email already in use.
     */

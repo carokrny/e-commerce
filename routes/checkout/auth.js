@@ -37,19 +37,20 @@ module.exports = (app) => {
     *         description: ID associated with Cart
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: email
     *         description: user's email
     *         in: body
     *         required: true
-    *         type: string
-    *         format: email
+    *         schema: 
+    *           $ref: '#/components/schemas/email'
     *       - name: password
     *         description: user's password
     *         in: body
     *         required: true
-    *         type: string
-    *         format: password
+    *         schema: 
+    *           $ref: '#/components/schemas/password'
     *     responses:
     *       302:
     *         description: Redirects to shipping when user is logged in. Redirects to auth if login fails.
@@ -92,19 +93,20 @@ module.exports = (app) => {
     *         description: ID associated with Cart
     *         in: cookie
     *         required: true
-    *         type: integer
+    *         schema: 
+    *           $ref: '#/components/schemas/id'
     *       - name: email
     *         description: user's email
     *         in: body
     *         required: true
-    *         type: string
-    *         format: email
+    *         schema: 
+    *           $ref: '#/components/schemas/email'
     *       - name: password
     *         description: user's password
     *         in: body
     *         required: true
-    *         type: string
-    *         format: password
+    *         schema: 
+    *           $ref: '#/components/schemas/password'
     *     responses:
     *       302:
     *         description: Redirects to shipping when user is logged in. Redirects to auth if registration fails.

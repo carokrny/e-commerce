@@ -12,51 +12,43 @@ module.exports = (app) => {
 
     /**
     * @swagger
-    * definition:
+    * definitions:
     *   Cart:
     *     type: object
     *     properties:
     *       id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       user_id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       total: 
-    *         type: number
-    *         format: money
-    *         example: 19.99
+    *         $ref: '#/components/schemas/price'
     *       num_items:
-    *         type: integer
+    *         $ref: '#/components/schemas/num_products'
     *       created:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *       modified:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *   CartItem:
     *     type: object
     *     properties:
     *       cart_id:
-    *         type: integer
+    *         $ref: '#/components/schemas/id'
     *       product_id:
-    *         type: integer
+    *         t$ref: '#/components/schemas/id'
     *       quantity: 
-    *         type: integer
+    *         $ref: '#/components/schemas/num_products'
     *       name:
-    *         type: string
+    *         $ref: '#/components/schemas/product_name'
     *       total_price:
-    *         type: number
-    *         format: money
-    *         example: 19.99
+    *         $ref: '#/components/schemas/price'
     *       description: 
-    *         type: string
+    *         $ref: '#/components/schemas/product_description'
     *       in_stock:
-    *         type: boolean
+    *         $ref: '#/components/schemas/in_stock'
     *       created:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *       modified:
-    *         type: string
-    *         format: date-time
+    *         $ref: '#/components/schemas/date_time'
     *
     */
 

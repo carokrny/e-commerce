@@ -17,20 +17,24 @@ module.exports = async (app) => {
                 description: 'Development server'
             }
         ],
-        components: {
-            securitySchemes: {
-                Bearer: {
-                    type: 'http',
-                    scheme: 'bearer',
-                    bearerFormat: 'JWT',
-                }
+        responses: {
+            UnauthorizedError: {
+                description: 'Access token is missing or invalid.',
+                example: 'Not authorized.'
             },
-            responses: {
-                UnauthorizedError: {
-                    description: 'Access token is missing or invalid.'
-                }
+            InputsError: {
+                description: 'Inputs are invalid.',
+                example: 'Invalid inputs.'
             }
-        }
+        },
+        securityDefinitions: {
+            Bearer: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
+            }
+        }, 
+        components: {}
     };
 
     // options for the swagger docs
