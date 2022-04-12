@@ -22,8 +22,34 @@
 - Built as a learning project, feedback appreciated!
 
 
+
+## Features
+#### Shopping 
+- Shopping routes that allow shoppers to browse by category or search for products
+- Persistent carts that consolidate when user logs-in/registers so shopping data is not lost
+#### User Accounts
+- Allow users to store addresses and payment methods, and set a primary address and primary payment method
+- Users can view information about their orders
+#### Fully-Built Checkout Flow
+- User can use saved payment methods and addresses, or enter new ones at checkout
+- Checkout route that provides a review page before placing order
+- Payment processing with Stripe API
+#### Security
+- Custom hashing function for passwords using bcrypt and a salt 
+- Custom RSA authentication middleware using secure JWTs
+- Custom data sanitizer and validation for protection against XSS attacks
+- Parameterized queries to protect against SQL injection 
+#### Testing 
+- Thorough test suite with multiple tests for each route
+- End-to-end tests for the checkout flow 
+- `pre-test` and `post-test` scripts to automate testing setup and tear down 
+#### API Documentation
+- Documentation with Swagger 
+
+
+
 ## Technologies Used
-### API:
+#### Server
 - `node.js` - version 14.17.1
 - `npm` - version 8.3.0
 - `express` - version 4.17.1
@@ -38,30 +64,19 @@
 - `cors` - version 2.8.5
 - `helmet` - version 4.6.0
 
-### Database
+#### Database
 - `psql` (PostgreSQL) - version 14.0
 - `connect-pg-simple` - version 7.0.0
 - `pg` (node-postgres) - version 8.7.1
 
-### Documentation
+#### Documentation
 - `swagger-jsdoc` - version 1.3.0
 - `swagger-ui-express` - version 4.3.0
 
-### Testing
+#### Testing
 - `jest` - version 27.4.3
 - `supertest` - version 6.1.6
 - `supertest-session` - version 4.1.0
-
-
-## Features
-- User accounts that allow users to store addresses and payment methods, and set a primary address and primary payment method
-- Custom hashing function for passwords
-- Custom RSA authentication middleware using secure JWT
-- Persistent carts that consolidate when user logs-in/registers so shopping data is not lost
-- Shopping routes that allow shoppers to browse by category or search for products
-- Checkout route that provides a review page before placing order
-- Payment processing with Stripe
-- Documentation with Swagger 
 
 
 ## Setup
