@@ -4,11 +4,24 @@ const OrderItem = require('../models/OrderItemModel');
 const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
 const User = require('../models/UserModel');
+const { validateID, 
+    validatePrice,
+    validateAddressInputs,
+    validatePaymentInputs,
+    validateCartItemInputs,
+    validateCart } = require('../lib/validatorUtils');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 module.exports.postOrder = async (data) => {  
     try { 
+
+        // validate inputs
+        validateID(data.user_id);
+        validateCart(data.cart);
+        validateAddressInputs(data.billing);
+        validateAddressInputs(data.shipping);
+        validatePaymentInputs(data.payment);
 
         // ---------------------------------------------------------
         // ----- charge Card with payment_id using Stripe API ------
@@ -95,6 +108,9 @@ module.exports.postOrder = async (data) => {
 
 module.exports.getAllOrders = async (user_id) => {
     try {
+        // validate inputs
+        validateID(user_id);
+
         // find orders assocaited with user_id
         const orders = await Order.findByUserId(user_id);
 
@@ -107,9 +123,9 @@ module.exports.getAllOrders = async (user_id) => {
 
 module.exports.getOneOrder = async (data) => {
     try {
-        if (!data.order_id) {
-            throw httpError(400, 'No order id');
-        }
+        // validate inputs
+        validateID(data.order_id);
+        validateID(data.user_id);
 
         // find order
         const order = await Order.findById(data.order_id);

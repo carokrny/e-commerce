@@ -1,5 +1,5 @@
 const httpError = require('http-errors');
-const { checkCartItem } = require('../lib/validatorUtils');
+const { validateCartItem, validateCartItemInputs } = require('../lib/validatorUtils');
 const CartItem = require('../models/CartItemModel');
 const Cart = require('../models/CartModel');
 const Product = require('../models/ProductModel');
@@ -7,9 +7,7 @@ const Product = require('../models/ProductModel');
 module.exports.postCartItem = async (data) => {
     try {
         // throw error if inputs invalid
-        if(!data.cart_id || !data.product_id || !data.quantity || data.quantity < 0) {
-            throw httpError(400, 'Invalid inputs.');
-        }
+        validateCartItemInputs(data);
 
         // check that cart exists
         const cart = await Cart.findById(data.cart_id);
@@ -46,7 +44,7 @@ module.exports.postCartItem = async (data) => {
 module.exports.getCartItem = async (data) => {
     try {
         // validate inputs and grab cart
-        const cartItem = await checkCartItem(data);
+        const cartItem = await validateCartItem(data);
 
         return { cartItem };
 
@@ -58,7 +56,7 @@ module.exports.getCartItem = async (data) => {
 module.exports.putCartItem = async (data) => {
     try {
         // validate inputs
-        await checkCartItem(data);
+        await validateCartItem(data);
 
         // update quantity of item in cart
         const cartItem = await CartItem.update(data);
@@ -73,7 +71,7 @@ module.exports.putCartItem = async (data) => {
 module.exports.deleteCartItem = async (data) => {
     try {
         // validate inputs
-        await checkCartItem(data);
+        await validateCartItem(data);
         
         // delete cart item and return it
         const cartItem = await CartItem.delete(data);

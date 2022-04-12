@@ -20,15 +20,18 @@ module.exports = (app) => {
     *     address1:
     *       type: string
     *       example: '123 Easy St'
+    *       maxLength: 30
     *       pattern: ^[A-Za-z0-9 '#:_-]*$
     *     address2:
     *       type: string
     *       required: false
     *       example: 'Apt 3'
+    *       maxLength: 30
     *       pattern: ^[A-Za-z0-9 '#:_-]*$
     *     city:
     *       type: string
     *       example: 'San Francisco'
+    *       maxLength: 30
     *       pattern: ^[A-Za-z '-]*$
     *     state:
     *       type: string
@@ -45,14 +48,17 @@ module.exports = (app) => {
     *     country:
     *       type: string
     *       example: 'United States'
+    *       maxLength: 30
     *       pattern: ^[A-Za- ':-]*$
     *     first_name: 
     *       type: string
     *       example: 'John'
+    *       maxLength: 30
     *       pattern: ^[A-Za-z .'_-]*$
     *     last_name:
     *       type: string
     *       example: 'Doe'
+    *       maxLength: 30
     *       pattern: ^[A-Za-z .'_-]*$
     *     date_time:
     *       type: string

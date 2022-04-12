@@ -33,12 +33,12 @@ CREATE TABLE "addresses" (
   "user_id" int NOT NULL,
   "first_name" varchar(30),
   "last_name" varchar(30),
-  "address1" varchar(20) NOT NULL,
-  "address2" varchar(20),
-  "city" varchar(20) NOT NULL,
+  "address1" varchar(30) NOT NULL,
+  "address2" varchar(30),
+  "city" varchar(30) NOT NULL,
   "state" varchar(2) NOT NULL,
   "zip" varchar(10) NOT NULL,
-  "country" varchar(50) NOT NULL,
+  "country" varchar(30) NOT NULL,
   "created" timestamp NOT NULL DEFAULT (now()),
   "modified" timestamp NOT NULL DEFAULT (now())
 );

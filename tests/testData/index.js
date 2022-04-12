@@ -376,6 +376,7 @@ const order_items = {
 }
 //******************************************************************************************************
 
+const xssAttack = ' <script>Alert (“XSS!”)</script>';
 
 module.exports = {
    users, 
@@ -398,5 +399,6 @@ module.exports = {
    cardPut,
    invalidCardPost, 
    invalidCardPut, 
-   differentPaymentId
+   differentPaymentId,
+   xssAttack
 };

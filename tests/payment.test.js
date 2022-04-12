@@ -188,21 +188,17 @@ describe ('Account payment method endpoints', () => {
 
             describe('Invalid formatted inputs', () => {
 
-                it ('Should not update', async () => {
-                    const res = await request(app)
+                it ('Should not update with 400 error', (done) => {
+                    request(app)
                         .put(`/account/payment/${paymentId}`)
                         .send(invalidCardPut)
                         .set('Authorization', token)
                         .set('Accept', 'application/json')
-                        .expect('Content-Type', /json/)
-                        .expect(200);
-                    expect(res.body).toBeDefined();
-                    expect(res.body.payment).toBeDefined();
-                    expect(res.body.payment.id).toEqual(paymentId);
-                    expect(res.body.payment.user_id).toEqual(user1.id);
-                    expect(res.body.payment.exp_year).toEqual(cardPost.exp_year);
-                    expect(res.body.payment.exp_year).not.toEqual(invalidCardPut.exp_year);
-                    expect(res.body.payment.provider).toEqual(cardPut.provider);
+                        .expect(400)
+                        .end((err, res) => {
+                            if (err) return done(err);
+                            return done();
+                        });
                 })
             }),
 

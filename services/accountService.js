@@ -1,15 +1,22 @@
 const httpError = require('http-errors');
 const { genPassword } = require('../lib/customAuth/passwordUtils');
 const { wipePassword } = require('../lib/formatUtils');
-const { checkUser } = require('../lib/validatorUtils');
+const { validateUser, 
+    validateName, 
+    validateEmail,
+    validatePassword,
+    validateID } = require('../lib/validatorUtils');
 const User = require('../models/UserModel');
 const Address = require('../models/AddressModel');
 const Card = require('../models/CardModel');
 
 module.exports.getAccount = async (user_id) => {
     try {
+        // validate inputs 
+        validateID(user_id);
+
         // check if user exists
-        const user = await checkUser(user_id);
+        const user = await validateUser(user_id);
         
         // wipe password info before returning
         wipePassword(user);
@@ -23,17 +30,22 @@ module.exports.getAccount = async (user_id) => {
 
 module.exports.putAccount = async (data) => {
     try {
-        // check if user exists
-        const user = await checkUser(data.user_id);
+        // validate user id
+        validateID(data.user_id);
 
-        // modify user with properties in data 
+        // check if user exists
+        const user = await validateUser(data.user_id);
+
+        // validate properties in data and modify user 
         for (const property in data) {
-            if (property === "email" ||  property === "first_name" || property === "last_name") {
-                // check inputs are truthy and not empty string
-                if (data[property] && data[property].length > 0) {
-                    user[property] = data[property];
-                }
+            if (property === "first_name" || property === "last_name") {
+                validateName(data[property]);
+                user[property] = data[property];
+            } else if (property === "email") {
+                validateEmail(data[property]);
+                user[property] = data[property];
             } else if (property === "password") {
+                validatePassword(data[property]);
                 // hash and salt password
                 const pwObj = await genPassword(data[property]);
 

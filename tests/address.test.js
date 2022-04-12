@@ -4,7 +4,8 @@ const { user3 } = require('./testData').users;
 const { loginUser } = require('./testUtils');
 const { addressPost, 
         addressPut,
-        differentAddressId } = require('./testData');
+        differentAddressId, 
+        xssAttack } = require('./testData');
 const User = require('../models/UserModel');
 const Address = require('../models/AddressModel');
 
@@ -53,6 +54,25 @@ describe ('Address endpoints', () => {
                     addressId = res.body.address.id;
                 })
             }), 
+
+            describe('XSS attack', () => {
+
+                it ('Should be return 400 because attack is longer than characters permitted', (done) => {
+                    request(app)
+                        .post('/account/address')
+                        .send({ ...addressPost,
+                            address1: addressPost.address1 + xssAttack,
+                            first_name: user3.first_name,
+                            last_name: user3.last_name })
+                        .set('Authorization', token)
+                        .set('Accept', 'application/json')
+                        .expect(400)
+                        .end((err, res) => {
+                            if (err) return done(err);
+                            return done();
+                        });
+                })
+            }),
 
             describe('Invalid inputs', () => {
 

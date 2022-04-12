@@ -1,11 +1,12 @@
 const httpError = require('http-errors');
 const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
-const Order = require('../models/OrderModel');
-const OrderItem = require('../models/OrderItemModel');
+const { validateID } = require('../lib/validatorUtils');
 
 module.exports.postCart = async (user_id) => {
     try {
+        // don't validate inputs because user_id can be null
+
         // create a new cart
         const cart = await Cart.create(user_id);
         
@@ -22,10 +23,8 @@ module.exports.postCart = async (user_id) => {
 
 module.exports.getCart = async (cart_id) => {
     try {
-        // throw error if no cart_id
-        if(!cart_id) {
-            throw httpError(400, 'No cart identifier.');
-        }
+        // validate inputs
+        validateID(cart_id);
 
         // throw error if cart not found 
         const cart = await Cart.findById(cart_id);

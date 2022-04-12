@@ -3,11 +3,10 @@ const { postAddress, getAddress } = require('./addressService');
 const { postPayment, getPayment } = require('./paymentService');
 const { postOrder } = require('./orderService');
 const { getCart } = require('./cartService');
+const { validateID } = require('../lib/validatorUtils');
 
 module.exports.postShipping = async (data) => {
     try {
-        var shipping = null;
-
         // fetch address if it already exists
         if (data.address_id) {
             shipping = await getAddress(data);
@@ -68,13 +67,11 @@ module.exports.postPayment = async (data) => {
 module.exports.getCheckoutReview = async (data) => {
     try { 
         // check for valid inputs 
-        if (!data.cart_id || 
-            !data.shipping_address_id ||
-            !data.billing_address_id ||
-            !data.payment_id||
-            !data.user_id) {
-                throw httpError(400, 'Invalid inputs');
-            }
+        validateID(data.user_id);
+        validateID(data.cart_id);
+        validateID(data.shipping_address_id);
+        validateID(data.billing_address_id);
+        validateID(data.payment_id);
 
         // get cart
         const { cart, cartItems } = await getCart(data.cart_id);

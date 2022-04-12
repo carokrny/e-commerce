@@ -1,45 +1,25 @@
 const httpError = require('http-errors');
-const { checkAddress } = require('../lib/validatorUtils');
+const { validateAddressInputs, validateAddress } = require('../lib/validatorUtils');
 const { attachIsPrimaryAddress } = require('../lib/formatUtils');
 const Address = require('../models/AddressModel');
 const User = require('../models/UserModel');
 
 module.exports.postAddress = async (data) => {
     try {  
-        const { address1, 
-                address2,               // can be null
-                city, 
-                state,
-                zip,
-                country,
-                isPrimaryAddress,        // can be null
-                first_name, 
-                last_name,
-                user_id } = data;
-
-        // check for valid inputs 
-        if (address1 === null   || address1.length === 0    || 
-            city === null       || city.length === 0        ||
-            state === null      || state.length === 0       ||
-            zip === null        || zip.length === 0         ||
-            country === null    || country.length === 0     ||
-            first_name === null || first_name.length === 0  ||
-            last_name === null  || last_name.length === 0   ||
-            user_id === null) {
-                throw httpError(400, 'Invalid inputs');
-        }
+        // validate inputs
+        validateAddressInputs(data); 
 
         // create address
         const address = await Address.create(data);
 
         // if isPrimaryAddress, update User
-        if (isPrimaryAddress) {
+        if (data.isPrimaryAddress) {
             // primary payment stored in User to avoid conflict
-            await User.updatePrimaryAddressId({ id: user_id, primary_address_id: address.id });
+            await User.updatePrimaryAddressId({ id: data.user_id, primary_address_id: address.id });
         }
 
         // attach isPrimaryAddress
-        address.isPrimaryAddress = isPrimaryAddress ? isPrimaryAddress : false;
+        address.isPrimaryAddress = data.isPrimaryAddress ? true : false;
 
         return { address };
 
@@ -51,7 +31,7 @@ module.exports.postAddress = async (data) => {
 module.exports.getAddress = async (data) => {
     try {
         // validate inputs and grab address
-        const address = await checkAddress(data);
+        const address = await validateAddress(data);
 
         // primary address stored in User to prevent conflict
         const { primary_address_id } = await User.findById(data.user_id);
@@ -69,7 +49,7 @@ module.exports.getAddress = async (data) => {
 module.exports.putAddress = async (data) => {
     try {
         // validate inputs and grab address
-        const address = await checkAddress(data);
+        const address = await validateAddress(data);
 
         // modify address with properties in data 
         for (const property in data) {
@@ -80,13 +60,14 @@ module.exports.putAddress = async (data) => {
                 property === "zip"          ||
                 property === "country"      ||
                 property === "first_name"   ||
-                property === "last_name") {
-                // check that value is truthy not an empty string
-                if (data[property] && data[property].length > 0) {
-                    address[property] = data[property];
-                }
+                property === "last_name"
+            ) {
+                address[property] = data[property];
             } 
         }
+
+        // validate each property before updating db
+        validateAddressInputs(address);
 
         // update address 
         const updatedAddress = await Address.update(address);
@@ -111,7 +92,7 @@ module.exports.putAddress = async (data) => {
 module.exports.deleteAddress = async (data) => {
     try {
         // validate inputs and grab address
-        const address = await checkAddress(data);
+        const address = await validateAddress(data);
 
         // grab user assocaited with address
         const { primary_address_id } = await User.findById(data.user_id);
