@@ -63,7 +63,7 @@ module.exports = (app) => {
     *     date_time:
     *       type: string
     *       format: date-time
-    *     isPrimaryAddress:
+    *     is_primary_address:
     *       type: boolean
     *       example: false
     * definitions:
@@ -94,8 +94,8 @@ module.exports = (app) => {
     *         $ref: '#/components/schemas/date_time'
     *       modified:
     *         $ref: '#/components/schemas/date_time'
-    *       isPrimaryAddress:
-    *         $ref: '#/components/schemas/isPrimaryAddress'
+    *       is_primary_address:
+    *         $ref: '#/components/schemas/is_primary_address'
     *
     */
 
@@ -160,12 +160,12 @@ module.exports = (app) => {
     *         required: true
     *         schema: 
     *           $ref: '#/components/schemas/last_name'
-    *       - name: isPrimaryAddress
+    *       - name: is_primary_address
     *         description: whether this is user's primary address
     *         in: body
     *         required: false
     *         schema: 
-    *           $ref: '#/components/schemas/isPrimaryAddress'
+    *           $ref: '#/components/schemas/is_primary_address'
     *     responses:
     *       201:
     *         description: An Address object.
@@ -347,12 +347,12 @@ module.exports = (app) => {
     *         required: false
     *         schema: 
     *           $ref: '#/components/schemas/last_name'
-    *       - name: isPrimaryAddress
+    *       - name: is_primary_address
     *         description: whether this is user's primary address
     *         in: body
     *         required: false
     *         schema: 
-    *           $ref: '#/components/schemas/isPrimaryAddress'
+    *           $ref: '#/components/schemas/is_primary_address'
     *     responses:
     *       200:
     *         description: An Address object.

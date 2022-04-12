@@ -231,12 +231,12 @@ const addressPost = {
     state: 'CA', 
     zip: '94103', 
     country: 'United States', 
-    isPrimaryAddress: false
+    is_primary_address: false
 }
 
 const addressPut = {
     address2: 'Apt 5', 
-    isPrimaryAddress: true
+    is_primary_address: true
 }
 
 // to get an error on address routes with wrong address id
@@ -301,12 +301,12 @@ const cardPost = {
    exp_month: 11,
    exp_year: 2023, 
    billing_address_id: addresses.address1.id, 
-   isPrimaryPayment: false,
+   is_primary_payment: false,
 }
 
 const cardPut = {
    provider: 'MasterCard', 
-   isPrimaryPayment: true
+   is_primary_payment: true
 }
 
 // Note billing_address_id is associated with user_id = 21

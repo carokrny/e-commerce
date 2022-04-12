@@ -12,14 +12,14 @@ module.exports.postAddress = async (data) => {
         // create address
         const address = await Address.create(data);
 
-        // if isPrimaryAddress, update User
-        if (data.isPrimaryAddress) {
+        // if is_primary_address, update User
+        if (data.is_primary_address) {
             // primary payment stored in User to avoid conflict
             await User.updatePrimaryAddressId({ id: data.user_id, primary_address_id: address.id });
         }
 
-        // attach isPrimaryAddress
-        address.isPrimaryAddress = data.isPrimaryAddress ? true : false;
+        // attach is_primary_address
+        address.is_primary_address = data.is_primary_address ? true : false;
 
         return { address };
 
@@ -73,13 +73,13 @@ module.exports.putAddress = async (data) => {
         const updatedAddress = await Address.update(address);
 
         // attach boolean property indicating whether address is primary address
-        if (data.isPrimaryAddress) {
+        if (data.is_primary_address) {
             // update User if true
             await User.updatePrimaryAddressId({ id: data.user_id, primary_address_id: updatedAddress.id });
-            updatedAddress.isPrimaryAddress = true;
+            updatedAddress.is_primary_address = true;
 
         } else {
-            updatedAddress.isPrimaryAddress = false;
+            updatedAddress.is_primary_address = false;
         }
 
         return { address: updatedAddress };
@@ -101,7 +101,7 @@ module.exports.deleteAddress = async (data) => {
         attachIsPrimaryAddress(address, primary_address_id);
 
         // check if address is primary address of user
-        if (address.isPrimaryAddress) {
+        if (address.is_primary_address) {
             // if so, update primary_address_id to be null
             await User.updatePrimaryAddressId({ id: data.user_id, primary_address_id: null });
         }

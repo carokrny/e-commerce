@@ -50,7 +50,7 @@ describe ('Address endpoints', () => {
                     expect(res.body.address.id).toBeDefined();
                     expect(res.body.address.user_id).toEqual(user3.id);
                     expect(res.body.address.address1).toEqual(addressPost.address1);
-                    expect(res.body.address.isPrimaryAddress).toEqual(addressPost.isPrimaryAddress);
+                    expect(res.body.address.is_primary_address).toEqual(addressPost.is_primary_address);
                     addressId = res.body.address.id;
                 })
             }), 
@@ -153,7 +153,7 @@ describe ('Address endpoints', () => {
                         expect(res.body.address.id).toEqual(addressId);
                         expect(res.body.address.user_id).toEqual(user3.id);
                         expect(res.body.address.address1).toEqual(addressPost.address1);
-                        expect(res.body.address.isPrimaryAddress).toEqual(addressPost.isPrimaryAddress);
+                        expect(res.body.address.is_primary_address).toEqual(addressPost.is_primary_address);
                     })
                 }), 
 
@@ -252,8 +252,8 @@ describe ('Address endpoints', () => {
                         expect(res.body.address.address1).toEqual(addressPost.address1);
                         expect(res.body.address.address2).toEqual(addressPut.address2);
                         expect(res.body.address.address1).toEqual(addressPost.address1);
-                        expect(res.body.address.isPrimaryAddress).toEqual(addressPut.isPrimaryAddress);
-                        expect(res.body.address.isPrimaryAddress).not.toEqual(addressPost.isPrimaryAddress);
+                        expect(res.body.address.is_primary_address).toEqual(addressPut.is_primary_address);
+                        expect(res.body.address.is_primary_address).not.toEqual(addressPost.is_primary_address);
                     })
                 }), 
 

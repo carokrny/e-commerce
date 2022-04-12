@@ -45,7 +45,7 @@ module.exports = async (app) => {
     *       maxLength: 3
     *       pattern: ^[0-9]*$
     *       example: '123'
-    *     isPrimaryPayment:
+    *     is_primary_payment:
     *       type: boolean
     *       example: false
     * definitions:
@@ -74,8 +74,8 @@ module.exports = async (app) => {
     *         $ref: '#/components/schemas/date_time'
     *       modified:
     *         $ref: '#/components/schemas/date_time'
-    *       isPrimaryPayment:
-    *         $ref: '#/components/schemas/isPrimaryPayment'
+    *       is_primary_payment:
+    *         $ref: '#/components/schemas/is_primary_payment'
     *
     */
 
@@ -133,12 +133,12 @@ module.exports = async (app) => {
     *         required: true
     *         schema:
     *           $ref: '#/components/schemas/id'
-    *       - name: isPrimaryPayment
+    *       - name: is_primary_payment
     *         description: whether this is user's primary payment method
     *         in: body
     *         required: false
     *         schema:
-    *           $ref: '#/components/schemas/isPrimaryPayment'
+    *           $ref: '#/components/schemas/is_primary_payment'
     *     responses:
     *       201:
     *         description: A Card object.
@@ -322,12 +322,12 @@ module.exports = async (app) => {
     *         required: false
     *         schema:
     *           $ref: '#/components/schemas/id'
-    *       - name: isPrimaryPayment
+    *       - name: is_primary_payment
     *         description: whether this is user's primary payment method
     *         in: body
     *         required: false
     *         schema:
-    *           $ref: '#/components/schemas/isPrimaryPayment'
+    *           $ref: '#/components/schemas/is_primary_payment'
     *     responses:
     *       200:
     *         description: A Card object.

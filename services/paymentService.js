@@ -12,14 +12,14 @@ module.exports.postPayment = async (data) => {
         // create payment
         const payment = await Card.create(data);
 
-        // if isPrimaryPayment, update User
-        if (data.isPrimaryPayment) {
+        // if is_primary_payment, update User
+        if (data.is_primary_payment) {
             // primary payment stored in User to prevent conflict
             await User.updatePrimaryPaymentId({ id: data.user_id, primary_payment_id: payment.id });
         }
 
-        // attach isPrimaryPayment 
-        payment.isPrimaryPayment = data.isPrimaryPayment ? true : false;
+        // attach is_primary_payment 
+        payment.is_primary_payment = data.is_primary_payment ? true : false;
 
         return { payment };
 
@@ -70,13 +70,13 @@ module.exports.putPayment = async (data) => {
         const updatedPayment = await Card.update(payment);
 
         // attach boolean property indicating whether payment is primary payment method
-        if (data.isPrimaryPayment) {
+        if (data.is_primary_payment) {
             // update User if true
             await User.updatePrimaryPaymentId({ id: data.user_id, primary_payment_id: updatedPayment.id });
-            updatedPayment.isPrimaryPayment = true;
+            updatedPayment.is_primary_payment = true;
 
         } else {
-            updatedPayment.isPrimaryPayment = false;
+            updatedPayment.is_primary_payment = false;
         }
   
         return { payment: updatedPayment };
@@ -97,7 +97,7 @@ module.exports.deletePayment = async (data) => {
         attachIsPrimaryPayment(payment, primary_payment_id);
 
         // check if payment is primary payment method of user
-        if (payment.isPrimaryPayment) {
+        if (payment.is_primary_payment) {
             // if so, update primary_payment_id to be null
             await User.updatePrimaryPaymentId({ id: data.user_id, primary_payment_id: null });
         }
