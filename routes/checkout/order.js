@@ -1,8 +1,8 @@
 const router = require('express').Router();
+const { wipeCardData } = require('../../lib/formatUtils');
 const { getOneOrder } = require('../../services/orderService');
 const { checkoutAuth } = require('../../lib/customAuth/jwtAuth');
 const { getCheckoutReview, postCheckout } = require('../../services/checkoutService');
-const { wipeCardData } = require('../../lib/formatUtils');
 
 module.exports = (app) => {
 

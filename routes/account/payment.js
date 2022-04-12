@@ -1,10 +1,10 @@
 const router = require('express').Router({ mergeParams : true });
 const { wipeCardData } = require('../../lib/formatUtils');
 const { postPayment, 
-        getPayment,
-        putPayment,
-        deletePayment,
-        getAllPayments } = require('../../services/paymentService');
+    getPayment,
+    putPayment,
+    deletePayment,
+    getAllPayments } = require('../../services/paymentService');
 
 module.exports = async (app) => {
 

@@ -1,9 +1,9 @@
 const router = require('express').Router({ mergeParams : true });
 const { postAddress, 
-        getAddress,
-        putAddress,
-        deleteAddress,
-        getAllAddresses } = require('../../services/addressService');
+    getAddress,
+    putAddress,
+    deleteAddress,
+    getAllAddresses } = require('../../services/addressService');
 
 module.exports = (app) => {
 
