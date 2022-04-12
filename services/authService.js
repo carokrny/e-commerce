@@ -9,8 +9,7 @@ const User = require('../models/UserModel');
 module.exports.register = async (data) => {
     try {
         // check for required inputs 
-        const { email, password } = data;
-        validateAuthInputs(email, password);
+        validateAuthInputs(data);
         
         // pwObj contains salt and hash generated
         const pwObj = await genPassword(data.password);
@@ -45,21 +44,16 @@ module.exports.register = async (data) => {
 module.exports.login = async (data) => {
     try {
         // check for required inputs 
-        const { email, password } = data;
-        validateAuthInputs(email, password);
+        validateAuthInputs(data);
         
         // check if user already exists
         const user = await User.findByEmail(data.email);
-
-        // reject if email not assocaited with existing user  
         if (!user) {
             throw httpError(401, 'Incorrect email or password.');
         };
 
         // validate password
         const isValid = await validPassword(data.password, user.pw_hash, user.pw_salt);
-
-        // reject if password not valid
         if (!isValid) {
             throw httpError(401, 'Incorrect email or password.');
         }

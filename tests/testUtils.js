@@ -39,8 +39,9 @@ const createUser = () => {
  const registerUser = async (user) => {
     // request token with user data
     const res = await request(app)
-            .post('/register')
-            .send(user);
+        .post('/register')
+        .send(user)
+        .set('Accept', 'application/json');
 
     // return token and id
     return { 
@@ -58,8 +59,9 @@ const createUser = () => {
 const loginUser = async (user) => {
     // request token with user data
     const res = await request(app)
-            .post('/login')
-            .send(user);
+        .post('/login')
+        .send(user)
+        .set('Accept', 'application/json');
 
     // return token 
     return res.body.token;

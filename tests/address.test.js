@@ -1,7 +1,6 @@
 const app = require('../app');
 const request = require('supertest');
 const { user3 } = require('./testData').users;
-const { loginUser } = require('./testUtils');
 const { addressPost, 
         addressPut,
         differentAddressId, 
@@ -15,8 +14,12 @@ describe ('Address endpoints', () => {
     let addressId;
 
     beforeAll(async () => {
-        // grab token from loggin in user
-        token = await loginUser(user3);
+        const res = await request(app)
+            .post('/login')
+            .send(user3)
+            .set('Accept', 'application/json');
+
+        token = res.body.token;
     }),
 
     afterEach(async () => {
