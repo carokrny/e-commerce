@@ -28,15 +28,15 @@
 - Shopping routes that allow shoppers to browse by category or search for products
 - Persistent carts that consolidate when user logs-in/registers so shopping data is not lost
 #### User Accounts
+- Users can create an account to save shopping session and view information about their orders
 - Allow users to store addresses and payment methods, and set a primary address and primary payment method
-- Users can view information about their orders
 #### Fully-Built Checkout Flow
 - User can use saved payment methods and addresses, or enter new ones at checkout
-- Checkout route that provides a review page before placing order
+- Checkout route provides a review page before placing order
 - Payment processing with Stripe API
 #### Security
 - Custom hashing function for passwords using bcrypt and a salt 
-- Custom RSA authentication middleware using secure JWTs
+- Custom RSA authentication middleware using secure JWT Bearer Tokens to protect against CSRF
 - Custom data sanitizer and validation for protection against XSS attacks
 - Parameterized queries to protect against SQL injection 
 #### Testing 
@@ -45,7 +45,6 @@
 - `pre-test` and `post-test` scripts to automate testing setup and tear down 
 #### API Documentation
 - Documentation with Swagger 
-
 
 
 ## Technologies Used
@@ -144,10 +143,12 @@ The project handles various endpoints a user may need to access while online sho
 - checkout flow and charging payments with Stripe
 - order summaries accessed through user account
 
-View live API documentation [_here_](https://crk-e-commerce.herokuapp.com/api-docs/).
+__Note:__ Must use HTTPS with JWT Bearer Authentication 
+See [Swagger API Documentation](https://crk-e-commerce.herokuapp.com/api-docs/) for info routes and their variable requirements. 
+
 
 ## Project Status
-Project is: _in progress_ 
+___IN PROGRESS:__ Working on additional secutiry measures_
 
 ## Room for Improvement
 
