@@ -376,7 +376,7 @@ const order_items = {
 }
 //******************************************************************************************************
 
-const xssAttack = ' <script>Alert (“XSS!”)</script>';
+const xssAttack = '<script>alert(“XSS!”)</script>';
 
 module.exports = {
    users, 

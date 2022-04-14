@@ -1,7 +1,8 @@
 const app = require('../app');
 const request = require('supertest');
 const { user1 } = require('./testData').users;
-const { userAccountPut } = require('./testData');
+const { userAccountPut,
+    xssAttack } = require('./testData');
 const User = require('../models/UserModel');
 const Address = require('../models/AddressModel');
 const Card = require('../models/CardModel');
@@ -78,10 +79,45 @@ describe ('Account endpoints', () => {
 
             it ('Should return 401 error', (done) => {
                 request(app)
-                    .get(`/account/`)
+                    .put(`/account/`)
+                    .send(userAccountPut)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(401)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        return done();
+                    });
+            })
+        }),
+         
+        describe('XSS attack on first_name field', () => {
+
+            it ('Should be return 400 because escaped XSS attack is longer than characters permitted', (done) => {
+                request(app)
+                    .put(`/account/`)
+                    .send({...userAccountPut,
+                        first_name: xssAttack})
+                    .set('Authorization', token)
+                    .set('Accept', 'application/json')
+                    .expect(400)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        return done();
+                    });
+            })
+        }),
+
+        describe('XSS attack on last_name field', () => {
+
+            it ('Should be return 400 because escaped XSS attack is longer than characters permitted', (done) => {
+                request(app)
+                    .put(`/account/`)
+                    .send({...userAccountPut,
+                        last_name: xssAttack})
+                    .set('Authorization', token)
+                    .set('Accept', 'application/json')
+                    .expect(400)
                     .end((err, res) => {
                         if (err) return done(err);
                         return done();

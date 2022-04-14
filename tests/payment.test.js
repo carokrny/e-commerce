@@ -2,10 +2,11 @@ const app = require('../app');
 const request = require('supertest');
 const { user1 } = require('./testData').users;
 const { cardPost, 
-        cardPut,
-        invalidCardPost, 
-        invalidCardPut,
-        differentPaymentId } = require('./testData');
+    cardPut,
+    invalidCardPost, 
+    invalidCardPut,
+    differentPaymentId,
+    xssAttack } = require('./testData');
 const User = require('../models/UserModel');
 const Card = require('../models/CardModel');
 
@@ -78,6 +79,40 @@ describe ('Account payment method endpoints', () => {
                         request(app)
                             .post('/account/payment')
                             .send(invalidCardPost)
+                            .set('Authorization', token)
+                            .set('Accept', 'application/json')
+                            .expect(400)
+                            .end((err, res) => {
+                                if (err) return done(err);
+                                return done();
+                            });
+                    })
+                }), 
+
+                describe('XSS attack on provider field', () => {
+
+                    it ('Should be return 400 because XSS attack is longer than characters permitted', (done) => {
+                        request(app)
+                            .post('/account/payment')
+                            .send({...cardPost,
+                                provider: xssAttack})
+                            .set('Authorization', token)
+                            .set('Accept', 'application/json')
+                            .expect(400)
+                            .end((err, res) => {
+                                if (err) return done(err);
+                                return done();
+                            });
+                    })
+                }),
+
+                describe('XSS attack on card_no field', () => {
+
+                    it ('Should be return 400 because XSS attack does not meet card_no format', (done) => {
+                        request(app)
+                            .post('/account/payment')
+                            .send({...cardPost,
+                                card_no: xssAttack})
                             .set('Authorization', token)
                             .set('Accept', 'application/json')
                             .expect(400)

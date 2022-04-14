@@ -2,7 +2,9 @@ const app = require('../app');
 const request = require('supertest');
 const session = require('supertest-session');
 const { user1 } = require('./testData').users;
-const { testRegister, product } = require('./testData');
+const { testRegister, 
+    product,
+    xssAttack } = require('./testData');
 const User = require('../models/UserModel');
 const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
@@ -43,6 +45,38 @@ describe('Auth endpoints', () => {
                 expect(res.body.token).toBeDefined();
             })
         }), 
+
+        describe('XSS attack on email field', () => {
+
+            it ('Should be return 400 because XSS attack is not email format', (done) => {
+                request(app)
+                    .post('/register')
+                    .send({ ...testRegister,
+                        email: xssAttack })
+                    .set('Accept', 'application/json')
+                    .expect(400)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        return done();
+                    });
+            })
+        }),
+
+        describe('XSS attack on password field', () => {
+
+            it ('should successfully register because XSS does not meet strong PW requirements', (done) => {
+                request(app)
+                    .post('/register')
+                    .send({ ...testRegister,
+                        password: xssAttack })
+                    .set('Accept', 'application/json')
+                    .expect(400)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        return done();
+                    });
+            })
+        }),
 
         describe('Email already in use', () => {
             
