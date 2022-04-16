@@ -42,7 +42,13 @@ module.exports = async (app) => {
         // import swaggerDefinitions
         swaggerDefinition: swaggerDefinition,
         // path to the API docs
-        apis: ['./routes/*/*.js'],
+        apis: ['./routes/auth/register.js', 
+            './routes/auth/*.js', 
+            './routes/shop/home.js',
+            './routes/shop/products.js',
+            './routes/shop/*.js',
+            './routes/account/*.js', 
+            './routes/checkout/*.js'],
     };
 
     // initialize swagger-jsdoc
