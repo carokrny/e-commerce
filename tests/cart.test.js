@@ -1,6 +1,6 @@
 const app = require('../app');
-const request = require('supertest');
 const session = require('supertest-session');
+const { loginUser } = require('./testUtils');
 const { user1 } = require('./testData').users;
 const { product } = require('./testData');
 const Cart = require('../models/CartModel');
@@ -9,38 +9,43 @@ const CartItem = require('../models/CartItemModel');
 
 describe ('Cart endpoints', () => {
 
-    describe('Valid JWT', () => {
-
-        let token;
+    describe('Valid auth', () => {
         let cartId;
         let testSession;
 
         beforeAll(async () => {
-            // create JWT for authentication 
-            const res = await request(app)
-                .post('/login')
-                .send(user1);
-            token = res.body.token;
-
+            // create test session
             testSession = session(app);
-        }),
+            
+            // log user in
+            try {
+                await loginUser( user1, testSession);
+            } catch(e) {
+                console.log(e);
+            }
+        })
 
         afterAll(async() => {
-            if(cartId) {
-                // delete cart item
-                await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
+            try {
+                if(cartId) {
+                    // delete cart item
+                    await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
 
-                // delete cart
-                await Cart.delete(cartId);
+                    // delete cart
+                    await Cart.delete(cartId);
+                }
+            } catch(e) {
+                console.log(e);
             }
-        }),
+
+            testSession = null;
+        })
 
         describe('POST \'/cart\'', () => {
 
             it ('Should create a new cart', async () => {
                 const res = await testSession
                     .post('/cart')
-                    .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect(201);
                 expect(res.body).toBeDefined();
@@ -48,7 +53,7 @@ describe ('Cart endpoints', () => {
                 expect(res.body.cart.id).toBeDefined();
                 cartId = res.body.cart.id;
             }) 
-        }),
+        })
 
         describe('GET \'/cart\'', () => {
 
@@ -57,11 +62,10 @@ describe ('Cart endpoints', () => {
                 it('Should throw a 404 error', async () => {
                     const res = await testSession
                         .get(`/cart`)
-                        .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(404);
                 })
-            }), 
+            }) 
 
             describe('Item in cart', () => {
 
@@ -69,14 +73,12 @@ describe ('Cart endpoints', () => {
                     const res = await testSession
                         .post(`/cart/item/${product.product_id}`)
                         .send(product)
-                        .set('Authorization', token)
                         .set('Accept', 'application/json');
-                }),
+                })
 
                 it('Should return the cart and cart item(s)', async () => {
                     const res = await testSession
                             .get(`/cart`)
-                            .set('Authorization', token)
                             .set('Accept', 'application/json')
                             .expect(200);
                     expect(res.body).toBeDefined();
@@ -90,31 +92,34 @@ describe ('Cart endpoints', () => {
         })
     })
 
-    describe('Invalid JWT', () => {
+    describe('Invalid auth', () => {
 
         let cartId;
         let testSession;
 
-        beforeAll(async () => {
+        beforeAll(() => {
             testSession = session(app);
-        }),
+        })
         
         afterAll(async() => {
-            if(cartId) {
-                // delete cart item
-                await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
-                
-                // delete cart
-                await Cart.delete(cartId);
+            try {
+                if(cartId) {
+                    // delete cart item
+                    await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
+                    
+                    // delete cart
+                    await Cart.delete(cartId);
+                }
+            } catch(e) {
+                console.log(e);
             }
-        }),
+        })
 
         describe('POST \'/cart\'', () => {
 
             it ('Should create a new cart', async () => {
                 const res = await testSession
                     .post('/cart')
-                    .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(201);
                 expect(res.body).toBeDefined();
@@ -122,7 +127,7 @@ describe ('Cart endpoints', () => {
                 expect(res.body.cart.id).toBeDefined();
                 cartId = res.body.cart.id;
             })
-        }),
+        })
 
         describe('GET \'/cart\'', () => {
 
@@ -131,11 +136,10 @@ describe ('Cart endpoints', () => {
                 it('Should throw a 404 error', async () => {
                     const res = await testSession
                         .get(`/cart`)
-                        .set('Authorization', null)
                         .set('Accept', 'application/json')
                         .expect(404);
                 })
-            }), 
+            }) 
 
             describe('Item in cart', () => {
 
@@ -143,14 +147,12 @@ describe ('Cart endpoints', () => {
                     const res = await testSession
                         .post(`/cart/item/${product.product_id}`)
                         .send(product)
-                        .set('Authorization', null)
                         .set('Accept', 'application/json');
-                }),
+                })
 
                 it('Should return the cart and cart item(s)', async () => {
                     const res = await testSession
                             .get(`/cart`)
-                            .set('Authorization', null)
                             .set('Accept', 'application/json')
                             .expect(200);
                     expect(res.body).toBeDefined();

@@ -1,27 +1,39 @@
 const app = require('../app');
-const request = require('supertest');
+const session = require('supertest-session');
+const { loginUser } = require('./testUtils');
 const { user1 } = require('./testData').users;
 const { order1 } = require('./testData').orders;
 
 describe ('Orders endpoints', () => {
 
-    let token;
+    let testSession;
 
-    beforeAll(async () => {
-        const res = await request(app)
-            .post('/login')
-            .send(user1);
-        token = res.body.token;
-    }),
+    beforeEach(() => {
+        // create test session
+        testSession = session(app);
+    })
 
-    describe('GET \'/account/orders/all\'', () => {
+    afterEach(() => {
+        testSession = null;
+    })
 
-        describe('Valid token', () => {
+    describe('Valid auth', () => {
 
+        beforeEach(async () => {
+            try {
+                // log user in 
+                await loginUser(user1, testSession);
+    
+            } catch(e) {
+                console.log(e);
+            }
+        })
+
+        describe('GET \'/account/orders/all\'', () => {
+    
             it ('Should return orders info', async () => {
-                const res = await request(app)
+                const res = await testSession
                     .get('/account/orders/all')
-                    .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(200);
@@ -31,30 +43,11 @@ describe ('Orders endpoints', () => {
             })
         }) 
 
-        describe('Invalid token', () => {
-
-            it ('Should return 401 error', (done) => {
-                request(app)
-                    .get('/account/orders/all')
-                    .set('Authorization', null)
-                    .set('Accept', 'application/json')
-                    .expect(401)
-                    .end((err, res) => {
-                        if (err) return done(err);
-                        return done();
-                    });
-            })
-        })
-    }), 
-
-    describe('GET \'/account/orders/:order_id\'', () => {
-
-        describe('Valid token', () => {
-
+        describe('GET \'/account/orders/:order_id\'', () => {
+    
             it ('Should return order info', async () => {
-                const res = await request(app)
+                const res = await testSession
                     .get(`/account/orders/${order1.id}`)
-                    .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(200);
@@ -63,14 +56,30 @@ describe ('Orders endpoints', () => {
                 expect(res.body.orderItems).toBeDefined();
                 expect(res.body.order.id).toEqual(order1.id);
             })
-        }),
+        })
+    })
 
-        describe('Invalid token', () => {
+    describe('Invalid auth', () => {
+
+        describe('GET \'/account/orders/all\'', () => {
 
             it ('Should return 401 error', (done) => {
-                request(app)
+                testSession
+                    .get('/account/orders/all')
+                    .set('Accept', 'application/json')
+                    .expect(401)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        return done();
+                    });
+            })
+        })
+
+        describe('GET \'/account/orders/:order_id\'', () => {
+
+            it ('Should return 401 error', (done) => {
+                testSession
                     .get('/account/orders/7')
-                    .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(401)
                     .end((err, res) => {

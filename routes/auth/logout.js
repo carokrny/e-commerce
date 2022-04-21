@@ -25,7 +25,8 @@ module.exports = (app) => {
     *           $ref: '#/responses/UnauthorizedError'
     */
     router.post('/', isAuth, (req, res, next) => {
-        delete req.jwt;
+        if (req.jwt) delete req.jwt;
+        res.clearCookie("access_token");
         res.status(200).json('You have successfully been logged out.');
     })
 }

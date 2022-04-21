@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const { register } = require('../../services/authService');
+const { JWTcookieOptions } = require('../../lib/customAuth/attachJWT');
+require('dotenv').config();
 
 module.exports = (app) => {
     
@@ -83,8 +85,8 @@ module.exports = (app) => {
             // await response
             const response = await register({ ...req.body, cart_id: cart_id });
 
-            // send response to client
-            res.status(201).json(response);
+            // put jwt in a secure cookie and send to client
+            res.cookie("access_token", response.signedToken, JWTcookieOptions).status(201).json(response);
         } catch(err) {
             next(err);
         }

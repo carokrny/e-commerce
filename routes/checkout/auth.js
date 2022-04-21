@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { login, register } = require('../../services/authService');
 const { demiAuth } = require('../../lib/customAuth/jwtAuth');
+const { JWTcookieOptions } = require('../../lib/customAuth/attachJWT');
 
 module.exports = (app) => {
 
@@ -69,8 +70,8 @@ module.exports = (app) => {
             // attach JWT 
             res.header('Authorization', response.token);
 
-            // redirect to get shipping info 
-            res.redirect('/checkout/shipping');
+            // attach cookie and redirect to get shipping info 
+            res.cookie("access_token", response.signedToken, JWTcookieOptions).redirect('/checkout/shipping');
         } catch(err) {
             if (err.status === 400 || err.status === 401) {
                 res.redirect('/checkout/auth');
@@ -125,8 +126,8 @@ module.exports = (app) => {
             // attach JWT 
             res.header('Authorization', response.token);
 
-            // redirect to get shipping info 
-            res.redirect('/checkout/shipping');
+            // attach cookie and redirect to get shipping info 
+            res.cookie("access_token", response.signedToken, JWTcookieOptions).redirect('/checkout/shipping');
         } catch(err) {
             if (err.status === 400 || err.status === 409) {
                 res.redirect('/checkout/auth');

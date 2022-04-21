@@ -1,5 +1,6 @@
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
@@ -7,8 +8,12 @@ const pool = require('../db/config');
 const { sanitizer } = require('../lib/sanitizer');
 require('dotenv').config();
 
+
 module.exports = (app) => {
-    
+
+    // helmet for added security on http headers
+    app.use(helmet());
+
     // enable cross-origin resource sharing
     app.use(cors());
 
@@ -18,8 +23,8 @@ module.exports = (app) => {
     // parse incoming url-encoded req
     app.use(bodyParser.urlencoded({ extended: true }));
 
-    // helmet for added security on http headers
-    app.use(helmet());
+    // parse all cookies into req.cookie and req.signedCookie
+    app.use(cookieParser());
 
     // custom middleware to sanitize user inputs
     app.use(sanitizer);

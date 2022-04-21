@@ -146,6 +146,15 @@ The project handles various endpoints a user may need to access while online sho
 __Note:__ Must use HTTPS with JWT Bearer Authentication 
 See [Swagger API Documentation](https://crk-e-commerce.herokuapp.com/api-docs/) for info routes and their variable requirements. 
 
+### Custom JWT Authentication 
+This project includes custom JWT authentication found in `lib/customAuth` folder instead of using Passport.
+
+The custom auth can be used either in Bearer Token or Cookie format, it will validate both formats. The API will automatically send both the Bearer Token and Cookie in response to logging in/registering. 
+
+To use cookies, simply ignore the Bearer Token in the body of the response. 
+
+If you wish to exclude the cookies from the response when using Bearer Tokens, remove the code attaching the cookie to the response in the auth/login, auth/register, checkout/auth routes. s
+
 
 ## Project Status
 ___IN PROGRESS:__ Working on additional secutiry measures_
