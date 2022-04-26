@@ -29,7 +29,11 @@
     "passport-local": "^1.0.0",
     "pg": "^8.7.1",
     "stripe": "^8.195.0",
-    "swagger-jsdoc": "^6.1.0",
+    "swagger-client": "^3.18.4",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-parser": "^10.0.3",
+    "swagger-ui": "^4.10.3",
+    "swagger-ui-dist": "^4.10.3",
     "swagger-ui-express": "^4.3.0",
     "validator": "^13.7.0"
   },

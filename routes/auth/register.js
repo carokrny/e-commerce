@@ -13,12 +13,12 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Auth
-    *     description: Returns registration page
+    *     summary: Returns registration page
     *     produces:
     *       - application/json
     *     responses:
     *       200:
-    *         description: Register form.
+    *         description: Registration form.
     */
     router.get('/', (req, res, next) => {
         res.status(200).json('Registration form goes here');
@@ -30,24 +30,23 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Auth
-    *     description: Returns user account info and bearer token 
-    *     produces:
-    *       - application/json
-    *     security: 
-    *       - Bearer: []
+    *     summary: Returns user account info and bearer token 
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               email:
+    *                 $ref: '#/components/schemas/email'
+    *               password:
+    *                 $ref: '#/components/schemas/password'
+    *             required:
+    *               - email
+    *               - password
     *     parameters:
-    *       - name: email
-    *         description: user's email
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/email'
-    *       - name: password
-    *         description: user's password
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/password'
     *       - name: cart_id
     *         description: ID associated with Cart
     *         in: cookie
@@ -57,23 +56,24 @@ module.exports = (app) => {
     *     responses:
     *       200:
     *         description: Object with a User object and a Bearer token object.
-    *         schema:
-    *           type: object
-    *           properties: 
-    *             user:
-    *               $ref: '#/definitions/User'
-    *             token:
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 user:
+    *                   $ref: '#/components/schemas/User'
+    *                 token:
+    *                   type: string
+    *                 expires:
+    *                   type: number
+    *         headers: 
+    *           Set-Cookie:
+    *             schema: 
     *               type: string
-    *             expires:
-    *               type: string
+    *               example: access_token=eyJhbGc...; Path=/; HttpOnly; Secure
     *       400: 
-    *         description: Email or password missing.
-    *         schema:
-    *           $ref: '#/responses/InputsError'
-    *       401: 
-    *         description: Incorrect email or password.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/InputsError'
     *       409: 
     *         description: Email already in use.
     */
@@ -86,7 +86,7 @@ module.exports = (app) => {
             const response = await register({ ...req.body, cart_id: cart_id });
 
             // put jwt in a secure cookie and send to client
-            res.cookie("access_token", response.signedToken, JWTcookieOptions).status(201).json(response);
+            res.cookie("access_token", response.token, JWTcookieOptions).status(201).json(response);
         } catch(err) {
             next(err);
         }

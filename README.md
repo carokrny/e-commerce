@@ -44,7 +44,10 @@
 - End-to-end tests for the checkout flow 
 - `pre-test` and `post-test` scripts to automate testing setup and tear down 
 #### API Documentation
-- Documentation with Swagger 
+- Documentation with Swagger UI
+- Can try out endpoints with test data via Swagger UI, connected to a test database
+- Parameters, request body, and response options are documented for each endpoint
+- Can create an account and authorize to access all endpoints via Swagger UI
 
 
 ## Technologies Used

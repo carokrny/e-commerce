@@ -14,11 +14,10 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Checkout
-    *     description: Returns review before placing order.
-    *     produces:
-    *       - application/json
+    *     summary: Returns review before placing order.
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     parameters: 
     *       - name: cart_id
     *         description: user's shopping cart id
@@ -47,21 +46,23 @@ module.exports = (app) => {
     *     responses:
     *       200:
     *         description: Review of cart, payment method, billing & shipping addresses.
-    *         schema:
-    *           type: object
-    *           properties: 
-    *               cart:  
-    *                 $ref: '#/definitions/Cart'
-    *               cartItems:
-    *                 type: array
-    *                 items: 
-    *                   $ref: '#/definitions/CartItem'
-    *               shipping:
-    *                 $ref: '#/definitions/Address'
-    *               billing:
-    *                 $ref: '#/definitions/Address'
-    *               payment:
-    *                 $ref: '#/definitions/Card'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 cart:
+    *                   $ref: '#/components/schemas/Cart'
+    *                 cartItems:
+    *                   type: array
+    *                   items:
+    *                     $ref: '#/components/schemas/Cart'
+    *                 shipping:
+    *                   $ref: '#/components/schemas/Address'
+    *                 billing:
+    *                   $ref: '#/components/schemas/Address'
+    *                 payment:
+    *                   $ref: '#/components/schemas/Card'
     *       302:
     *         description: |
     *           Redirects to /cart if user is not authenticated. 
@@ -102,11 +103,10 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Checkout
-    *     description: Submits order.
-    *     produces:
-    *       - application/json
+    *     summary: Submits order.
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     parameters: 
     *       - name: cart_id
     *         description: user's shopping cart id
@@ -133,8 +133,6 @@ module.exports = (app) => {
     *         schema: 
     *           $ref: '#/components/schemas/id'
     *     responses:
-    *       200:
-    *         description: Summary of cart, payment method, billing & shipping addresses.
     *       302:
     *         description: |
     *           Redirects to /checkout/order/confirmation if sucessful.
@@ -175,11 +173,10 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Checkout
-    *     description: Returns order confirmation
-    *     produces:
-    *       - application/json
+    *     summary: Returns order confirmation
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     parameters:
     *       - name: order_id
     *         description: ID of order
@@ -189,8 +186,13 @@ module.exports = (app) => {
     *     responses:
     *       200:
     *         description: An Order object.
-    *         schema:
-    *           $ref: '#/definitions/Order'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 order:
+    *                   $ref: '#/components/schemas/Order'
     *       302:
     *         description: Redirects to /cart if user is not authenticated.
     *       400: 

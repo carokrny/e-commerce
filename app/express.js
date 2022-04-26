@@ -12,7 +12,7 @@ require('dotenv').config();
 module.exports = (app) => {
 
     // helmet for added security on http headers
-    app.use(helmet());
+    //app.use(helmet());
 
     // enable cross-origin resource sharing
     app.use(cors());

@@ -16,9 +16,7 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Checkout
-    *     description: Begins checkout flow
-    *     produces:
-    *       - application/json
+    *     summary: Begins checkout flow
     *     parameters:
     *       - name: cart_id
     *         description: ID associated with Cart
@@ -29,12 +27,10 @@ module.exports = (app) => {
     *     responses:
     *       302:
     *         description: |
-    *           Redirects to /checkout/auth if user not authenticated. 
+    *           Redirects to /checkout/auth if user not authenticated.  
     *           Redirects to /checkout/shipping if user is authenticated.
     *       400: 
-    *         description: Missing cart_id.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       404: 
     *         description: Cart associated with cart_id doesn't exist or is empty.
     */ 

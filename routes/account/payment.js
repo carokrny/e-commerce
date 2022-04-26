@@ -48,34 +48,33 @@ module.exports = async (app) => {
     *     is_primary_payment:
     *       type: boolean
     *       example: false
-    * definitions:
-    *   Card:
-    *     type: object
-    *     properties:
-    *       id:
-    *         $ref: '#/components/schemas/id'
-    *       user_id:
-    *         $ref: '#/components/schemas/id'
-    *       provider:
-    *         $ref: '#/components/schemas/provider'
-    *       card_type:
-    *         $ref: '#/components/schemas/card_type'
-    *       card_no:
-    *         $ref: '#/components/schemas/card_no'
-    *       exp_month:
-    *         $ref: '#/components/schemas/exp_month'
-    *       exp_year:
-    *         $ref: '#/components/schemas/exp_year'
-    *       cvv:
-    *         $ref: '#/components/schemas/cvv'
-    *       billing_address_id:
-    *         $ref: '#/components/schemas/id'
-    *       created:
-    *         $ref: '#/components/schemas/date_time'
-    *       modified:
-    *         $ref: '#/components/schemas/date_time'
-    *       is_primary_payment:
-    *         $ref: '#/components/schemas/is_primary_payment'
+    *     Card:
+    *       type: object
+    *       properties:
+    *         id:
+    *           $ref: '#/components/schemas/id'
+    *         user_id:
+    *           $ref: '#/components/schemas/id'
+    *         provider:
+    *           $ref: '#/components/schemas/provider'
+    *         card_type:
+    *           $ref: '#/components/schemas/card_type'
+    *         card_no:
+    *           $ref: '#/components/schemas/card_no'
+    *         exp_month:
+    *           $ref: '#/components/schemas/exp_month'
+    *         exp_year:
+    *           $ref: '#/components/schemas/exp_year'
+    *         cvv:
+    *           $ref: '#/components/schemas/cvv'
+    *         billing_address_id:
+    *           $ref: '#/components/schemas/id'
+    *         created:
+    *           $ref: '#/components/schemas/date_time'
+    *         modified:
+    *           $ref: '#/components/schemas/date_time'
+    *         is_primary_payment:
+    *           $ref: '#/components/schemas/is_primary_payment'
     *
     */
 
@@ -85,73 +84,56 @@ module.exports = async (app) => {
     *   post:
     *     tags:
     *       - Account
-    *     description: Creates and returns new card payment method
-    *     produces:
-    *       - application/json
+    *     summary: Creates and returns new card payment method
     *     security: 
-    *       - Bearer: []
-    *     parameters:
-    *       - name: provider
-    *         description: card's provider (e.g., Visa)
-    *         in: body
-    *         required: true
-    *         schema:
-    *           $ref: '#/components/schemas/provider'
-    *       - name: card_type
-    *         description: type of card (e.g., credit, debit)
-    *         in: body
-    *         required: true
-    *         schema:
-    *           $ref: '#/components/schemas/card_type'
-    *       - name: card_no
-    *         description: card number
-    *         in: body
-    *         required: true
-    *         schema:
-    *           $ref: '#/components/schemas/card_no'
-    *       - name: exp_month
-    *         description: card expiration month
-    *         in: body
-    *         required: true
-    *         schema:
-    *           $ref: '#/components/schemas/exp_month'
-    *       - name: exp_year
-    *         description: card expiration year
-    *         in: body
-    *         required: true
-    *         schema:
-    *           $ref: '#/components/schemas/exp_year'
-    *       - name: cvv
-    *         description: card cvv
-    *         in: body
-    *         required: true
-    *         schema:
-    *           $ref: '#/components/schemas/cvv'
-    *       - name: billing_address_id
-    *         description: id of address associated with billing info
-    *         in: body
-    *         required: true
-    *         schema:
-    *           $ref: '#/components/schemas/id'
-    *       - name: is_primary_payment
-    *         description: whether this is user's primary payment method
-    *         in: body
-    *         required: false
-    *         schema:
-    *           $ref: '#/components/schemas/is_primary_payment'
+    *       - bearerJWT: []
+    *       - cookieJWT: []
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               provider:
+    *                 $ref: '#/components/schemas/provider'
+    *               card_type:
+    *                 $ref: '#/components/schemas/card_type'
+    *               card_no:
+    *                 $ref: '#/components/schemas/card_no'
+    *               exp_month:
+    *                 $ref: '#/components/schemas/exp_month'
+    *               exp_year:
+    *                 $ref: '#/components/schemas/exp_year'
+    *               cvv:
+    *                 $ref: '#/components/schemas/cvv'
+    *               billing_address_id:
+    *                 $ref: '#/components/schemas/id'
+    *               is_primary_payment:
+    *                 $ref: '#/components/schemas/is_primary_payment'
+    *             required:
+    *               - provider
+    *               - card_type
+    *               - card_no
+    *               - exp_month
+    *               - exp_year
+    *               - cvv
+    *               - billing_address_id
     *     responses:
     *       201:
     *         description: A Card object.
-    *         schema:
-    *           $ref: '#/definitions/Card'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 payment: 
+    *                   $ref: '#/components/schemas/Card' 
     *       400: 
-    *         description: Invalid inputs.
-    *         schema:
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     */
     router.post('/', async (req, res, next) => {
         try {
@@ -177,22 +159,24 @@ module.exports = async (app) => {
     *   get:
     *     tags:
     *       - Account
-    *     description: Returns all card payment methods associated with user
-    *     produces:
-    *       - application/json
+    *     summary: Returns all card payment methods associated with user
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: An array of Card objects.
-    *         schema:
-    *           type: array 
-    *           items: 
-    *             $ref: '#/definitions/Card'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 payments: 
+    *                   type: array
+    *                   items:
+    *                     $ref: '#/components/schemas/Card'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     */
     router.get('/all', async (req, res ,next) => {
         try {
@@ -224,24 +208,24 @@ module.exports = async (app) => {
     *   get:
     *     tags:
     *       - Account
-    *     description: Returns card with specified payment_id
-    *     produces:
-    *       - application/json
+    *     summary: Returns card with specified payment_id
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: A Card object.
-    *         schema:
-    *           $ref: '#/definitions/Card'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 payment: 
+    *                   $ref: '#/components/schemas/Card'
     *       400: 
-    *         description: Missing payment_id.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     *       403: 
     *         description: User not associated with specified payment_id.
     *       404: 
@@ -274,73 +258,48 @@ module.exports = async (app) => {
     *   put:
     *     tags:
     *       - Account
-    *     description: Updates and returns card payment method with specified ID
-    *     produces:
-    *       - application/json
+    *     summary: Updates and returns card payment method with specified ID
     *     security: 
-    *       - Bearer: []
-    *     parameters:
-    *       - name: provider
-    *         description: card's provider (e.g., Visa)
-    *         in: body
-    *         required: false
-    *         schema:
-    *           $ref: '#/components/schemas/provider'
-    *       - name: card_type
-    *         description: type of card (e.g., credit, debit)
-    *         in: body
-    *         required: false
-    *         schema:
-    *           $ref: '#/components/schemas/card_type'
-    *       - name: card_no
-    *         description: card number
-    *         in: body
-    *         required: false
-    *         schema:
-    *           $ref: '#/components/schemas/card_no'
-    *       - name: exp_month
-    *         description: card expiration month
-    *         in: body
-    *         required: false
-    *         schema:
-    *           $ref: '#/components/schemas/exp_month'
-    *       - name: exp_year
-    *         description: card expiration year
-    *         in: body
-    *         required: false
-    *         schema:
-    *           $ref: '#/components/schemas/exp_year'
-    *       - name: cvv
-    *         description: card cvv
-    *         in: body
-    *         required: false
-    *         schema:
-    *           $ref: '#/components/schemas/cvv'
-    *       - name: billing_address_id
-    *         description: id of address associated with billing info
-    *         in: body
-    *         required: false
-    *         schema:
-    *           $ref: '#/components/schemas/id'
-    *       - name: is_primary_payment
-    *         description: whether this is user's primary payment method
-    *         in: body
-    *         required: false
-    *         schema:
-    *           $ref: '#/components/schemas/is_primary_payment'
+    *       - bearerJWT: []
+    *       - cookieJWT: []
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               provider:
+    *                 $ref: '#/components/schemas/provider'
+    *               card_type:
+    *                 $ref: '#/components/schemas/card_type'
+    *               card_no:
+    *                 $ref: '#/components/schemas/card_no'
+    *               exp_month:
+    *                 $ref: '#/components/schemas/exp_month'
+    *               exp_year:
+    *                 $ref: '#/components/schemas/exp_year'
+    *               cvv:
+    *                 $ref: '#/components/schemas/cvv'
+    *               billing_address_id:
+    *                 $ref: '#/components/schemas/id'
+    *               is_primary_payment:
+    *                 $ref: '#/components/schemas/is_primary_payment'
     *     responses:
     *       200:
     *         description: A Card object.
-    *         schema:
-    *           $ref: '#/definitions/Card'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 payment: 
+    *                   $ref: '#/components/schemas/Card'
     *       400: 
-    *         description: Missing payment_id.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     *       403: 
     *         description: User not associated with specified payment_id.
     *       404: 
@@ -377,24 +336,24 @@ module.exports = async (app) => {
     *   delete:
     *     tags:
     *       - Account
-    *     description: Returns card with specified payment_id
-    *     produces:
-    *       - application/json
+    *     summary: Returns card with specified payment_id
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: A Card object.
-    *         schema:
-    *           $ref: '#/definitions/Card'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 payment: 
+    *                   $ref: '#/components/schemas/Card'
     *       400: 
-    *         description: Missing payment_id.
-    *         schema:
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     *       403: 
     *         description: User not associated with specified payment_id.
     *       404: 

@@ -28,61 +28,60 @@ module.exports = (app) => {
     *     product_name: 
     *       type: string
     *       pattern: ^[A-Za-z0-9 '#:_-]*$
-    *       example: 'socks'
+    *       example: 'T-shirt'
     *     product_description:
     *       type: string
     *       pattern: ^[A-Za-z0-9 '#:_-]*$
-    *       example: 'luxurious item imported from Italy'
+    *       example: 'Imported pima cotton unisex t-shirt'
     *     in_stock: 
     *       type: boolean 
     *       example: true
-    * definitions:
-    *   Order:
-    *     type: object
-    *     properties:
-    *       id:
-    *         $ref: '#/components/schemas/id'
-    *       user_id:
-    *         $ref: '#/components/schemas/id'
-    *       shipping_address_id:
-    *         $ref: '#/components/schemas/id'
-    *       billing_address_id:
-    *         $ref: '#/components/schemas/id'
-    *       payment_id:
-    *         $ref: '#/components/schemas/id'
-    *       stripe_charge_id:
-    *         $ref: '#/components/schemas/id'
-    *       status:
-    *         $ref: '#/components/schemas/status'
-    *       amount_charged:
-    *         $ref: '#/components/schemas/price'
-    *       num_items:
-    *         $ref: '#/components/schemas/num_products'
-    *       created:
-    *         $ref: '#/components/schemas/date_time'
-    *       modified:
-    *         $ref: '#/components/schemas/date_time'
-    *   OrderItem:
-    *     type: object
-    *     properties:
-    *       order_id:
-    *         $ref: '#/components/schemas/id'
-    *       product_id:
-    *         $ref: '#/components/schemas/id'
-    *       quantity: 
-    *         $ref: '#/components/schemas/num_products'
-    *       name:
-    *         $ref: '#/components/schemas/product_name'
-    *       total_price:
-    *         $ref: '#/components/schemas/price'
-    *       description: 
-    *         $ref: '#/components/schemas/product_description'
-    *       in_stock:
-    *         $ref: '#/components/schemas/in_stock'
-    *       created:
-    *         $ref: '#/components/schemas/date_time'
-    *       modified:
-    *         $ref: '#/components/schemas/date_time'
+    *     Order:
+    *       type: object
+    *       properties:
+    *         id:
+    *           $ref: '#/components/schemas/id'
+    *         user_id:
+    *           $ref: '#/components/schemas/id'
+    *         shipping_address_id:
+    *           $ref: '#/components/schemas/id'
+    *         billing_address_id:
+    *           $ref: '#/components/schemas/id'
+    *         payment_id:
+    *           $ref: '#/components/schemas/id'
+    *         stripe_charge_id:
+    *           $ref: '#/components/schemas/id'
+    *         status:
+    *           $ref: '#/components/schemas/status'
+    *         amount_charged:
+    *           $ref: '#/components/schemas/price'
+    *         num_items:
+    *           $ref: '#/components/schemas/num_products'
+    *         created:
+    *           $ref: '#/components/schemas/date_time'
+    *         modified:
+    *           $ref: '#/components/schemas/date_time'
+    *     OrderItem:
+    *       type: object
+    *       properties:
+    *         order_id:
+    *           $ref: '#/components/schemas/id'
+    *         product_id:
+    *           $ref: '#/components/schemas/id'
+    *         quantity: 
+    *           $ref: '#/components/schemas/num_products'
+    *         name:
+    *           $ref: '#/components/schemas/product_name'
+    *         total_price:
+    *           $ref: '#/components/schemas/price'
+    *         description: 
+    *           $ref: '#/components/schemas/product_description'
+    *         in_stock:
+    *           $ref: '#/components/schemas/in_stock'
+    *         created:
+    *           $ref: '#/components/schemas/date_time'
+    *         modified:
+    *           $ref: '#/components/schemas/date_time'
     *
     */
 
@@ -92,22 +91,24 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Account
-    *     description: Returns all orders associated with user
-    *     produces:
-    *       - application/json
+    *     summary: Returns all orders associated with user
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: An array of Order objects.
-    *         schema:
-    *           type: array 
-    *           items: 
-    *             $ref: '#/definitions/Order'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 orders:
+    *                   type: array
+    *                   items: 
+    *                     $ref: '#/components/schemas/Order'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     */ 
     router.get('/all', async (req, res ,next) => {
         try {
@@ -133,24 +134,24 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Account
-    *     description: Returns order associated with specified order_id
-    *     produces:
-    *       - application/json
+    *     summary: Returns order associated with specified order_id
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: An Order object.
-    *         schema:
-    *           $ref: '#/definitions/Order'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 order:
+    *                   $ref: '#/components/schemas/Product'
     *       400: 
-    *         description: Missing order_id.
-    *         schema:
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     *       403: 
     *         description: User not associated with specified order_id.
     *       404: 

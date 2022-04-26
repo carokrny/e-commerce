@@ -13,7 +13,7 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Auth
-    *     description: Returns login page
+    *     summary: Returns login page
     *     produces:
     *       - application/json
     *     responses:
@@ -30,24 +30,23 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Auth
-    *     description: Returns user account info and bearer token 
-    *     produces:
-    *       - application/json
-    *     security: 
-    *       - Bearer: []
+    *     summary: Returns user account info and bearer token 
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               email:
+    *                 $ref: '#/components/schemas/email'
+    *               password:
+    *                 $ref: '#/components/schemas/password'
+    *             required:
+    *               - email
+    *               - password
     *     parameters:
-    *       - name: email
-    *         description: user's email
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/email'
-    *       - name: password
-    *         description: user's password
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/password'
     *       - name: cart_id
     *         description: ID associated with Cart
     *         in: cookie
@@ -56,16 +55,23 @@ module.exports = (app) => {
     *           $ref: '#/components/schemas/id'
     *     responses:
     *       200:
-    *         description: Object with a User object and a Bearer token object. 
-    *         schema:
-    *           type: object
-    *           properties: 
-    *             user:
-    *               $ref: '#/definitions/User'
-    *             token:
+    *         description: Object with a User object and a Bearer token object.
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 user:
+    *                   $ref: '#/components/schemas/User'
+    *                 token:
+    *                   type: string
+    *                 expires:
+    *                   type: number
+    *         headers: 
+    *           Set-Cookie:
+    *             schema: 
     *               type: string
-    *             expires:
-    *               type: string
+    *               example: access_token=eyJhbGc...; Path=/; HttpOnly; Secure
     *       400: 
     *         description: Email or password missing.
     *       401: 
@@ -80,10 +86,9 @@ module.exports = (app) => {
             const response = await login({ ...req.body, cart_id: cart_id });
 
             // put jwt in a secure cookie and send to client
-            res.cookie("access_token", response.signedToken, JWTcookieOptions).status(200).json(response);
+            res.cookie("access_token", response.token, JWTcookieOptions).status(200).json(response);
         } catch(err) {
             next(err);
         }
     });
-
 };
