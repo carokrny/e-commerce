@@ -1,6 +1,7 @@
 const app = require('../app');
 const session = require('supertest-session');
-const { loginUser } = require('./testUtils');
+const { loginUser,
+    createCSRFToken } = require('./testUtils');
 const { user1 } = require('./testData').users;
 const { product } = require('./testData');
 const Cart = require('../models/CartModel');
@@ -12,14 +13,18 @@ describe ('Cart endpoints', () => {
     describe('Valid auth', () => {
         let cartId;
         let testSession;
+        let csrfToken;
 
         beforeAll(async () => {
             // create test session
             testSession = session(app);
             
-            // log user in
             try {
-                await loginUser( user1, testSession);
+                // create csrfToken
+                csrfToken = await createCSRFToken(testSession);
+
+                // log user in
+                token = await loginUser(user1, testSession, csrfToken);
             } catch(e) {
                 console.log(e);
             }
@@ -37,8 +42,6 @@ describe ('Cart endpoints', () => {
             } catch(e) {
                 console.log(e);
             }
-
-            testSession = null;
         })
 
         describe('POST \'/cart\'', () => {
@@ -47,6 +50,7 @@ describe ('Cart endpoints', () => {
                 const res = await testSession
                     .post('/cart')
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(201);
                 expect(res.body).toBeDefined();
                 expect(res.body.cart).toBeDefined();
@@ -73,7 +77,8 @@ describe ('Cart endpoints', () => {
                     const res = await testSession
                         .post(`/cart/item/${product.product_id}`)
                         .send(product)
-                        .set('Accept', 'application/json');
+                        .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken);
                 })
 
                 it('Should return the cart and cart item(s)', async () => {
@@ -96,9 +101,17 @@ describe ('Cart endpoints', () => {
 
         let cartId;
         let testSession;
+        let csrfToken
 
-        beforeAll(() => {
+        beforeAll(async () => {
             testSession = session(app);
+
+            try {
+                // create csrfToken
+                csrfToken = await createCSRFToken(testSession);
+            } catch(e) {
+                console.log(e);
+            }
         })
         
         afterAll(async() => {
@@ -121,6 +134,7 @@ describe ('Cart endpoints', () => {
                 const res = await testSession
                     .post('/cart')
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(201);
                 expect(res.body).toBeDefined();
                 expect(res.body.cart).toBeDefined();
@@ -147,7 +161,8 @@ describe ('Cart endpoints', () => {
                     const res = await testSession
                         .post(`/cart/item/${product.product_id}`)
                         .send(product)
-                        .set('Accept', 'application/json');
+                        .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken);
                 })
 
                 it('Should return the cart and cart item(s)', async () => {

@@ -1,29 +1,27 @@
 const app = require('../app');
 const session = require('supertest-session');
-const { loginUser } = require('./testUtils');
+const { loginUser,
+    createCSRFToken } = require('./testUtils');
 const { user1 } = require('./testData').users;
 const { order1 } = require('./testData').orders;
 
 describe ('Orders endpoints', () => {
 
     let testSession;
-
-    beforeEach(() => {
-        // create test session
-        testSession = session(app);
-    })
-
-    afterEach(() => {
-        testSession = null;
-    })
+    let csrfToken;
 
     describe('Valid auth', () => {
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             try {
+                // create test session
+                testSession = session(app);
+
+                // create csrf token
+                csrfToken = await createCSRFToken(testSession);
+
                 // log user in 
-                await loginUser(user1, testSession);
-    
+                await loginUser(user1, testSession, csrfToken);
             } catch(e) {
                 console.log(e);
             }
@@ -60,6 +58,18 @@ describe ('Orders endpoints', () => {
     })
 
     describe('Invalid auth', () => {
+
+        beforeAll(async () => {
+            try {
+                // create test session
+                testSession = session(app);
+
+                // create csrf token
+                csrfToken = await createCSRFToken(testSession);    
+            } catch(e) {
+                console.log(e);
+            }
+        })
 
         describe('GET \'/account/orders/all\'', () => {
 

@@ -13,10 +13,10 @@ module.exports = (app) => {
     *     summary: Returns home page
     *     responses:
     *       200:
-    *         description: Home page.
+    *         description: returns csrfToken.
     */ 
     router.get('/', (req, res, next) => {
-        res.status(200).json('Home page');
+        res.status(200).json({csrfToken: req.csrfToken()});
     });
 
 }

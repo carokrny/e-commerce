@@ -18,10 +18,10 @@ module.exports = (app) => {
     *       - application/json
     *     responses:
     *       200:
-    *         description: Login form.
+    *         description: returns csrfToken
     */
     router.get('/', (req, res, next) => {
-        res.status(200).json('Login form goes here.');
+        res.status(200).json({csrfToken: req.csrfToken()});
     });
 
     /**

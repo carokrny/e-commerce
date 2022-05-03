@@ -1,6 +1,7 @@
 const app = require('../app');
 const session = require('supertest-session');
-const { loginUser } = require('./testUtils');
+const { loginUser,
+    createCSRFToken } = require('./testUtils');
 const { user3 } = require('./testData').users;
 const { addressPost, 
         addressPut,
@@ -12,19 +13,21 @@ const Address = require('../models/AddressModel');
 describe ('Address endpoints', () => {
 
     let testSession;
+    let csrfToken;
     let addressId;
-
-    beforeAll(() => {
-        // create a test session for saving functional cookies
-        testSession = session(app);
-    })
 
     describe('Valid auth', () => {
 
         beforeAll(async () => {
-            // log user in
+            // create a test session for saving functional cookies
+            testSession = session(app);
+
             try {
-                await loginUser(user3, testSession);
+                // create csrfToken
+                csrfToken = await createCSRFToken(testSession);
+
+                // log user in
+                await loginUser(user3, testSession, csrfToken);
             } catch(e) {
                 console.log(e);
             }
@@ -41,6 +44,7 @@ describe ('Address endpoints', () => {
                             first_name: user3.first_name,
                             last_name: user3.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(201);
                     expect(res.body).toBeDefined();
@@ -63,6 +67,7 @@ describe ('Address endpoints', () => {
                             first_name: user3.first_name,
                             last_name: user3.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(400)
                         .end((err, res) => {
                             if (err) return done(err);
@@ -81,6 +86,7 @@ describe ('Address endpoints', () => {
                             first_name: user3.first_name,
                             last_name: user3.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(400)
                         .end((err, res) => {
                             if (err) return done(err);
@@ -99,6 +105,7 @@ describe ('Address endpoints', () => {
                             first_name: user3.first_name,
                             last_name: user3.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(400)
                         .end((err, res) => {
                             if (err) return done(err);
@@ -117,7 +124,8 @@ describe ('Address endpoints', () => {
                     .send({ ...addressPost, 
                         first_name: user3.first_name,
                         last_name: user3.last_name })
-                    .set('Accept', 'application/json');
+                    .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken);
                 addressId = res.body.address.id;
             })
 
@@ -201,6 +209,7 @@ describe ('Address endpoints', () => {
                             .put(`/account/address/${addressId}`)
                             .send(addressPut)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect('Content-Type', /json/)
                             .expect(200);
                         expect(res.body).toBeDefined();
@@ -222,6 +231,7 @@ describe ('Address endpoints', () => {
                             .put(`/account/address/${addressId}`)
                             .send({ ...addressPut, telephone: 1234567890 })
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect('Content-Type', /json/)
                             .expect(200);
                         expect(res.body).toBeDefined();
@@ -241,6 +251,7 @@ describe ('Address endpoints', () => {
                             .put(`/account/address/${differentAddressId}`)
                             .send(addressPut)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(403)
                             .end((err, res) => {
                                 if (err) return done(err);
@@ -259,6 +270,7 @@ describe ('Address endpoints', () => {
                         const res = await testSession
                             .delete(`/account/address/${addressId}`)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect('Content-Type', /json/)
                             .expect(200);
                         expect(res.body).toBeDefined();
@@ -278,7 +290,8 @@ describe ('Address endpoints', () => {
                                 .send({ ...addressPost, 
                                     first_name: user3.first_name,
                                     last_name: user3.last_name })
-                                .set('Accept', 'application/json');
+                                .set('Accept', 'application/json')
+                                .set(`XSRF-TOKEN`, csrfToken);
                             addressId = res.body.address.id;
 
                             // update User's primary_address_id
@@ -293,6 +306,7 @@ describe ('Address endpoints', () => {
                             const res = await testSession
                                 .delete(`/account/address/${addressId}`)
                                 .set('Accept', 'application/json')
+                                .set(`XSRF-TOKEN`, csrfToken)
                                 .expect('Content-Type', /json/)
                                 .expect(200);
                             expect(res.body).toBeDefined();
@@ -314,6 +328,7 @@ describe ('Address endpoints', () => {
                         testSession
                             .delete(`/account/address/${differentAddressId}`)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(403)
                             .end((err, res) => {
                                 if (err) return done(err);
@@ -327,8 +342,16 @@ describe ('Address endpoints', () => {
 
     describe('Invalid auth', () => {
 
-        beforeAll(() => {
+        beforeAll(async () => {
+            // create a test session for saving functional cookies
             testSession = session(app);
+
+            try {
+                // create csrfToken
+                csrfToken = await createCSRFToken(testSession);
+            } catch(e) {
+                console.log(e);
+            }
         })
 
         describe('POST \'/account/address\'', () => {
@@ -340,6 +363,7 @@ describe ('Address endpoints', () => {
                             first_name: user3.first_name,
                             last_name: user3.last_name })
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(401)
                     .end((err, res) => {
                         if (err) return done(err);
@@ -383,6 +407,7 @@ describe ('Address endpoints', () => {
                     .put(`/account/address/${addressId}`)
                     .send(addressPut)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(401)
                     .end((err, res) => {
                         if (err) return done(err);
@@ -398,6 +423,7 @@ describe ('Address endpoints', () => {
                     .delete(`/account/address/${addressId}`)
                     .set('Authorization', null)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(401)
                     .end((err, res) => {
                         if (err) return done(err);

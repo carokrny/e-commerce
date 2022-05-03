@@ -37,15 +37,18 @@ const createUser = () => {
  *  - email
  *  - password
  * @param {Object} testSession the test testSession
- * @returns {Number} user id 
+ * @param {String} csrfToken csrf token to verify authenticity of request
+ * 
+ * @return {Number} user id 
  */
- const registerUser = async (user, testSession) => {
+ const registerUser = async (user, testSession, csrfToken) => {
      try {
         // log user in to get cookie with JWT
         const res = await testSession
             .post('/register')
             .send(user)
-            .set('Accept', 'application/json');
+            .set('Accept', 'application/json')
+            .set(`XSRF-TOKEN`, csrfToken);
 
         // return id and testSession w cookeies
         return res.body.user.id;
@@ -62,14 +65,19 @@ const createUser = () => {
  *   - email
  *   - password
  * @param {Object} testSession the test testSession
+ * @param {String} csrfToken csrf token to verify authenticity of request
+ * 
+ * @return {Srting} JWT
  */
-const loginUser = async (user, testSession) => {
+const loginUser = async (user, testSession, csrfToken) => {
     try {
         // log user in to get cookie with JWT
-        await testSession
+        const res = await testSession
             .post('/login')
             .send(user)
-            .set('Accept', 'application/json');
+            .set('Accept', 'application/json')
+            .set(`XSRF-TOKEN`, csrfToken);
+        return res.body.token;
     } catch(e) {
         console.log(e);
     }
@@ -79,14 +87,16 @@ const loginUser = async (user, testSession) => {
  * Creates a new cart
  * 
  * @param {Object} testSession the test testSession
- * @returns {Number} id of the new cart
+ * @param {String} csrfToken csrf token to verify authenticity of request
+ * 
+ * @return {Number} id of the new cart
  */
-const createCart = async (testSession) => {
+const createCart = async (testSession, csrfToken) => {
     try {
         const res = await testSession
             .post('/cart')
-            .set('Accept', 'application/json');
-
+            .set('Accept', 'application/json')
+            .set(`XSRF-TOKEN`, csrfToken);
         return res.body.cart.id;
 
     } catch(e) {
@@ -100,17 +110,61 @@ const createCart = async (testSession) => {
  * @param {Object} product to add as a new cart item, has properties:
  *    - product_id: id of product 
  * @param {Object} testSession the test testSessions
+ * @param {String} csrfToken csrf token to verify authenticity of request
  */
- const createCartItem = async (product, testSession) => {
+ const createCartItem = async (product, testSession, csrfToken) => {
     try {
         const res = await testSession
             .post(`/cart/item/${product.product_id}`)
             .send(product)
-            .set('Accept', 'application/json');
+            .set('Accept', 'application/json')
+            .set(`XSRF-TOKEN`, csrfToken);
     } catch(e) {
         console.log(e);
     }
 }
+
+
+
+/**
+ * Creates a new csrfToken
+ * @param {Object} testSession the test testSessions
+ * 
+ * @return {String} XSRF Token value
+ */
+ const createCSRFToken = async (testSession) => {
+    try {
+        const res = await testSession
+            .get(`/`)
+            .set('Accept', 'application/json');
+        const XSRFToken = testSession.cookies.find((cookie) => {
+            return cookie.name === `XSRF-TOKEN`;
+        });
+        return XSRFToken.value;
+    } catch(e) {
+        console.log(e);
+    }
+}
+
+
+
+/**
+ * Gets an existing csrfToken
+ * @param {Object} testSession the test testSessions
+ * 
+ * @return {String} XSRF Token value
+ */
+ const getCSRFToken = async (testSession) => {
+    try {
+        const XSRFToken = testSession.cookies.find((cookie) => {
+            return cookie.name === `XSRF-TOKEN`;
+        });
+        return XSRFToken.value;
+    } catch(e) {
+        console.log(e);
+    }
+}
+
 
 
 module.exports = {
@@ -118,5 +172,7 @@ module.exports = {
     registerUser,
     loginUser,
     createCart, 
-    createCartItem
+    createCartItem,
+    createCSRFToken,
+    getCSRFToken
 }

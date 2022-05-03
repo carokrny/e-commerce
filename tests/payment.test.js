@@ -1,6 +1,7 @@
 const app = require('../app');
 const session = require('supertest-session');
-const { loginUser } = require('./testUtils');
+const { loginUser,
+    createCSRFToken } = require('./testUtils');
 const { user1 } = require('./testData').users;
 const { cardPost, 
     cardPut,
@@ -15,6 +16,7 @@ describe ('Account payment method endpoints', () => {
 
     let testSession;
     let paymentId;
+    let csrfToken;
 
     describe('Valid auth', () => {
         
@@ -23,8 +25,11 @@ describe ('Account payment method endpoints', () => {
                 // create test session
                 testSession = session(app);
 
+                // create csrfToken
+                csrfToken = await createCSRFToken(testSession);
+
                 // login user
-                await loginUser(user1, testSession);
+                await loginUser(user1, testSession, csrfToken);
             } catch(e) {
                 console.log(e);
             }
@@ -50,6 +55,7 @@ describe ('Account payment method endpoints', () => {
                         .post('/account/payment')
                         .send(cardPost)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(201);
                     expect(res.body).toBeDefined();
@@ -71,6 +77,7 @@ describe ('Account payment method endpoints', () => {
                             .post('/account/payment')
                             .send({ ...cardPost, card_no: null })
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(400)
                             .end((err, res) => {
                                 if (err) return done(err);
@@ -86,6 +93,7 @@ describe ('Account payment method endpoints', () => {
                             .post('/account/payment')
                             .send(invalidCardPost)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(400)
                             .end((err, res) => {
                                 if (err) return done(err);
@@ -102,6 +110,7 @@ describe ('Account payment method endpoints', () => {
                             .send({...cardPost,
                                 provider: xssAttack})
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(400)
                             .end((err, res) => {
                                 if (err) return done(err);
@@ -118,6 +127,7 @@ describe ('Account payment method endpoints', () => {
                             .send({...cardPost,
                                 card_no: xssAttack})
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(400)
                             .end((err, res) => {
                                 if (err) return done(err);
@@ -186,6 +196,7 @@ describe ('Account payment method endpoints', () => {
                         .put(`/account/payment/${paymentId}`)
                         .send(cardPut)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(200);
                     expect(res.body).toBeDefined();
@@ -206,6 +217,7 @@ describe ('Account payment method endpoints', () => {
                         .put(`/account/payment/${paymentId}`)
                         .send({ ...cardPut, telephone: 1234567890 })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(200);
                     expect(res.body).toBeDefined();
@@ -226,6 +238,7 @@ describe ('Account payment method endpoints', () => {
                         .put(`/account/payment/${paymentId}`)
                         .send(invalidCardPut)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(400)
                         .end((err, res) => {
                             if (err) return done(err);
@@ -241,6 +254,7 @@ describe ('Account payment method endpoints', () => {
                         .put(`/account/payment/${differentPaymentId}`)
                         .send(cardPut)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(409)
                         .end((err, res) => {
                             if (err) return done(err);
@@ -261,6 +275,7 @@ describe ('Account payment method endpoints', () => {
                             .delete(`/account/payment/${paymentId}`)
                             .set('Accept', 'application/json')
                             .expect('Content-Type', /json/)
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(200);
                         expect(res.body).toBeDefined();
                         expect(res.body.payment).toBeDefined();
@@ -283,6 +298,7 @@ describe ('Account payment method endpoints', () => {
                     testSession
                         .delete(`/account/payment/${differentPaymentId}`)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(409)
                         .end((err, res) => {
                             if (err) return done(err);
@@ -295,8 +311,11 @@ describe ('Account payment method endpoints', () => {
 
     describe('Invalid auth', () => {
 
-        beforeAll (() => {
+        beforeAll (async () => {
             testSession = session(app);
+
+            // create csrf token 
+            csrfToken = await createCSRFToken(testSession);
         })
 
         describe('POST \'/account/payment\'', () => {
@@ -306,6 +325,7 @@ describe ('Account payment method endpoints', () => {
                     .post('/account/payment')
                     .send(cardPost)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(401)
                     .end((err, res) => {
                         if (err) return done(err);
@@ -349,6 +369,7 @@ describe ('Account payment method endpoints', () => {
                     .put(`/account/payment/${paymentId}`)
                     .send(cardPut)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(401)
                     .end((err, res) => {
                         if (err) return done(err);
@@ -363,6 +384,7 @@ describe ('Account payment method endpoints', () => {
                 testSession
                     .delete(`/account/payment/${paymentId}`)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(401)
                     .end((err, res) => {
                         if (err) return done(err);

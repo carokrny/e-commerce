@@ -2,7 +2,8 @@ const app = require('../app');
 const session = require('supertest-session');
 const { loginUser, 
     createCart,
-    createCartItem } = require('./testUtils');
+    createCartItem,
+    createCSRFToken } = require('./testUtils');
 const { user3 } = require('./testData').users;
 const { product, 
     updatedProduct } = require('./testData');
@@ -15,17 +16,21 @@ describe ('Cart endpoints', () => {
 
         let cartId;
         let testSession;
+        let csrfToken
 
         beforeEach(async () => {
             try {
                 // create test session
                 testSession = session(app);
 
+                // create csrf token
+                csrfToken = await createCSRFToken(testSession);
+
                 // log user in
-                await loginUser(user3, testSession);
+                await loginUser(user3, testSession, csrfToken);
 
                 // create cart
-                cartId = await createCart(testSession); 
+                cartId = await createCart(testSession, csrfToken); 
             } catch(e) {
                 console.log(e);
             }
@@ -41,9 +46,6 @@ describe ('Cart endpoints', () => {
             } catch(e) {
                 console.log(e);
             }
-
-            cartId = null;
-            testSession = null;
         })
 
         describe('POST \'/cart/item/:product_id\'', () => {
@@ -53,6 +55,7 @@ describe ('Cart endpoints', () => {
                     .post(`/cart/item/${product.product_id}`)
                     .send(product)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(201);
                 expect(res.body).toBeDefined();
                 expect(res.body.cartItem).toBeDefined();
@@ -67,7 +70,7 @@ describe ('Cart endpoints', () => {
             beforeEach(async () => {
                 try {
                     // add item to cart
-                    await createCartItem(product, testSession);
+                    await createCartItem(product, testSession, csrfToken);
                 } catch(e) {
                     console.log(e);
                 }
@@ -80,6 +83,7 @@ describe ('Cart endpoints', () => {
                         .post(`/cart/item/${product.product_id}`)
                         .send(product)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(201);
                     expect(res.body).toBeDefined();
                     expect(res.body.cartItem).toBeDefined();
@@ -124,6 +128,7 @@ describe ('Cart endpoints', () => {
                         .put(`/cart/item/${product.product_id}`)
                         .send(updatedProduct)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(200);
                     expect(res.body).toBeDefined();
                     expect(res.body.cartItem).toBeDefined();
@@ -139,6 +144,7 @@ describe ('Cart endpoints', () => {
                             .put(`/cart/item/7`)
                             .send(updatedProduct)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(404)
                             .end((err, res) => {
                                 if (err) return done(err);
@@ -154,6 +160,7 @@ describe ('Cart endpoints', () => {
                     const res = await testSession
                         .delete(`/cart/item/${product.product_id}`)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(200);
                     expect(res.body).toBeDefined();
                     expect(res.body.cartItem).toBeDefined();
@@ -167,6 +174,7 @@ describe ('Cart endpoints', () => {
                         testSession
                             .delete(`/cart/item/${product.product_id + 4}`)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(404)
                             .end((err, res) => {
                                 if (err) return done(err);
@@ -182,14 +190,18 @@ describe ('Cart endpoints', () => {
 
         let testSession;
         let cartId;
+        let csrfToken
 
         beforeEach(async () => {
             try {
                 // create test session, no log in
                 testSession = session(app);
 
+                // create csrf token
+                csrfToken = await createCSRFToken(testSession);
+
                 // create cart
-                cartId  = await createCart(testSession); 
+                cartId  = await createCart(testSession, csrfToken); 
             } catch(e) {
                 console.log(e);
             }
@@ -206,9 +218,6 @@ describe ('Cart endpoints', () => {
             } catch(e) {
                 console.log(e);
             }
-
-            cartId = null;
-            testSession = null;
         })
 
         describe('POST \'/cart/item/:product_id\'', () => {
@@ -218,6 +227,7 @@ describe ('Cart endpoints', () => {
                     .post(`/cart/item/${product.product_id}`)
                     .send(product)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(201);
                 expect(res.body).toBeDefined();
                 expect(res.body.cartItem).toBeDefined();
@@ -231,7 +241,7 @@ describe ('Cart endpoints', () => {
             beforeEach(async () => {
                 try {
                     // add item to cart
-                    await createCartItem(product, testSession);
+                    await createCartItem(product, testSession, csrfToken);
                 } catch(e) {
                     console.log(e);
                 }
@@ -258,6 +268,7 @@ describe ('Cart endpoints', () => {
                         .put(`/cart/item/${product.product_id}`)
                         .send(updatedProduct)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(200);
                     expect(res.body).toBeDefined();
                     expect(res.body.cartItem).toBeDefined();
@@ -273,6 +284,7 @@ describe ('Cart endpoints', () => {
                     const res = await testSession
                         .delete(`/cart/item/${product.product_id}`)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(200);
                     expect(res.body).toBeDefined();
                     expect(res.body.cartItem).toBeDefined();

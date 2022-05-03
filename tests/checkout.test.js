@@ -2,7 +2,8 @@ const app = require('../app');
 const session = require('supertest-session');
 const { loginUser, 
     createCart, 
-    createCartItem } = require('./testUtils');
+    createCartItem, 
+    createCSRFToken } = require('./testUtils');
 const { user4, 
         user5  } = require('./testData').users;
 const { testRegister,
@@ -23,20 +24,24 @@ describe ('Checkout endpoints', () => {
 
         let cartId;                       
         let testSession;
+        let csrfToken;
 
         beforeEach(async () => {
             try{
                 // create test session
                 testSession = session(app);
 
+                // create csrf token
+                csrfToken = await createCSRFToken(testSession);
+
                 // log user in 
-                await loginUser(user4, testSession);
+                await loginUser(user4, testSession, csrfToken);
 
                 // create cart
-                cartId = await createCart(testSession)
+                cartId = await createCart(testSession, csrfToken)
 
                 // add item to cart
-                await createCartItem(product, testSession);
+                await createCartItem(product, testSession, csrfToken);
             } catch(e) {
                 console.log(e);
             }
@@ -82,9 +87,7 @@ describe ('Checkout endpoints', () => {
             } catch(e) {
                 console.log(e);
             }
-
             cartId = null;
-            testSession = null;
         })
 
         describe('GET \'/checkout/\'', () => {
@@ -116,6 +119,7 @@ describe ('Checkout endpoints', () => {
                 const res = await testSession
                     .post(`/checkout/auth/login`)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(302)
                     .expect('Location', '/checkout/shipping');
                 expect(res.body).toBeDefined();
@@ -128,6 +132,7 @@ describe ('Checkout endpoints', () => {
                 const res = await testSession
                     .post(`/checkout/auth/register`)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(302)
                     .expect('Location', '/checkout/shipping');
                 expect(res.body).toBeDefined();
@@ -157,6 +162,7 @@ describe ('Checkout endpoints', () => {
                             first_name: null,
                             last_name: null })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/shipping');
                     expect(res.body).toBeDefined();
@@ -172,6 +178,7 @@ describe ('Checkout endpoints', () => {
                             first_name: "",
                             last_name: "" })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/shipping');
                     expect(res.body).toBeDefined();
@@ -188,6 +195,7 @@ describe ('Checkout endpoints', () => {
                             first_name: user4.first_name,
                             last_name: user4.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/shipping');
                     expect(res.body).toBeDefined();
@@ -204,6 +212,7 @@ describe ('Checkout endpoints', () => {
                             first_name: user4.first_name,
                             last_name: user4.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/shipping');
                     expect(res.body).toBeDefined();
@@ -219,6 +228,7 @@ describe ('Checkout endpoints', () => {
                             first_name: user4.first_name,
                             last_name: user4.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/payment');
                     expect(res.body).toBeDefined();
@@ -248,7 +258,8 @@ describe ('Checkout endpoints', () => {
                         .send({ ...addressPost, 
                             first_name: user4.first_name,
                             last_name: user4.last_name })
-                        .set('Accept', 'application/json');
+                        .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken);
                 } catch(e) {
                     console.log(e);
                 }
@@ -264,6 +275,7 @@ describe ('Checkout endpoints', () => {
                             first_name: null,
                             last_name: null })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/payment');
                     expect(res.body).toBeDefined();
@@ -280,6 +292,7 @@ describe ('Checkout endpoints', () => {
                             first_name: "",
                             last_name: "" })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/payment');
                     expect(res.body).toBeDefined();
@@ -297,6 +310,7 @@ describe ('Checkout endpoints', () => {
                             first_name: user4.first_name,
                             last_name: user4.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/payment');
                     expect(res.body).toBeDefined();
@@ -314,6 +328,7 @@ describe ('Checkout endpoints', () => {
                             first_name: user4.first_name,
                             last_name: user4.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/payment');
                     expect(res.body).toBeDefined();
@@ -330,6 +345,7 @@ describe ('Checkout endpoints', () => {
                             first_name: user4.first_name,
                             last_name: user4.last_name })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/order');
                     expect(res.body).toBeDefined();
@@ -349,7 +365,8 @@ describe ('Checkout endpoints', () => {
                             .send({ ...addressPost, 
                                 first_name: user4.first_name,
                                 last_name: user4.last_name })
-                            .set('Accept', 'application/json');
+                            .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken);
 
                         // post payment and billing info 
                         await testSession
@@ -358,7 +375,8 @@ describe ('Checkout endpoints', () => {
                                 ...cardPost,
                                 first_name: user4.first_name,
                                 last_name: user4.last_name })
-                            .set('Accept', 'application/json');
+                            .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken);
                     } catch(e) {
                         console.log(e);
                     }
@@ -395,7 +413,8 @@ describe ('Checkout endpoints', () => {
                             .send({ ...addressPost, 
                                 first_name: user4.first_name,
                                 last_name: user4.last_name })
-                            .set('Accept', 'application/json');
+                            .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken);
 
                         // post payment and billing info 
                         await testSession
@@ -404,7 +423,8 @@ describe ('Checkout endpoints', () => {
                                 ...cardPost,
                                 first_name: user4.first_name,
                                 last_name: user4.last_name })
-                            .set('Accept', 'application/json');
+                            .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken);
                     } catch(e) {
                         console.log(e);
                     }
@@ -414,13 +434,12 @@ describe ('Checkout endpoints', () => {
                     const res = await testSession
                         .post(`/checkout/order`)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/order/confirmation');
                     expect(res.body).toBeDefined();
                 })
-
             })
-
         })
 
         describe('GET \'/checkout/order/confirmation\'', () => {
@@ -435,7 +454,8 @@ describe ('Checkout endpoints', () => {
                             .send({ ...addressPost, 
                                 first_name: user4.first_name,
                                 last_name: user4.last_name })
-                            .set('Accept', 'application/json');
+                            .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken);
                         
                         // post payment and billing info 
                         await testSession
@@ -444,12 +464,14 @@ describe ('Checkout endpoints', () => {
                                 ...cardPost,
                                 first_name: user4.first_name,
                                 last_name: user4.last_name })
-                            .set('Accept', 'application/json');
+                            .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken);
                         
                         // post order
                         await testSession
                             .post(`/checkout/order`)
-                            .set('Accept', 'application/json');
+                            .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken);
                     } catch(e) {
                         console.log(e);
                     }
@@ -493,17 +515,21 @@ describe ('Checkout endpoints', () => {
         let cartId;
         let testSession;
         let newUserEmail;
+        let csrfToken;
 
         beforeEach(async () => {
             try {
                 // create test session
                 testSession = session(app);
 
+                // create csrf token
+                csrfToken = await createCSRFToken(testSession);
+
                 // create cart
-                cartId = await createCart(testSession)
+                cartId = await createCart(testSession, csrfToken);
 
                 // add item to cart
-                await createCartItem(product, testSession);
+                await createCartItem(product, testSession, csrfToken);
             } catch(e) {
                 console.log(e);
             }
@@ -517,20 +543,15 @@ describe ('Checkout endpoints', () => {
 
                     // delete cart
                     await Cart.delete(cartId);
-
-                    cartId = null;
                 }
 
                 if (newUserEmail) {
                     await User.deleteByEmail(newUserEmail);
-                    newUserEmail = null;
                 }
             } catch(e) {
                 console.log(e);
             }
-
             cartId = null;
-            testSession = null;
             newUserEmail = null;
         })
 
@@ -566,6 +587,7 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/auth/login`)
                         .send({ email: user5.email, password: 'wrongPassword' })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
@@ -579,6 +601,7 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/auth/login`)
                         .send({ email: 'wrong@me.com', password: user5.password })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
@@ -592,6 +615,7 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/auth/login`)
                         .send({ email: null, password: null })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
@@ -605,6 +629,7 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/auth/login`)
                         .send(user5)
                         .set('Accept', 'application/json') 
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/shipping');
                     expect(res.body).toBeDefined();
@@ -621,6 +646,7 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/auth/register`)
                         .send({ email: null, password: null })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
@@ -634,6 +660,7 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/auth/register`)
                         .send({ email: "", password: "" })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
@@ -647,6 +674,7 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/auth/register`)
                         .send({ email: user4.email, password: testRegister.password })
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/auth');
                     expect(res.body).toBeDefined();
@@ -660,6 +688,7 @@ describe ('Checkout endpoints', () => {
                         .post(`/checkout/auth/register`)
                         .send(testRegister)
                         .set('Accept', 'application/json') 
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(302)
                         .expect('Location', '/checkout/shipping');
                     expect(res.body).toBeDefined();
@@ -689,6 +718,7 @@ describe ('Checkout endpoints', () => {
                         first_name: user5.first_name,
                         last_name: user5.last_name })
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(302)
                     .expect('Location', '/cart');
                 expect(res.body).toBeDefined();
@@ -717,6 +747,7 @@ describe ('Checkout endpoints', () => {
                         first_name: user5.first_name,
                         last_name: user5.last_name })
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(302)
                     .expect('Location', '/cart');
                 expect(res.body).toBeDefined();
@@ -741,6 +772,7 @@ describe ('Checkout endpoints', () => {
                 const res = await testSession
                     .post(`/checkout/order`)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(302)
                     .expect('Location', '/cart');
                 expect(res.body).toBeDefined();
