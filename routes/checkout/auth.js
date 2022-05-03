@@ -75,7 +75,7 @@ module.exports = (app) => {
             res.header('Authorization', response.token);
 
             // attach cookie and redirect to get shipping info 
-            res.cookie("access_token", response.signedToken, JWTcookieOptions).redirect('/checkout/shipping');
+            res.cookie("access_token", response.token, JWTcookieOptions).redirect('/checkout/shipping');
         } catch(err) {
             if (err.status === 400 || err.status === 401) {
                 res.redirect('/checkout/auth');

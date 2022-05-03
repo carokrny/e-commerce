@@ -44,11 +44,8 @@ module.exports = (app) => {
             httpOnly: true
         }
     }));
-<<<<<<< HEAD
-=======
 
     // protect routes from CSRF attacks
     app.use(csrfProtection);
 
->>>>>>> jwt-new
 }
