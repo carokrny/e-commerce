@@ -1,5 +1,5 @@
 const httpError = require('http-errors');
-const attachJWT = require('../lib/customAuth/attachJWT');
+const { attachJWT } = require('../lib/customAuth/attachJWT');
 const { genPassword, validPassword } = require('../lib/customAuth/passwordUtils');
 const { wipePassword } = require('../lib/formatUtils');
 const { validateAuthInputs } = require('../lib/validatorUtils');

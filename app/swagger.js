@@ -6,35 +6,41 @@ module.exports = async (app) => {
     
     // swagger definition
     const swaggerDefinition = {
+        openapi: '3.0.0',
         info: {
             title: 'E-Commerce API',
             version: '1.0.0',
             description: 'Basic e-commerce API with express and postgres',
         },
-        servers: [
-            { 
+        servers: [ 
+            {
+                url: `https://crk-e-commerce.herokuapp.com`, 
+                description: 'Heroku production server'
+            }, {
                 url: `http://localhost:${process.env.PORT}`, 
                 description: 'Development server'
             }
         ],
-        responses: {
-            UnauthorizedError: {
-                description: 'Access token is missing or invalid.',
-                example: 'Not authorized.'
-            },
-            InputsError: {
-                description: 'Inputs are invalid.',
-                example: 'Invalid inputs.'
-            }
-        },
-        securityDefinitions: {
-            Bearer: {
-                type: 'http',
-                scheme: 'bearer',
-                bearerFormat: 'JWT',
+        components: {
+            securitySchemes: {
+                bearerJWT: {
+                    type: 'apiKey',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT'
+                }, 
+                cookieJWT: {
+                    type: 'apiKey',
+                    in: 'cookie',
+                    name: 'access_token' 
+                }
             }
         }, 
-        components: {}
+        tags: [
+            'Shop',
+            'Auth',
+            'Account',
+            'Checkout'
+        ]
     };
 
     // options for the swagger docs
@@ -42,12 +48,17 @@ module.exports = async (app) => {
         // import swaggerDefinitions
         swaggerDefinition: swaggerDefinition,
         // path to the API docs
-        apis: ['./routes/auth/register.js', 
-            './routes/auth/*.js', 
-            './routes/shop/home.js',
+        apis: [ './routes/shop/home.js',
             './routes/shop/products.js',
             './routes/shop/*.js',
+            './routes/auth/register.js', 
+            './routes/auth/*.js',
+            './routes/account/index.js', 
             './routes/account/*.js', 
+            './routes/checkout/index.js',
+            './routes/checkout/auth.js', 
+            './routes/checkout/shipping.js', 
+            './routes/checkout/payment.js', 
             './routes/checkout/*.js'],
     };
 

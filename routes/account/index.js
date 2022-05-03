@@ -31,26 +31,25 @@ module.exports = (app) => {
     *       nullable: true
     *       minimum: 1
     *       example: 125
-    * definitions:
-    *   User:
-    *     type: object
-    *     properties:
-    *       id:
-    *         $ref: '#/components/schemas/id'
-    *       email:
-    *         $ref: '#/components/schemas/email'
-    *       first_name:
-    *         $ref: '#/components/schemas/first_name'
-    *       last_name:
-    *         $ref: '#/components/schemas/last_name'
-    *       primary_address_id:
-    *         $ref: '#/components/schemas/nullable_id'
-    *       primary_payment_id:
-    *         $ref: '#/components/schemas/nullable_id'
-    *       created:
-    *         $ref: '#/components/schemas/date_time'
-    *       modified:
-    *         $ref: '#/components/schemas/date_time'
+    *     User:
+    *       type: object
+    *       properties:
+    *         id:
+    *           $ref: '#/components/schemas/id'
+    *         email:
+    *           $ref: '#/components/schemas/email'
+    *         first_name:
+    *           $ref: '#/components/schemas/first_name'
+    *         last_name:
+    *           $ref: '#/components/schemas/last_name'
+    *         primary_address_id:
+    *           $ref: '#/components/schemas/nullable_id'
+    *         primary_payment_id:
+    *           $ref: '#/components/schemas/nullable_id'
+    *         created:
+    *           $ref: '#/components/schemas/date_time'
+    *         modified:
+    *           $ref: '#/components/schemas/date_time'
     *
     */
 
@@ -61,20 +60,22 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Account
-    *     description: Returns user account info
-    *     produces:
-    *       - application/json
+    *     summary: Returns user account info
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: A User object
-    *         schema:
-    *           $ref: '#/definitions/User'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 user:
+    *                   $ref: '#/components/schemas/User'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     *       404: 
     *         description: A User with the id was not found.
     */
@@ -99,45 +100,38 @@ module.exports = (app) => {
     *  put:
     *     tags:
     *       - Account
-    *     description: Returns user account info
-    *     produces:
-    *       - application/json
+    *     summary: Returns user account info
     *     security: 
-    *       - Bearer: []
-    *     parameters:
-    *       - name: email
-    *         description: user's email
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/email'
-    *       - name: first_name
-    *         description: user's first name
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/first_name'
-    *       - name: last_name
-    *         description: user's last name
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/last_name'
-    *       - name: password
-    *         description: user's password
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/password'
+    *       - bearerJWT: []
+    *       - cookieJWT: []
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: false
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               email:
+    *                 $ref: '#/components/schemas/email'
+    *               password:
+    *                 $ref: '#/components/schemas/password'
+    *               first_name:
+    *                 $ref: '#/components/schemas/first_name'
+    *               last_name:
+    *                 $ref: '#/components/schemas/last_name'
     *     responses:
     *       200:
     *         description: A User object
-    *         schema:
-    *           $ref: '#/definitions/User'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 user:
+    *                   $ref: '#/components/schemas/User'
     *       401: 
-    *         description: User not authorized to access route.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     *       404: 
     *         description: A User with the ID was not found.
     */

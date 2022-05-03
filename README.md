@@ -44,7 +44,10 @@
 - End-to-end tests for the checkout flow 
 - `pre-test` and `post-test` scripts to automate testing setup and tear down 
 #### API Documentation
-- Documentation with Swagger 
+- Documentation with Swagger UI
+- Can try out endpoints with test data via Swagger UI, connected to a test database
+- Parameters, request body, and response options are documented for each endpoint
+- Can create an account and authorize to access all endpoints via Swagger UI
 
 
 ## Technologies Used
@@ -145,6 +148,15 @@ The project handles various endpoints a user may need to access while online sho
 
 __Note:__ Must use HTTPS with JWT Bearer Authentication 
 See [Swagger API Documentation](https://crk-e-commerce.herokuapp.com/api-docs/) for info routes and their variable requirements. 
+
+### Custom JWT Authentication 
+This project includes custom JWT authentication found in `lib/customAuth` folder instead of using Passport.
+
+The custom auth can be used either in Bearer Token or Cookie format, it will validate both formats. The API will automatically send both the Bearer Token and Cookie in response to logging in/registering. 
+
+To use cookies, simply ignore the Bearer Token in the body of the response. 
+
+If you wish to exclude the cookies from the response when using Bearer Tokens, remove the code attaching the cookie to the response in the auth/login, auth/register, checkout/auth routes. s
 
 
 ## Project Status

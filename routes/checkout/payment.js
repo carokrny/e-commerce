@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { postPayment } = require('../../services/checkoutService');
 const { getAllPayments } = require('../../services/paymentService');
+const { getAllAddresses } = require('../../services/addressService');
 const { checkoutAuth } = require('../../lib/customAuth/jwtAuth');
 
 module.exports = (app) => {
@@ -13,21 +14,26 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Checkout
-    *     description: info for user to select payment method
-    *     produces:
-    *       - application/json
+    *     summary: info for user to select payment method
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: Info about user's saved payment methods
-    *         schema:
-    *           type: object
-    *           properties: 
-    *             payments:
-    *               type: array
-    *               items: 
-    *                 $ref: '#/definitions/Payment'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 payments:
+    *                   type: array
+    *                   items:
+    *                     $ref: '#/components/schemas/Card'
+    *                 addresses:
+    *                   type: array
+    *                   items:
+    *                     $ref: '#/components/schemas/Address'
     *       302:
     *         description: |
     *           Redirects to /cart if user is not authorized
@@ -37,8 +43,10 @@ module.exports = (app) => {
             // grab user_id
             const user_id = req.jwt.sub;
 
-            // get addresses
+            // get payments
             const response = await getAllPayments(user_id);
+
+            response.addresses = await getAllAddresses(user_id);
 
             res.status(200).json(response);
         } catch(err) {
@@ -52,110 +60,75 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Checkout
-    *     description: |
-    *       User provides billing and payment info.
-    *       Send either (a) payment_id and address_id of existing payment method and billing address, respectively
-    *       Or (b) post new payment and address objects instead
+    *     summary: User selects payment from saved info or adds new one with billing address.
     *     produces:
     *       - application/json
     *     security: 
-    *       - Bearer: []
-    *     parameters:
-    *       - name: address_id
-    *         description: id of existing address for billing
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/id'
-    *       - name: address1
-    *         description: first line of new address for billing
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/address1'
-    *       - name: address2
-    *         description: second line of new address for billing
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/address2'
-    *       - name: city
-    *         description: city of new address for billing
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/city'
-    *       - name: state
-    *         description: state of user's address for billing
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/state'
-    *       - name: zip
-    *         description: zip code of new address for billing
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/zip'
-    *       - name: country
-    *         description: country of new address for billing
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/country'
-    *       - name: first_name
-    *         description: first name of new address for billing
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/first_name'
-    *       - name: last_name
-    *         description: last name of new address for billing
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/last_name'
-    *       - name: payment_id
-    *         description: id of existing payment
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/id'
-    *       - name: provider
-    *         description: provider (e.g., Visa) for new payemnt
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/provider'
-    *       - name: card_type
-    *         description: type (e.g., credit, debit) for new payemnt
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/card_type'
-    *       - name: card_no
-    *         description: card number for new payemnt
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/card_no'
-    *       - name: exp_month
-    *         description: card expiration month
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/exp_month'
-    *       - name: exp_year
-    *         description: card expiration year
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/exp_month'
-    *       - name: cvv
-    *         description: cvv for new payemnt
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/cvv'
+    *       - bearerJWT: []
+    *       - cookieJWT: []
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             oneOf:
+    *               - type: object
+    *                 properties:
+    *                   payment_id: 
+    *                     $ref: '#/components/schemas/id'
+    *               - type: object
+    *                 properties:
+    *                   address_id: 
+    *                     $ref: '#/components/schemas/id'
+    *                   provider:
+    *                     $ref: '#/components/schemas/provider'
+    *                   card_type:
+    *                     $ref: '#/components/schemas/card_type'
+    *                   card_no:
+    *                     $ref: '#/components/schemas/card_no'
+    *                   exp_month:
+    *                     $ref: '#/components/schemas/exp_month'
+    *                   exp_year:
+    *                     $ref: '#/components/schemas/exp_year'
+    *                   cvv:
+    *                     $ref: '#/components/schemas/cvv'
+    *                   is_primary_payment:
+    *                     $ref: '#/components/schemas/is_primary_payment'
+    *               - type: object
+    *                 properties:
+    *                   address1:
+    *                     $ref: '#/components/schemas/address1'
+    *                   address2:
+    *                     $ref: '#/components/schemas/address2'
+    *                   city:
+    *                     $ref: '#/components/schemas/city'
+    *                   state:
+    *                     $ref: '#/components/schemas/state'
+    *                   zip:
+    *                     $ref: '#/components/schemas/zip'
+    *                   country:
+    *                     $ref: '#/components/schemas/country'
+    *                   first_name:
+    *                     $ref: '#/components/schemas/first_name'
+    *                   last_name:
+    *                     $ref: '#/components/schemas/last_name'
+    *                   is_primary_address:
+    *                     $ref: '#/components/schemas/is_primary_address'
+    *                   provider:
+    *                     $ref: '#/components/schemas/provider'
+    *                   card_type:
+    *                     $ref: '#/components/schemas/card_type'
+    *                   card_no:
+    *                     $ref: '#/components/schemas/card_no'
+    *                   exp_month:
+    *                     $ref: '#/components/schemas/exp_month'
+    *                   exp_year:
+    *                     $ref: '#/components/schemas/exp_year'
+    *                   cvv:
+    *                     $ref: '#/components/schemas/cvv'
+    *                   is_primary_payment:
+    *                     $ref: '#/components/schemas/is_primary_payment'
     *     responses:
     *       302: 
     *         description: |

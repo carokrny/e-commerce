@@ -1,4 +1,3 @@
-const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
@@ -6,20 +5,19 @@ const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const pool = require('../db/config');
 const { sanitizer } = require('../lib/sanitizer');
+const { csrfProtection } = require('../lib/csrf');
 require('dotenv').config();
 
+
 module.exports = (app) => {
-    
+
     // helmet for added security on http headers
     app.use(helmet());
-
-    // enable cross-origin resource sharing
-    app.use(cors());
 
     // parse incoming json req
     app.use(bodyParser.json());
 
-    // parse incoming url-encoded req
+    // parse incoming url-encoded form data
     app.use(bodyParser.urlencoded({ extended: true }));
 
     // parse all cookies into req.cookie and req.signedCookie
@@ -46,4 +44,11 @@ module.exports = (app) => {
             httpOnly: true
         }
     }));
+<<<<<<< HEAD
+=======
+
+    // protect routes from CSRF attacks
+    app.use(csrfProtection);
+
+>>>>>>> jwt-new
 }

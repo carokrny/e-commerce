@@ -13,21 +13,22 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Checkout
-    *     description: Returns info for user to select shipping address
-    *     produces:
-    *       - application/json
+    *     summary: Returns info for user to select shipping address
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: Info about user's saved addresses
-    *         schema:
-    *           type: object
-    *           properties: 
-    *             addresses:
-    *               type: array
-    *               items: 
-    *                 $ref: '#/definitions/Address'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 addresses:
+    *                   type: array
+    *                   items:
+    *                     $ref: '#/components/schemas/Address'
     *       302:
     *         description: |
     *           Redirects to /cart if user is not authorized
@@ -46,74 +47,51 @@ module.exports = (app) => {
         }
     });
 
+    /*
+   
+    * /
+
     /**
     * @swagger
     * /checkout/shipping:
     *   post:
     *     tags:
     *       - Checkout
-    *     description: |
-    *       User selects existing address for shipping or creates new address
-    *       Send either (a) address_id of address for shipping 
-    *       Or (b) post a new address
-    *     produces:
-    *       - application/json
+    *     summary: User selects existing address or creates new address for shipping
     *     security: 
-    *       - Bearer: []
-    *     parameters:
-    *       - name: address_id
-    *         description: id of existing address
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/id'
-    *       - name: address1
-    *         description: first line of new address for shipping recipient
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/address1'
-    *       - name: address2
-    *         description: second line of new address for shipping recipient
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/address2'
-    *       - name: city
-    *         description: city of new address for shipping recipient
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/city'
-    *       - name: state
-    *         description: state of user's address for shipping recipient
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/state'
-    *       - name: zip
-    *         description: zip code of new address for shipping recipient
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/zip'
-    *       - name: country
-    *         description: country of new address for shipping recipient
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/country'
-    *       - name: first_name
-    *         description: first name of new address for shipping recipient
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/first_name'
-    *       - name: last_name
-    *         description: last name of new address for shipping recipient
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/last_name'
+    *       - bearerJWT: []
+    *       - cookieJWT: []
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             oneOf:
+    *               - type: object
+    *                 properties:
+    *                   address_id: 
+    *                     $ref: '#/components/schemas/id'
+    *               - type: object
+    *                 properties:
+    *                   address1:
+    *                     $ref: '#/components/schemas/address1'
+    *                   address2:
+    *                     $ref: '#/components/schemas/address2'
+    *                   city:
+    *                     $ref: '#/components/schemas/city'
+    *                   state:
+    *                     $ref: '#/components/schemas/state'
+    *                   zip:
+    *                     $ref: '#/components/schemas/zip'
+    *                   country:
+    *                     $ref: '#/components/schemas/country'
+    *                   first_name:
+    *                     $ref: '#/components/schemas/first_name'
+    *                   last_name:
+    *                     $ref: '#/components/schemas/last_name'
+    *                   is_primary_address:
+    *                     $ref: '#/components/schemas/is_primary_address'
     *     responses:
     *       302: 
     *         description: |

@@ -15,29 +15,32 @@ module.exports = (app) => {
     *     category:
     *       type: string
     *       pattern: ^[A-Za-z0-9 '#:_-]*$
-    *       example: 'accessories'
-    * definitions:
-    *   Product:
-    *     type: object
-    *     properties:
-    *       id:
-    *         $ref: '#/components/schemas/id'
-    *       name:
-    *         $ref: '#/components/schemas/product_name'
-    *       price:
-    *         $ref: '#/components/schemas/price'
-    *       description:
-    *         $ref: '#/components/schemas/product_description'
-    *       quantity: 
-    *         $ref: '#/components/schemas/num_products'
-    *       in_stock:
-    *         $ref: '#/components/schemas/in_stock'
-    *       category:
-    *         $ref: '#/components/schemas/category'
-    *       created:
-    *         $ref: '#/components/schemas/date_time'
-    *       modified:
-    *         $ref: '#/components/schemas/date_time'
+    *       example: 'tops'
+    *     query:
+    *       type: string
+    *       pattern: ^[A-Za-z0-9 '#:_-]*$
+    *       example: 'pants'
+    *     Product:
+    *       type: object
+    *       properties:
+    *         id:
+    *           $ref: '#/components/schemas/id'
+    *         name:
+    *           $ref: '#/components/schemas/product_name'
+    *         price:
+    *           $ref: '#/components/schemas/price'
+    *         description:
+    *           $ref: '#/components/schemas/product_description'
+    *         quantity: 
+    *           $ref: '#/components/schemas/quantity'
+    *         in_stock:
+    *           $ref: '#/components/schemas/in_stock'
+    *         category:
+    *           $ref: '#/components/schemas/category'
+    *         created:
+    *           $ref: '#/components/schemas/date_time'
+    *         modified:
+    *           $ref: '#/components/schemas/date_time'
     *
     */
 
@@ -47,14 +50,19 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Shop
-    *     description: Returns all products
-    *     produces:
-    *       - application/json
+    *     summary: Returns all products
     *     responses:
     *       200:
     *         description: An array of Product objects.
-    *         schema:
-    *           $ref: '#/definitions/Product'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 products:
+    *                   type: array
+    *                   items: 
+    *                     $ref: '#/components/schemas/Product'
     */ 
     router.get('/', async (req, res, next) => {
         try {
@@ -71,25 +79,28 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Shop
-    *     description: Returns products in query
-    *     produces:
-    *       - application/json
+    *     summary: Returns products in query
     *     parameters:
-    *       - name: query
+    *       - name: q
     *         description: search query
     *         in: query
     *         required: true
     *         schema: 
-    *           $ref: '#/components/schemas/category'
+    *           $ref: '#/components/schemas/query'
     *     responses:
     *       200:
     *         description: An array of Product objects.
-    *         schema:
-    *           $ref: '#/definitions/Product'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 products:
+    *                   type: array
+    *                   items: 
+    *                     $ref: '#/components/schemas/Product'
     *       400: 
-    *         description: Missing query.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       404: 
     *         description: No products matching search query.
     */ 
@@ -109,21 +120,24 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Shop
-    *     description: Returns products with associated ID
-    *     produces:
-    *       - application/json
+    *     summary: Returns products with associated ID
     *     parameters:
     *       - name: product_id
     *         description: ID of product
     *         in: path
     *         required: true
     *         schema: 
-    *           $ref: '#/components/schemas/id'
+    *           $ref: '#/components/schemas/product_id'
     *     responses:
     *       200:
     *         description: A Product object.
-    *         schema:
-    *           $ref: '#/definitions/Product'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 product: 
+    *                   $ref: '#/components/schemas/Product'
     *       404: 
     *         description: Product with ID not found.
     */ 
@@ -143,9 +157,7 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Shop
-    *     description: Returns products in category
-    *     produces:
-    *       - application/json
+    *     summary: Returns products in category
     *     parameters:
     *       - name: category
     *         description: category to filter products
@@ -156,8 +168,15 @@ module.exports = (app) => {
     *     responses:
     *       200:
     *         description: An array of Product objects.
-    *         schema:
-    *           $ref: '#/definitions/Product'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 products:
+    *                   type: array
+    *                   items: 
+    *                     $ref: '#/components/schemas/Product'
     *       404: 
     *         description: No products matching category.
     */ 

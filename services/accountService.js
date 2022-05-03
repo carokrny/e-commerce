@@ -50,8 +50,8 @@ module.exports.putAccount = async (data) => {
                 const pwObj = await genPassword(data[property]);
 
                 // save hash and salt to db, not password itself
-                user.pw_hash = pwObj.pw_hash;
-                user.pw_salt = pwObj.pw_salt;
+                user.pw_hash = pwObj.hash;
+                user.pw_salt = pwObj.salt;
             } 
         }
 

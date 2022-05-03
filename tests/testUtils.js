@@ -1,15 +1,17 @@
 /**
  * Helper functions for running tests 
  */
-const app = require('../app');
-const request = require('supertest');
 const { faker } = require('@faker-js/faker');
 const User = require('../models/UserModel');
 
 
 /**
  * Creates a new fake user using faker.js
- * @return Obj of user
+ * @return {Object} with properties: 
+ *  - first_name
+ *  - last_name
+ *  - password
+ *  - email
  * 
  */
 const createUser = () => {
@@ -28,48 +30,149 @@ const createUser = () => {
 }
 
 /**
- * Adds a user to the db 
- * @param user has properties:
+ * Adds a user to the db by registering and 
+ * generates auth token in testSession cookie
+ * 
+ * @param {Object} user has properties:
  *  - email
  *  - password
- *  - first_name
- *  - last_name
- * @return object with token and id 
+ * @param {Object} testSession the test testSession
+ * @param {String} csrfToken csrf token to verify authenticity of request
+ * 
+ * @return {Number} user id 
  */
- const registerUser = async (user) => {
-    // request token with user data
-    const res = await request(app)
-        .post('/register')
-        .send(user)
-        .set('Accept', 'application/json');
+ const registerUser = async (user, testSession, csrfToken) => {
+     try {
+        // log user in to get cookie with JWT
+        const res = await testSession
+            .post('/register')
+            .send(user)
+            .set('Accept', 'application/json')
+            .set(`XSRF-TOKEN`, csrfToken);
 
-    // return token and id
-    return { 
-        id: res.body.user.id,
-        token: res.body.token 
-    };
+        // return id and testSession w cookeies
+        return res.body.user.id;
+    } catch(e) {
+        console.log(e);
+    }
 }
 
 
 /**
- * Creates a new user from faker.js
- * Logs user in to generate auth token
- * @returns Object with token and user data
+ * Logs user in to generate auth token in cookies
+ * 
+ * @param {Object} user has properties:
+ *   - email
+ *   - password
+ * @param {Object} testSession the test testSession
+ * @param {String} csrfToken csrf token to verify authenticity of request
+ * 
+ * @return {Srting} JWT
  */
-const loginUser = async (user) => {
-    // request token with user data
-    const res = await request(app)
-        .post('/login')
-        .send(user)
-        .set('Accept', 'application/json');
-
-    // return token 
-    return res.body.token;
+const loginUser = async (user, testSession, csrfToken) => {
+    try {
+        // log user in to get cookie with JWT
+        const res = await testSession
+            .post('/login')
+            .send(user)
+            .set('Accept', 'application/json')
+            .set(`XSRF-TOKEN`, csrfToken);
+        return res.body.token;
+    } catch(e) {
+        console.log(e);
+    }
 }
+
+/**
+ * Creates a new cart
+ * 
+ * @param {Object} testSession the test testSession
+ * @param {String} csrfToken csrf token to verify authenticity of request
+ * 
+ * @return {Number} id of the new cart
+ */
+const createCart = async (testSession, csrfToken) => {
+    try {
+        const res = await testSession
+            .post('/cart')
+            .set('Accept', 'application/json')
+            .set(`XSRF-TOKEN`, csrfToken);
+        return res.body.cart.id;
+
+    } catch(e) {
+        console.log(e);
+    }
+}
+
+/**
+ * Creates a new cart item
+ * 
+ * @param {Object} product to add as a new cart item, has properties:
+ *    - product_id: id of product 
+ * @param {Object} testSession the test testSessions
+ * @param {String} csrfToken csrf token to verify authenticity of request
+ */
+ const createCartItem = async (product, testSession, csrfToken) => {
+    try {
+        const res = await testSession
+            .post(`/cart/item/${product.product_id}`)
+            .send(product)
+            .set('Accept', 'application/json')
+            .set(`XSRF-TOKEN`, csrfToken);
+    } catch(e) {
+        console.log(e);
+    }
+}
+
+
+
+/**
+ * Creates a new csrfToken
+ * @param {Object} testSession the test testSessions
+ * 
+ * @return {String} XSRF Token value
+ */
+ const createCSRFToken = async (testSession) => {
+    try {
+        const res = await testSession
+            .get(`/`)
+            .set('Accept', 'application/json');
+        const XSRFToken = testSession.cookies.find((cookie) => {
+            return cookie.name === `XSRF-TOKEN`;
+        });
+        return XSRFToken.value;
+    } catch(e) {
+        console.log(e);
+    }
+}
+
+
+
+/**
+ * Gets an existing csrfToken
+ * @param {Object} testSession the test testSessions
+ * 
+ * @return {String} XSRF Token value
+ */
+ const getCSRFToken = async (testSession) => {
+    try {
+        const XSRFToken = testSession.cookies.find((cookie) => {
+            return cookie.name === `XSRF-TOKEN`;
+        });
+        return XSRFToken.value;
+    } catch(e) {
+        console.log(e);
+    }
+}
+
 
 
 module.exports = {
     createUser, 
     registerUser,
-    loginUser
+    loginUser,
+    createCart, 
+    createCartItem,
+    createCSRFToken,
+    getCSRFToken
 }

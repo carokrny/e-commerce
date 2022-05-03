@@ -1,6 +1,7 @@
 const app = require('../app');
-const request = require('supertest');
 const session = require('supertest-session');
+const { loginUser, 
+    createCSRFToken } = require('./testUtils');
 const { user1 } = require('./testData').users;
 const { testRegister, 
     product,
@@ -10,33 +11,53 @@ const Cart = require('../models/CartModel');
 const CartItem = require('../models/CartItemModel');
 
 describe('Auth endpoints', () => {
+
+    let testSession;
+    let csrfToken;
+
+    beforeEach(async () => {
+        // create a test session for saving functional cookies
+        testSession = session(app);
+
+        try {
+            // create csrfToken
+            csrfToken = await createCSRFToken(testSession);
+        } catch(e) {
+            console.log(e);
+        }
+    })
         
     describe('GET \'/register\'', () => {
 
         it('should return registration page', async () => {
-            const res = await request(app)
+            const res = await testSession
                 .get('/register')
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200);
             expect(res.body).toBeDefined();
             })
-    }),
+    })
 
     describe ('POST \'/register\'', () => {
         
         describe('Email and password entered', () => {
 
             afterEach(async () => {
-                // delete the test registration after tests run 
-                await User.deleteByEmail(testRegister.email);
+                try {
+                    // delete the test registration after tests run 
+                    await User.deleteByEmail(testRegister.email);
+                } catch(e) {
+                    console.log(e);
+                }
             })
 
             it ('should successfully register and attach JWT', async () => {
-                const res = await request(app)
+                const res = await testSession
                     .post('/register')
                     .send(testRegister)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect('Content-Type', /json/)
                     .expect(201);
                 expect(res.body).toBeDefined();
@@ -44,47 +65,50 @@ describe('Auth endpoints', () => {
                 expect(res.body.user.email).toEqual(testRegister.email);
                 expect(res.body.token).toBeDefined();
             })
-        }), 
+        })
 
         describe('XSS attack on email field', () => {
 
             it ('Should be return 400 because XSS attack is not email format', (done) => {
-                request(app)
+                testSession
                     .post('/register')
                     .send({ ...testRegister,
                         email: xssAttack })
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(400)
                     .end((err, res) => {
                         if (err) return done(err);
                         return done();
                     });
             })
-        }),
+        })
 
         describe('XSS attack on password field', () => {
 
             it ('should successfully register because XSS does not meet strong PW requirements', (done) => {
-                request(app)
+                testSession
                     .post('/register')
                     .send({ ...testRegister,
                         password: xssAttack })
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(400)
                     .end((err, res) => {
                         if (err) return done(err);
                         return done();
                     });
             })
-        }),
+        })
 
         describe('Email already in use', () => {
             
             it('should return a 409 error', (done) => {
-                request(app)
+                testSession
                     .post('/register')
                     .send({ email: user1.email, password: testRegister.password})
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect('Content-Type', /json/)
                     .expect(409)
                     .end((err, res) => {
@@ -92,15 +116,16 @@ describe('Auth endpoints', () => {
                         return done();
                     });
             })
-        }),
+        })
 
         describe('Email and/or password missing', () => {
             
             it('should return a 400 error', (done) => {
-                request(app)
+                testSession
                     .post('/register')
                     .send({ email: null, password: null })
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect('Content-Type', /json/)
                     .expect(400)
                     .end((err, res) => {
@@ -108,25 +133,27 @@ describe('Auth endpoints', () => {
                         return done();
                     });
             })
-        }),
+        })
 
         describe('Cart with registration', () => {
 
-            let testSession;
             let cartId;
 
-            beforeEach(async () => {
-                testSession = session(app);
-            }),
-
             afterEach(async () => {
-                if (cartId) {
-                    await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
-                    await Cart.delete(cartId);
-                    cartId = null;
+                try {
+                    // delete cart if it exists
+                    if (cartId) {
+                        await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
+                        await Cart.delete(cartId);
+                        cartId = null;
+                    }
+
+                    // delete user from db 
+                    await User.deleteByEmail(testRegister.email);
+                } catch(e) {
+                    console.log(e)
                 }
-                await User.deleteByEmail(testRegister.email);
-            }),
+            })
 
             describe('Existing cart before registration', () => {
 
@@ -135,7 +162,8 @@ describe('Auth endpoints', () => {
                     const res1 = await testSession
                         .post('/cart')
                         .set('Authorization', null)
-                        .set('Accept', 'application/json');
+                        .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken);
                     cartId = res1.body.cart.id;
 
                     // add item to cart 
@@ -143,13 +171,15 @@ describe('Auth endpoints', () => {
                         .post(`/cart/item/${product.product_id}`)
                         .send(product)
                         .set('Authorization', null)
-                        .set('Accept', 'application/json');
+                        .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken);
 
                     // register user account
                     const res3 = await testSession
                         .post('/register')
                         .send(testRegister)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(201);
                     expect(res3.body).toBeDefined();
@@ -168,7 +198,7 @@ describe('Auth endpoints', () => {
                     expect(res4.body.cart).toBeDefined();
                     expect(res4.body.cart.id).toEqual(cartId);
                 })
-            }), 
+            })
 
             describe ('No existing cart before registration', () => {
 
@@ -178,6 +208,7 @@ describe('Auth endpoints', () => {
                         .post('/register')
                         .send(testRegister)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(201);
                     expect(res1.body).toBeDefined();
@@ -195,12 +226,12 @@ describe('Auth endpoints', () => {
                 })
             })
         })
-    }),
+    })
 
     describe ('GET \'/login\'', () => {
 
         it ('should return login page', async () => {
-            const res = await request(app)
+            const res = await testSession
                 .get('/login')
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
@@ -214,10 +245,11 @@ describe('Auth endpoints', () => {
         describe ('correct email and password entered', () => {
             
             it ('should return user and attach a JWT', async () => {
-                const res = await request(app)
+                const res = await testSession
                     .post('/login')
                     .send(user1)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect('Content-Type', /json/)
                     .expect(200);
                 expect(res.body).toBeDefined();
@@ -226,15 +258,16 @@ describe('Auth endpoints', () => {
                 expect(res.body.user.id).toEqual(user1.id);
                 expect(res.body.token).toBeDefined();
             })
-        }),
+        })
 
         describe ('email and password entered, but password incorrect', () => {
 
             it ('should return a 401 error', (done) => {
-                request(app)
+                testSession
                     .post('/login')
                     .send({ email: user1.email, password: 'wrongPassw0rd' })
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect('Content-Type', /json/)
                     .expect(401)
                     .end((err, res) => {
@@ -242,15 +275,16 @@ describe('Auth endpoints', () => {
                         return done();
                     });
             })
-        }), 
+        })
 
         describe ('email and password entered, but email incorrect', () => {
 
             it ('should return a 401 error', (done) => {
-                request(app)
+                testSession
                     .post('/login')
                     .send({ email: 'wrong@me.com', password: user1.password })
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect('Content-Type', /json/)
                     .expect(401)
                     .end((err, res) => {
@@ -258,15 +292,16 @@ describe('Auth endpoints', () => {
                         return done();
                     });
             })
-        }), 
+        })
 
         describe ('email and/or password missing', () => {
 
             it('should return a 400 error', (done) => {
-                request(app)
+                testSession
                     .post('/login')
                     .send({ email: null, password: null })
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect('Content-Type', /json/)
                     .expect(400)
                     .end((err, res) => {
@@ -274,24 +309,23 @@ describe('Auth endpoints', () => {
                         return done();
                     });
             })
-        }), 
+        })
 
         describe('Cart with login', () => {
 
-            let testSession;
             let cartId;
 
-            beforeEach(async () => {
-                testSession = session(app);
-            }),
-
             afterEach(async () => {
-                if (cartId) {
-                    await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
-                    await Cart.delete(cartId);
-                    cartId = null;
+                try {
+                    if (cartId) {
+                        await CartItem.delete({ cart_id: cartId, product_id: product.product_id });
+                        await Cart.delete(cartId);
+                        cartId = null;
+                    }
+                } catch(e) {
+                    console.log(e);
                 }
-            }),
+            })
 
             describe('Existing cart before login, user has no cart from previous session', () => {
 
@@ -300,7 +334,8 @@ describe('Auth endpoints', () => {
                     const res1 = await testSession
                         .post('/cart')
                         .set('Authorization', null)
-                        .set('Accept', 'application/json');
+                        .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken);
                     cartId = res1.body.cart.id;
 
                     // add item to cart 
@@ -308,13 +343,15 @@ describe('Auth endpoints', () => {
                         .post(`/cart/item/${product.product_id}`)
                         .send(product)
                         .set('Authorization', null)
-                        .set('Accept', 'application/json');
+                        .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken);
 
                     // log into user account
                     const res3 = await testSession
                         .post('/login')
                         .send(user1)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(200);
                     expect(res3.body).toBeDefined();
@@ -334,7 +371,7 @@ describe('Auth endpoints', () => {
                     expect(res4.body.cart).toBeDefined();
                     expect(res4.body.cart.id).toEqual(cartId);
                 })
-            }),
+            })
 
             describe('Existing cart before login, user has cart from previous session', () => {
 
@@ -351,7 +388,8 @@ describe('Auth endpoints', () => {
                     const res1 = await testSession
                         .post('/cart')
                         .set('Authorization', null)
-                        .set('Accept', 'application/json');
+                        .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken);
                     const newCart = res1.body.cart;
                     cartId = newCart.id;
 
@@ -363,6 +401,7 @@ describe('Auth endpoints', () => {
                         .post('/login')
                         .send(user1)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(200);
                     expect(res2.body).toBeDefined();
@@ -384,7 +423,7 @@ describe('Auth endpoints', () => {
                     expect(res3.body.cartItems[0].quantity).toEqual(product.quantity * 2);
 
                 })
-            }), 
+            })
 
             describe ('No existing cart before login', () => {
 
@@ -394,6 +433,7 @@ describe('Auth endpoints', () => {
                         .post('/login')
                         .send(user1)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(200);
                     expect(res1.body).toBeDefined();
@@ -416,20 +456,19 @@ describe('Auth endpoints', () => {
 
     describe ('POST \'/logout\'', () => {
 
-        let token; 
-
         beforeEach(async () => {
-            const res = await request(app)
-                    .post('/login')
-                    .send(user1);
-            token = res.body.token;
+            try{
+                await loginUser(user1, testSession, csrfToken);
+            } catch(e) {
+                console.log(e);
+            }
         })
-        
+
         it ('should log out', async () => {
-            const res = await request(app)
+            const res = await testSession
                 .post('/logout')
-                .set('Authorization', token)
                 .set('Accept', 'application/json')
+                .set(`XSRF-TOKEN`, csrfToken)
                 .expect('Content-Type', /json/)
                 .expect(200);
             expect(res.body).toBeDefined();

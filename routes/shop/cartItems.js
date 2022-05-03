@@ -14,9 +14,19 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Shop
-    *     description: Creates and returns new item in cart
-    *     produces:
-    *       - application/json
+    *     summary: Creates and returns new item in cart
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               quantity:
+    *                 $ref: '#/components/schemas/quantity'
+    *             required:
+    *               - quantity
     *     parameters:
     *       - name: cart_id
     *         description: ID associated with Cart
@@ -29,22 +39,19 @@ module.exports = (app) => {
     *         in: path
     *         required: true
     *         schema: 
-    *           $ref: '#/components/schemas/id'
-    *       - name: quantity
-    *         description: quantity of product being added to Cart
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/num_products'
+    *           $ref: '#/components/schemas/product_id'
     *     responses:
     *       201:
     *         description: A CartItem object.
-    *         schema:
-    *           $ref: '#/definitions/CartItem'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 cartItem:
+    *                   $ref: '#/components/schemas/CartItem'
     *       400: 
-    *         description: Invalid inputs.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       404: 
     *         description: Cart or Product not found.
     */
@@ -70,9 +77,7 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Shop
-    *     description: Returns cart item
-    *     produces:
-    *       - application/json
+    *     summary: Returns cart item
     *     parameters:
     *       - name: cart_id
     *         description: ID associated with Cart
@@ -85,16 +90,19 @@ module.exports = (app) => {
     *         in: path
     *         required: true
     *         schema: 
-    *           $ref: '#/components/schemas/id'
+    *           $ref: '#/components/schemas/product_id'
     *     responses:
     *       200:
     *         description: A CartItem object.
-    *         schema:
-    *           $ref: '#/definitions/CartItem'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 cartItem:
+    *                   $ref: '#/components/schemas/CartItem'
     *       400: 
-    *         description: Invalid inputs.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       404: 
     *         description: Cart item not found.
     */
@@ -119,9 +127,19 @@ module.exports = (app) => {
     *   put:
     *     tags:
     *       - Shop
-    *     description: Updates and returns new item in cart
-    *     produces:
-    *       - application/json
+    *     summary: Updates and returns new item in cart
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               quantity:
+    *                 $ref: '#/components/schemas/quantity'
+    *             required:
+    *               - quantity
     *     parameters:
     *       - name: cart_id
     *         description: ID associated with Cart
@@ -134,22 +152,19 @@ module.exports = (app) => {
     *         in: path
     *         required: true
     *         schema: 
-    *           $ref: '#/components/schemas/id'
-    *       - name: quantity
-    *         description: quantity of product in added to Cart
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/num_products'
+    *           $ref: '#/components/schemas/product_id'
     *     responses:
     *       200:
     *         description: A CartItem object.
-    *         schema:
-    *           $ref: '#/definitions/CartItem'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 cartItem:
+    *                   $ref: '#/components/schemas/CartItem'
     *       400: 
-    *         description: Invalid inputs.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       404: 
     *         description: Cart item not found.
     */
@@ -175,9 +190,7 @@ module.exports = (app) => {
     *   delete:
     *     tags:
     *       - Shop
-    *     description: Returns cart item
-    *     produces:
-    *       - application/json
+    *     summary: Deletes and returns cart item
     *     parameters:
     *       - name: cart_id
     *         description: ID associated with Cart
@@ -190,16 +203,19 @@ module.exports = (app) => {
     *         in: path
     *         required: true
     *         schema: 
-    *           $ref: '#/components/schemas/id'
+    *           $ref: '#/components/schemas/product_id'
     *     responses:
     *       200:
     *         description: A CartItem object.
-    *         schema:
-    *           $ref: '#/definitions/CartItem'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 cartItem:
+    *                   $ref: '#/components/schemas/CartItem'
     *       400: 
-    *         description: Invalid inputs.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       404: 
     *         description: Cart item not found.
     */

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { login, register } = require('../../services/authService');
 const { demiAuth } = require('../../lib/customAuth/jwtAuth');
+const { JWTcookieOptions } = require('../../lib/customAuth/attachJWT');
 
 module.exports = (app) => {
 
@@ -12,9 +13,7 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Checkout
-    *     description: Returns login/registration forms
-    *     produces:
-    *       - application/json
+    *     summary: Returns login/registration forms
     *     responses:
     *       200:
     *         description: Login and/or registration forms.
@@ -29,9 +28,22 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Checkout
-    *     description: Logs user into account and attached authentication
-    *     produces:
-    *       - application/json
+    *     summary: Logs user into account and attaches authentication
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               email:
+    *                 $ref: '#/components/schemas/email'
+    *               password:
+    *                 $ref: '#/components/schemas/password'
+    *             required:
+    *               - email
+    *               - password
     *     parameters:
     *       - name: cart_id
     *         description: ID associated with Cart
@@ -39,21 +51,14 @@ module.exports = (app) => {
     *         required: true
     *         schema: 
     *           $ref: '#/components/schemas/id'
-    *       - name: email
-    *         description: user's email
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/email'
-    *       - name: password
-    *         description: user's password
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/password'
     *     responses:
     *       302:
     *         description: Redirects to shipping when user is logged in. Redirects to auth if login fails.
+    *         headers: 
+    *           Set-Cookie:
+    *             schema: 
+    *               type: string
+    *               example: access_token=eyJhbGc...; Path=/; HttpOnly; Secure
     */ 
     router.post('/login', demiAuth, async (req, res, next) => {
         try {
@@ -69,8 +74,8 @@ module.exports = (app) => {
             // attach JWT 
             res.header('Authorization', response.token);
 
-            // redirect to get shipping info 
-            res.redirect('/checkout/shipping');
+            // attach cookie and redirect to get shipping info 
+            res.cookie("access_token", response.signedToken, JWTcookieOptions).redirect('/checkout/shipping');
         } catch(err) {
             if (err.status === 400 || err.status === 401) {
                 res.redirect('/checkout/auth');
@@ -82,12 +87,25 @@ module.exports = (app) => {
     /**
     * @swagger
     * /checkout/auth/register:
-    *   POST:
+    *   post:
     *     tags:
     *       - Checkout
-    *     description: Registers user account and attaches authentication
-    *     produces:
-    *       - application/json
+    *     summary: Registers user account and attaches authentication
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               email:
+    *                 $ref: '#/components/schemas/email'
+    *               password:
+    *                 $ref: '#/components/schemas/password'
+    *             required:
+    *               - email
+    *               - password
     *     parameters:
     *       - name: cart_id
     *         description: ID associated with Cart
@@ -95,21 +113,14 @@ module.exports = (app) => {
     *         required: true
     *         schema: 
     *           $ref: '#/components/schemas/id'
-    *       - name: email
-    *         description: user's email
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/email'
-    *       - name: password
-    *         description: user's password
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/password'
     *     responses:
     *       302:
     *         description: Redirects to shipping when user is logged in. Redirects to auth if registration fails.
+    *         headers: 
+    *           Set-Cookie:
+    *             schema: 
+    *               type: string
+    *               example: access_token=eyJhbGc...; Path=/; HttpOnly; Secure
     */ 
     router.post('/register', demiAuth, async (req, res, next) => {
         try {
@@ -125,8 +136,8 @@ module.exports = (app) => {
             // attach JWT 
             res.header('Authorization', response.token);
 
-            // redirect to get shipping info 
-            res.redirect('/checkout/shipping');
+            // attach cookie and redirect to get shipping info 
+            res.cookie("access_token", response.token, JWTcookieOptions).redirect('/checkout/shipping');
         } catch(err) {
             if (err.status === 400 || err.status === 409) {
                 res.redirect('/checkout/auth');
@@ -134,6 +145,4 @@ module.exports = (app) => {
             next(err);
         }
     });
-
-   
 }

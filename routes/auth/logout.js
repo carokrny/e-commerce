@@ -11,21 +11,20 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Auth
-    *     description: Logs user out
-    *     produces:
-    *       - application/json
+    *     summary: Logs user out
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: Logout confirmation.
     *       401: 
-    *         description: User not authorized to access route.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     */
     router.post('/', isAuth, (req, res, next) => {
-        delete req.jwt;
+        if (req.jwt) delete req.jwt;
+        res.clearCookie("access_token");
+        res.clearCookie("connect.sid");
         res.status(200).json('You have successfully been logged out.');
     })
 }

@@ -16,7 +16,6 @@ module.exports = (app) => {
     *     id: 
     *       type: integer
     *       minimum: 1
-    *       example: 126
     *     address1:
     *       type: string
     *       example: '123 Easy St'
@@ -66,36 +65,54 @@ module.exports = (app) => {
     *     is_primary_address:
     *       type: boolean
     *       example: false
-    * definitions:
-    *   Address:
-    *     type: object
-    *     properties:
-    *       id:
-    *         $ref: '#/components/schemas/id'
-    *       user_id:
-    *         $ref: '#/components/schemas/id'
-    *       address1:
-    *         $ref: '#/components/schemas/address1'
-    *       address2:
-    *         $ref: '#/components/schemas/address2'
-    *       city:
-    *         $ref: '#/components/schemas/city'
-    *       state:
-    *         $ref: '#/components/schemas/state'
-    *       zip:
-    *         $ref: '#/components/schemas/zip'
-    *       country:
-    *         $ref: '#/components/schemas/country'
-    *       first_name: 
-    *         $ref: '#/components/schemas/first_name'
-    *       last_name:
-    *         $ref: '#/components/schemas/last_name'
-    *       created:
-    *         $ref: '#/components/schemas/date_time'
-    *       modified:
-    *         $ref: '#/components/schemas/date_time'
-    *       is_primary_address:
-    *         $ref: '#/components/schemas/is_primary_address'
+    *     Address:
+    *       type: object
+    *       properties:
+    *         id:
+    *           $ref: '#/components/schemas/id'
+    *         user_id:
+    *           $ref: '#/components/schemas/id'
+    *         address1:
+    *           $ref: '#/components/schemas/address1'
+    *         address2:
+    *           $ref: '#/components/schemas/address2'
+    *         city:
+    *           $ref: '#/components/schemas/city'
+    *         state:
+    *           $ref: '#/components/schemas/state'
+    *         zip:
+    *           $ref: '#/components/schemas/zip'
+    *         country:
+    *           $ref: '#/components/schemas/country'
+    *         first_name: 
+    *           $ref: '#/components/schemas/first_name'
+    *         last_name:
+    *           $ref: '#/components/schemas/last_name'
+    *         created:
+    *           $ref: '#/components/schemas/date_time'
+    *         modified:
+    *           $ref: '#/components/schemas/date_time'
+    *         is_primary_address:
+    *           $ref: '#/components/schemas/is_primary_address'
+    *     Error:
+    *       type: object
+    *       properties: 
+    *         code: 
+    *           type: string
+    *         message:
+    *           type: string
+    *       required:
+    *         - code
+    *         - message
+    *   responses:
+    *     UnauthorizedError:
+    *       description: JWT is missing or invalid. Attach JWT as Bearer token or in access_token cookie.
+    *     InputsError: 
+    *       description: One or more inputs are invalid.
+    *     ForbiddenError: 
+    *       description: The resource does not belong to the user attempting to access it.
+    *     NotFoundError: 
+    *       description: The resource cannot be found.
     *
     */
 
@@ -105,80 +122,58 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Account
-    *     description: Creates and returns new address
-    *     produces:
-    *       - application/json
+    *     summary: Creates and returns new address
     *     security: 
-    *       - Bearer: []
-    *     parameters:
-    *       - name: address1
-    *         description: first line of user's address
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/address1'
-    *       - name: address2
-    *         description: second line of user's address
-    *         in: body
-    *         required: false
-    *         type: string
-    *         schema: 
-    *           $ref: '#/components/schemas/address2'
-    *       - name: city
-    *         description: city of user's address
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/city'
-    *       - name: state
-    *         description: state of user's address
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/state'
-    *       - name: zip
-    *         description: zip code of user's address
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/zip'
-    *       - name: country
-    *         description: country of user's address
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/country'
-    *       - name: first_name
-    *         description: first name of address recipient
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/first_name'
-    *       - name: last_name
-    *         description: last name of address recipient
-    *         in: body
-    *         required: true
-    *         schema: 
-    *           $ref: '#/components/schemas/last_name'
-    *       - name: is_primary_address
-    *         description: whether this is user's primary address
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/is_primary_address'
+    *       - bearerJWT: []
+    *       - cookieJWT: []
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               address1:
+    *                 $ref: '#/components/schemas/address1'
+    *               address2:
+    *                 $ref: '#/components/schemas/address2'
+    *               city:
+    *                 $ref: '#/components/schemas/city'
+    *               state:
+    *                 $ref: '#/components/schemas/state'
+    *               zip:
+    *                 $ref: '#/components/schemas/zip'
+    *               country:
+    *                 $ref: '#/components/schemas/country'
+    *               first_name:
+    *                 $ref: '#/components/schemas/first_name'
+    *               last_name:
+    *                 $ref: '#/components/schemas/last_name'
+    *               is_primary_address:
+    *                 $ref: '#/components/schemas/is_primary_address'
+    *             required:
+    *               - address1
+    *               - city
+    *               - state
+    *               - zip
+    *               - country
+    *               - first_name
+    *               - last_name
     *     responses:
     *       201:
     *         description: An Address object.
-    *         schema:
-    *           $ref: '#/definitions/Address'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 address: 
+    *                   $ref: '#/components/schemas/Address' 
     *       400: 
-    *         description: Invalid inputs.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     */
     router.post('/', async (req, res, next) => {
         try {
@@ -201,22 +196,24 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Account
-    *     description: Returns all addresses associated with user
-    *     produces:
-    *       - application/json
+    *     summary: Returns all addresses associated with user
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: An array of Address objects.
-    *         schema:
-    *           type: array 
-    *           items: 
-    *             $ref: '#/definitions/Address'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 addresses:
+    *                   type: array
+    *                   items: 
+    *                     $ref: '#/components/schemas/Address' 
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     */
     router.get('/all', async (req, res ,next) => {
         try {
@@ -246,24 +243,24 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Account
-    *     description: Returns address with specified address_id
-    *     produces:
-    *       - application/json
+    *     summary: Returns address with specified address_id
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: An Address object.
-    *         schema:
-    *           $ref: '#/definitions/Address'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 address: 
+    *                   $ref: '#/components/schemas/Address' 
     *       400: 
-    *         description: Missing address_id.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     *       403: 
     *         description: User not associated with specified address_id.
     *       404: 
@@ -293,79 +290,50 @@ module.exports = (app) => {
     *   put:
     *     tags:
     *       - Account
-    *     description: Updates and returns address with specified ID
-    *     produces:
-    *       - application/json
+    *     summary: Updates and returns address with specified ID
     *     security: 
-    *       - Bearer: []
-    *     parameters:
-    *       - name: address1
-    *         description: first line of user's address
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/address1'
-    *       - name: address2
-    *         description: second line of user's address
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/address2'
-    *       - name: city
-    *         description: city of user's address
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/city'
-    *       - name: state
-    *         description: state of user's address
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/state'
-    *       - name: zip
-    *         description: zip code of user's address
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/zip'
-    *       - name: country
-    *         description: country of user's address
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/country'
-    *       - name: first_name
-    *         description: first name of address recipient
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/first_name'
-    *       - name: last_name
-    *         description: last name of address recipient
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/last_name'
-    *       - name: is_primary_address
-    *         description: whether this is user's primary address
-    *         in: body
-    *         required: false
-    *         schema: 
-    *           $ref: '#/components/schemas/is_primary_address'
+    *       - bearerJWT: []
+    *       - cookieJWT: []
+    *     requestBody:
+    *       description: body with necessary parameters
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               address1:
+    *                 $ref: '#/components/schemas/address1'
+    *               address2:
+    *                 $ref: '#/components/schemas/address2'
+    *               city:
+    *                 $ref: '#/components/schemas/city'
+    *               state:
+    *                 $ref: '#/components/schemas/state'
+    *               zip:
+    *                 $ref: '#/components/schemas/zip'
+    *               country:
+    *                 $ref: '#/components/schemas/country'
+    *               first_name:
+    *                 $ref: '#/components/schemas/first_name'
+    *               last_name:
+    *                 $ref: '#/components/schemas/last_name'
+    *               is_primary_address:
+    *                 $ref: '#/components/schemas/is_primary_address'
     *     responses:
     *       200:
     *         description: An Address object.
-    *         schema:
-    *           $ref: '#/definitions/Address'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 address: 
+    *                   $ref: '#/components/schemas/Address' 
     *       400: 
-    *         description: Missing address_id.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     *       403: 
     *         description: User not associated with specified address_id.
     *       404: 
@@ -399,24 +367,24 @@ module.exports = (app) => {
     *   delete:
     *     tags:
     *       - Account
-    *     description: Deletes and returns address with specified ID
-    *     produces:
-    *       - application/json
+    *     summary: Deletes and returns address with specified ID
     *     security: 
-    *       - Bearer: []
+    *       - bearerJWT: []
+    *       - cookieJWT: []
     *     responses:
     *       200:
     *         description: An Address object.
-    *         schema:
-    *           $ref: '#/definitions/Address'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 address: 
+    *                   $ref: '#/components/schemas/Address' 
     *       400: 
-    *         description: Missing address_id.
-    *         schema: 
-    *           $ref: '#/responses/InputsError'
+    *         $ref: '#/components/responses/InputsError'
     *       401: 
-    *         description: User not authorized.
-    *         schema:
-    *           $ref: '#/responses/UnauthorizedError'
+    *         $ref: '#/components/responses/UnauthorizedError'
     *       403: 
     *         description: User not associated with specified address_id.
     *       404: 

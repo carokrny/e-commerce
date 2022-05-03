@@ -12,43 +12,52 @@ module.exports = (app) => {
 
     /**
     * @swagger
-    * definitions:
-    *   Cart:
-    *     type: object
-    *     properties:
-    *       id:
-    *         $ref: '#/components/schemas/id'
-    *       user_id:
-    *         $ref: '#/components/schemas/id'
-    *       total: 
-    *         $ref: '#/components/schemas/price'
-    *       num_items:
-    *         $ref: '#/components/schemas/num_products'
-    *       created:
-    *         $ref: '#/components/schemas/date_time'
-    *       modified:
-    *         $ref: '#/components/schemas/date_time'
-    *   CartItem:
-    *     type: object
-    *     properties:
-    *       cart_id:
-    *         $ref: '#/components/schemas/id'
-    *       product_id:
-    *         t$ref: '#/components/schemas/id'
-    *       quantity: 
-    *         $ref: '#/components/schemas/num_products'
-    *       name:
-    *         $ref: '#/components/schemas/product_name'
-    *       total_price:
-    *         $ref: '#/components/schemas/price'
-    *       description: 
-    *         $ref: '#/components/schemas/product_description'
-    *       in_stock:
-    *         $ref: '#/components/schemas/in_stock'
-    *       created:
-    *         $ref: '#/components/schemas/date_time'
-    *       modified:
-    *         $ref: '#/components/schemas/date_time'
+    * components:
+    *   schemas:
+    *     product_id: 
+    *       type: integer
+    *       minimum: 1
+    *       example: 3
+    *     quantity: 
+    *       type: integer
+    *       example: 2
+    *       maximum: 100
+    *     Cart:
+    *       type: object
+    *       properties:
+    *         id:
+    *           $ref: '#/components/schemas/id'
+    *         user_id:
+    *           $ref: '#/components/schemas/id'
+    *         total: 
+    *           $ref: '#/components/schemas/price'
+    *         num_items:
+    *           $ref: '#/components/schemas/num_products'
+    *         created:
+    *           $ref: '#/components/schemas/date_time'
+    *         modified:
+    *           $ref: '#/components/schemas/date_time'
+    *     CartItem:
+    *       type: object
+    *       properties:
+    *         cart_id:
+    *           $ref: '#/components/schemas/id'
+    *         product_id:
+    *           $ref: '#/components/schemas/product_id'
+    *         quantity: 
+    *           $ref: '#/components/schemas/quantity'
+    *         name:
+    *           $ref: '#/components/schemas/product_name'
+    *         total_price:
+    *           $ref: '#/components/schemas/price'
+    *         description: 
+    *           $ref: '#/components/schemas/product_description'
+    *         in_stock:
+    *           $ref: '#/components/schemas/in_stock'
+    *         created:
+    *           $ref: '#/components/schemas/date_time'
+    *         modified:
+    *           $ref: '#/components/schemas/date_time'
     *
     */
 
@@ -58,14 +67,22 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Shop
-    *     description: Creates and returns new cart
-    *     produces:
-    *       - application/json
+    *     summary: Creates and returns new cart
     *     responses:
     *       201:
     *         description: A Cart object.
-    *         schema:
-    *           $ref: '#/definitions/Cart'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 cart:
+    *                   $ref: '#/components/schemas/Cart'
+    *         headers: 
+    *           Set-Cookie:
+    *             schema: 
+    *               type: string
+    *               example: connect.sid=s%3ApzUS6...; Path=/; HttpOnly; Secure
     *       500: 
     *         description: Server error creating cart.
     */
@@ -93,9 +110,7 @@ module.exports = (app) => {
     *   get:
     *     tags:
     *       - Shop
-    *     description: Returns cart with items
-    *     produces:
-    *       - application/json
+    *     summary: Returns cart with items 
     *     parameters:
     *       - name: cart_id
     *         description: ID associated with Cart
@@ -105,15 +120,17 @@ module.exports = (app) => {
     *     responses:
     *       200:
     *         description: A Cart object and an array of CartItem objects.
-    *         schema:
-    *           type: object
-    *           properties: 
-    *               cart:  
-    *                 $ref: '#/definitions/Cart'
-    *               cartItems:
-    *                 type: array
-    *                 items: 
-    *                   $ref: '#/definitions/CartItem'
+    *         content:
+    *           application/json:  
+    *             schema:
+    *               type: object
+    *               properties: 
+    *                 cart:
+    *                   $ref: '#/components/schemas/Cart'
+    *                 cartItems:
+    *                   type: array
+    *                   items: 
+    *                     $ref: '#/components/schemas/CartItem'
     *       400: 
     *         description: Missing cart_id.
     *       404: 

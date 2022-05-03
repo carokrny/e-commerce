@@ -1,5 +1,7 @@
 const app = require('../app');
-const request = require('supertest');
+const session = require('supertest-session');
+const { loginUser,
+    createCSRFToken } = require('./testUtils');
 const { user1 } = require('./testData').users;
 const { cardPost, 
     cardPut,
@@ -12,37 +14,48 @@ const Card = require('../models/CardModel');
 
 describe ('Account payment method endpoints', () => {
 
-    describe('Valid JWT', () => {
+    let testSession;
+    let paymentId;
+    let csrfToken;
 
-        let token;
-        let paymentId;
-
+    describe('Valid auth', () => {
+        
         beforeAll(async () => {
-            const res = await request(app)
-                .post('/login')
-                .send(user1);
-            token = res.body.token;
-        }),
+            try {
+                // create test session
+                testSession = session(app);
+
+                // create csrfToken
+                csrfToken = await createCSRFToken(testSession);
+
+                // login user
+                await loginUser(user1, testSession, csrfToken);
+            } catch(e) {
+                console.log(e);
+            }
+        })
 
         afterAll(async () => {
             // tear down 
-            if(paymentId) {
-                try {
+            try {
+                if (paymentId) {
                     await Card.delete(paymentId);
-                } catch(e) {}
+                }
+            } catch(e) {
+                console.log(e);
             }
-        }),
+        })
 
         describe('POST \'/account/payment\'', () => {
 
             describe('Valid inputs', () => {
 
                 it ('Should create a new payment method', async () => {
-                    const res = await request(app)
+                    const res = await testSession
                         .post('/account/payment')
                         .send(cardPost)
-                        .set('Authorization', token)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(201);
                     expect(res.body).toBeDefined();
@@ -53,68 +66,68 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment.is_primary_payment).toEqual(cardPost.is_primary_payment);
                     paymentId = res.body.payment.id;
                 })
-            }), 
+            }) 
 
             describe('Invalid inputs', () => {
 
                 describe('Null input field', () => {
 
                     it ('Should return a 400 error', (done) => {
-                        request(app)
+                        testSession
                             .post('/account/payment')
                             .send({ ...cardPost, card_no: null })
-                            .set('Authorization', token)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(400)
                             .end((err, res) => {
                                 if (err) return done(err);
                                 return done();
                             });
                     })
-                }),
+                })
 
                 describe('Invalid card format', () => {
 
                     it ('Should return a 400 error', (done) => {
-                        request(app)
+                        testSession
                             .post('/account/payment')
                             .send(invalidCardPost)
-                            .set('Authorization', token)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(400)
                             .end((err, res) => {
                                 if (err) return done(err);
                                 return done();
                             });
                     })
-                }), 
+                }) 
 
                 describe('XSS attack on provider field', () => {
 
                     it ('Should be return 400 because XSS attack is longer than characters permitted', (done) => {
-                        request(app)
+                        testSession
                             .post('/account/payment')
                             .send({...cardPost,
                                 provider: xssAttack})
-                            .set('Authorization', token)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(400)
                             .end((err, res) => {
                                 if (err) return done(err);
                                 return done();
                             });
                     })
-                }),
+                })
 
                 describe('XSS attack on card_no field', () => {
 
                     it ('Should be return 400 because XSS attack does not meet card_no format', (done) => {
-                        request(app)
+                        testSession
                             .post('/account/payment')
                             .send({...cardPost,
                                 card_no: xssAttack})
-                            .set('Authorization', token)
                             .set('Accept', 'application/json')
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(400)
                             .end((err, res) => {
                                 if (err) return done(err);
@@ -123,16 +136,15 @@ describe ('Account payment method endpoints', () => {
                     })
                 })
             })
-        }), 
+        }) 
 
         describe('GET \'/account/payment/payment_id\'', () => {
 
             describe('Valid user_id', () => {
 
                 it ('Should return the payment method', async () => {
-                    const res = await request(app)
+                    const res = await testSession
                         .get(`/account/payment/${paymentId}`)
-                        .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .expect(200);
@@ -143,14 +155,13 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment.card_no.slice(-4)).toEqual(cardPost.card_no.slice(-4));
                     expect(res.body.payment.is_primary_payment).toEqual(cardPost.is_primary_payment);
                 })
-            }), 
+            }) 
 
             describe('Invalid user_id for the payment', () => {
 
                 it ('Should return a 409 error', (done) => {
-                    request(app)
+                    testSession
                         .get(`/account/payment/${differentPaymentId}`)
-                        .set('Authorization', token)
                         .set('Accept', 'application/json')
                         .expect(409)
                         .end((err, res) => {
@@ -159,14 +170,13 @@ describe ('Account payment method endpoints', () => {
                         });
                 })
             })
-        }), 
+        }) 
 
         describe('GET \'/account/payment/all\'', () => {
 
             it ('Should return the payment methods', async () => {
-                const res = await request(app)
+                const res = await testSession
                     .get(`/account/payment/all`)
-                    .set('Authorization', token)
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
                     .expect(200);
@@ -175,18 +185,18 @@ describe ('Account payment method endpoints', () => {
                 expect(res.body.payments[0]).toBeDefined();
                 expect(res.body.payments[0].user_id).toEqual(user1.id);
             })
-        }), 
+        }) 
 
         describe('PUT \'/account/payment/payment_id\'', () => {
 
             describe('Valid user_id', () => {
 
                 it ('Should update and return the payment', async () => {
-                    const res = await request(app)
+                    const res = await testSession
                         .put(`/account/payment/${paymentId}`)
                         .send(cardPut)
-                        .set('Authorization', token)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(200);
                     expect(res.body).toBeDefined();
@@ -198,16 +208,16 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment.is_primary_payment).toEqual(cardPut.is_primary_payment);
                     expect(res.body.payment.is_primary_payment).not.toEqual(cardPost.is_primary_payment);
                 })
-            }), 
+            }) 
 
             describe('Extra input field', () => {
 
                 it ('Should ignore extra field and update payment', async () => {
-                    const res = await request(app)
+                    const res = await testSession
                         .put(`/account/payment/${paymentId}`)
                         .send({ ...cardPut, telephone: 1234567890 })
-                        .set('Authorization', token)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect('Content-Type', /json/)
                         .expect(200);
                     expect(res.body).toBeDefined();
@@ -219,32 +229,32 @@ describe ('Account payment method endpoints', () => {
                     expect(res.body.payment.is_primary_payment).toEqual(cardPut.is_primary_payment);
                     expect(res.body.payment.telephone).not.toBeDefined();
                 })
-            }), 
+            }) 
 
             describe('Invalid formatted inputs', () => {
 
                 it ('Should not update with 400 error', (done) => {
-                    request(app)
+                    testSession
                         .put(`/account/payment/${paymentId}`)
                         .send(invalidCardPut)
-                        .set('Authorization', token)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(400)
                         .end((err, res) => {
                             if (err) return done(err);
                             return done();
                         });
                 })
-            }),
+            })
 
             describe('Invalid user_id for the payment', () => {
 
                 it ('Should return a 409 error', (done) => {
-                    request(app)
+                    testSession
                         .put(`/account/payment/${differentPaymentId}`)
                         .send(cardPut)
-                        .set('Authorization', token)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(409)
                         .end((err, res) => {
                             if (err) return done(err);
@@ -252,7 +262,7 @@ describe ('Account payment method endpoints', () => {
                         });
                 })
             })
-        }),
+        })
 
         describe('DELETE \'/account/payment/payment_id\'', () => {
 
@@ -261,11 +271,11 @@ describe ('Account payment method endpoints', () => {
                 describe('Payment is primary payment method', () => {
 
                     it ('Should delete and return the payment', async () => {
-                        const res = await request(app)
+                        const res = await testSession
                             .delete(`/account/payment/${paymentId}`)
-                            .set('Authorization', token)
                             .set('Accept', 'application/json')
                             .expect('Content-Type', /json/)
+                            .set(`XSRF-TOKEN`, csrfToken)
                             .expect(200);
                         expect(res.body).toBeDefined();
                         expect(res.body.payment).toBeDefined();
@@ -280,15 +290,15 @@ describe ('Account payment method endpoints', () => {
                         expect(testUser.primary_payment_id).toEqual(null);
                     })
                 })
-            }), 
+            }) 
 
             describe('Invalid user_id for the payment', () => {
 
                 it ('Should return a 409 error', (done) => {
-                    request(app)
+                    testSession
                         .delete(`/account/payment/${differentPaymentId}`)
-                        .set('Authorization', token)
                         .set('Accept', 'application/json')
+                        .set(`XSRF-TOKEN`, csrfToken)
                         .expect(409)
                         .end((err, res) => {
                             if (err) return done(err);
@@ -297,34 +307,38 @@ describe ('Account payment method endpoints', () => {
                 })
             })
         })
-    }),
+    })
 
-    describe('Invalid JWT', () => {
+    describe('Invalid auth', () => {
 
-        let paymentId;
+        beforeAll (async () => {
+            testSession = session(app);
+
+            // create csrf token 
+            csrfToken = await createCSRFToken(testSession);
+        })
 
         describe('POST \'/account/payment\'', () => {
 
             it ('Should return 401 error', (done) => {
-                request(app)
+                testSession
                     .post('/account/payment')
                     .send(cardPost)
-                    .set('Authorization', null)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(401)
                     .end((err, res) => {
                         if (err) return done(err);
                         return done();
                     });
             })
-        }), 
+        }) 
 
         describe('GET \'/account/payment/payment_id\'', () => {
 
             it ('Should return 401 error', (done) => {
-                request(app)
+                testSession
                     .get(`/account/payment/${paymentId}`)
-                    .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(401)
                     .end((err, res) => {
@@ -332,14 +346,13 @@ describe ('Account payment method endpoints', () => {
                         return done();
                     });
             })
-        }), 
+        }) 
 
         describe('GET \'/account/payment/all\'', () => {
 
             it ('Should return 401 error', (done) => {
-                request(app)
+                testSession
                     .get(`/account/payment/all`)
-                    .set('Authorization', null)
                     .set('Accept', 'application/json')
                     .expect(401)
                     .end((err, res) => {
@@ -347,31 +360,31 @@ describe ('Account payment method endpoints', () => {
                         return done();
                     });
             })
-        }), 
+        }) 
 
         describe('PUT \'/account/payment/payment_id\'', () => {
 
             it ('Should return 401 error', (done) => {
-                request(app)
+                testSession
                     .put(`/account/payment/${paymentId}`)
                     .send(cardPut)
-                    .set('Authorization', null)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(401)
                     .end((err, res) => {
                         if (err) return done(err);
                         return done();
                     });
             })
-        }),
+        })
 
         describe('DELETE \'/account/payment/payment_id\'', () => {
 
             it ('Should return 401 error', (done) => {
-                request(app)
+                testSession
                     .delete(`/account/payment/${paymentId}`)
-                    .set('Authorization', null)
                     .set('Accept', 'application/json')
+                    .set(`XSRF-TOKEN`, csrfToken)
                     .expect(401)
                     .end((err, res) => {
                         if (err) return done(err);
