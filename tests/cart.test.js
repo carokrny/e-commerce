@@ -1,7 +1,8 @@
 const app = require('../app');
 const session = require('supertest-session');
 const { loginUser,
-    createCSRFToken } = require('./testUtils');
+    createCSRFToken, 
+    createCartItem } = require('./testUtils');
 const { user1 } = require('./testData').users;
 const { product } = require('./testData');
 const Cart = require('../models/CartModel');
@@ -74,11 +75,8 @@ describe ('Cart endpoints', () => {
             describe('Item in cart', () => {
 
                 beforeEach(async () => {
-                    const res = await testSession
-                        .post(`/cart/item/${product.product_id}`)
-                        .send(product)
-                        .set('Accept', 'application/json')
-                        .set(`XSRF-TOKEN`, csrfToken);
+                    // add item to cart
+                    await createCartItem(product, testSession, csrfToken);
                 })
 
                 it('Should return the cart and cart item(s)', async () => {
@@ -158,11 +156,8 @@ describe ('Cart endpoints', () => {
             describe('Item in cart', () => {
 
                 beforeEach(async () => {
-                    const res = await testSession
-                        .post(`/cart/item/${product.product_id}`)
-                        .send(product)
-                        .set('Accept', 'application/json')
-                        .set(`XSRF-TOKEN`, csrfToken);
+                    // add item to cart
+                    await createCartItem(product, testSession, csrfToken);
                 })
 
                 it('Should return the cart and cart item(s)', async () => {

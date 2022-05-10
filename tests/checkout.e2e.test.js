@@ -118,11 +118,8 @@ describe('Checkout flow E2E', () => {
                     // login user
                     await loginUser(user6, testSession, csrfToken);
 
-                    // create cart 
-                    cartId = await createCart(testSession, csrfToken);
-
                     // add item to cart
-                    await createCartItem(product, testSession, csrfToken);
+                    cartId = await createCartItem(product, testSession, csrfToken);
                 } catch(e) {
                     console.log(e);
                 }
@@ -225,11 +222,8 @@ describe('Checkout flow E2E', () => {
                     // login user
                     await loginUser(user8, testSession, csrfToken);
 
-                    // create cart 
-                    cartId = await createCart(testSession, csrfToken);
-
                     // add item to cart
-                    await createCartItem(product, testSession, csrfToken);
+                    cartId = await createCartItem(product, testSession, csrfToken);
 
                     // create address
                     address = await Address.create({ 
@@ -402,7 +396,7 @@ describe('Checkout flow E2E', () => {
             beforeEach(async () => {
                 try {
                     // add item to cart
-                    await createCartItem(product, testSession, csrfToken)
+                    cartId = await createCartItem(product, testSession, csrfToken)
                 } catch(e) {
                     console.log(e);
                 }
@@ -509,7 +503,7 @@ describe('Checkout flow E2E', () => {
             beforeEach(async () => {
                 try {
                     // add item to cart
-                    await createCartItem(product, testSession, csrfToken)
+                    cartId = await createCartItem(product, testSession, csrfToken)
                 } catch(e) {
                     console.log(e);
                 }

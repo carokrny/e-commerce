@@ -28,13 +28,19 @@ module.exports.register = async (data) => {
         });
 
         // handle if user had shopping cart before registering in 
-        await cartConsolidator(data.cart_id, newUser.id);
+        const { cart, cartItems } = await cartConsolidator(data.cart_id, newUser.id);
 
         // wipe password info before returning
         wipePassword(newUser)
 
-        // attach JWT
-        return attachJWT(newUser);
+        // attach JWT and return user
+        const response = attachJWT(newUser);
+
+        return {
+            ...response, 
+            cart, 
+            cartItems
+        }
 
     } catch(err) {
         throw err;
@@ -59,13 +65,19 @@ module.exports.login = async (data) => {
         }
 
         // handle if user had shopping cart before logging in 
-        await cartConsolidator(data.cart_id, user.id);
+        const { cart, cartItems } = await cartConsolidator(data.cart_id, user.id);
 
         // wipe password info before returning
         wipePassword(user);
 
         // attach JWT and return user
-        return attachJWT(user);
+        const response = attachJWT(user);
+
+        return {
+            ...response, 
+            cart, 
+            cartItems
+        }
 
     } catch(err) {
         throw err;

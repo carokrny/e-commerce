@@ -21,6 +21,7 @@ module.exports = (app) => {
     *     quantity: 
     *       type: integer
     *       example: 2
+    *       minimum: 1
     *       maximum: 100
     *     Cart:
     *       type: object
@@ -67,7 +68,7 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Shop
-    *     summary: Creates and returns new cart
+    *     summary: Creates and returns a new empty cart 
     *     responses:
     *       201:
     *         description: A Cart object.
@@ -78,6 +79,10 @@ module.exports = (app) => {
     *               properties: 
     *                 cart:
     *                   $ref: '#/components/schemas/Cart'
+    *                 cartItems:
+    *                   type: array
+    *                   items: 
+    *                     $ref: '#/components/schemas/CartItem'
     *         headers: 
     *           Set-Cookie:
     *             schema: 
@@ -139,10 +144,13 @@ module.exports = (app) => {
     router.get('/', async (req, res ,next) => {
         try {
             // grab cart_id from express session, if it exists
-            const cart_id = req.session.cart_id ? req.session.cart_id : null;
+            const cart_id = req.session.cart_id || null;
+
+            // grad user_id, if it exists
+            const user_id = req.jwt ? req.jwt.sub : null;
 
             // await response
-            const response = await getCart(cart_id);
+            const response = await getCart(cart_id, user_id);
 
             // send response to client
             res.status(200).json(response);

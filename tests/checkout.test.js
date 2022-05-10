@@ -1,7 +1,6 @@
 const app = require('../app');
 const session = require('supertest-session');
 const { loginUser, 
-    createCart, 
     createCartItem, 
     createCSRFToken } = require('./testUtils');
 const { user4, 
@@ -37,11 +36,8 @@ describe ('Checkout endpoints', () => {
                 // log user in 
                 await loginUser(user4, testSession, csrfToken);
 
-                // create cart
-                cartId = await createCart(testSession, csrfToken)
-
                 // add item to cart
-                await createCartItem(product, testSession, csrfToken);
+                cartId = await createCartItem(product, testSession, csrfToken);
             } catch(e) {
                 console.log(e);
             }
@@ -525,11 +521,8 @@ describe ('Checkout endpoints', () => {
                 // create csrf token
                 csrfToken = await createCSRFToken(testSession);
 
-                // create cart
-                cartId = await createCart(testSession, csrfToken);
-
                 // add item to cart
-                await createCartItem(product, testSession, csrfToken);
+                cartId = await createCartItem(product, testSession, csrfToken);
             } catch(e) {
                 console.log(e);
             }

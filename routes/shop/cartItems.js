@@ -14,7 +14,7 @@ module.exports = (app) => {
     *   post:
     *     tags:
     *       - Shop
-    *     summary: Creates and returns new item in cart
+    *     summary: Adds product of specified quantity to cart and returns new item in cart. Creates a cart if one does not exist.
     *     requestBody:
     *       description: body with necessary parameters
     *       required: true
@@ -57,13 +57,19 @@ module.exports = (app) => {
     */
     router.post('/:product_id', async (req, res ,next) => {
         try {
-            // grab cart_id from express session
-            const cart_id = req.session.cart_id ? req.session.cart_id : null;
-            // grab product_id and quantity from express objects
-            const { product_id } = req.params;
-            const { quantity } = req.body;
+            // grab data needed to get post cart item 
+            const data = {
+                cart_id: req.session.cart_id || null,
+                user_id: req.jwt ? req.jwt.sub : null, 
+                product_id: req.params.product_id, 
+                quantity: req.body.quantity
+            };
 
-            const response = await postCartItem({ cart_id, product_id, quantity });
+            // get response
+            const response = await postCartItem(data);
+
+            // attach cart_id to session, in case cart_id changed
+            req.session.cart_id = response.cartItem.cart_id;
 
             res.status(201).json(response);
         } catch(err) {
@@ -108,12 +114,14 @@ module.exports = (app) => {
     */
     router.get('/:product_id', async (req, res ,next) => {
         try {
-            // grab cart_id from express session
-            const cart_id = req.session.cart_id ? req.session.cart_id : null;
-            // grab product_id from express params object
-            const { product_id } = req.params;
+            // grab data needed to get post cart item 
+            const data = {
+                cart_id: req.session.cart_id || null, 
+                product_id: req.params.product_id
+            };
 
-            const response = await getCartItem({ cart_id, product_id });
+            // get response
+            const response = await getCartItem(data);
             
             res.status(200).json(response);
         } catch(err) {
@@ -127,7 +135,7 @@ module.exports = (app) => {
     *   put:
     *     tags:
     *       - Shop
-    *     summary: Updates and returns new item in cart
+    *     summary: Updates and returns specified item in cart
     *     requestBody:
     *       description: body with necessary parameters
     *       required: true
@@ -170,13 +178,19 @@ module.exports = (app) => {
     */
     router.put('/:product_id', async (req, res ,next) => {
         try {
-            // grab cart_id from express session
-            const cart_id = req.session.cart_id ? req.session.cart_id : null;
-            // grab product_id and quantity from express objects
-            const { product_id } = req.params;
-            const { quantity } = req.body;
+            // grab data needed to get post cart item 
+            const data = {
+                cart_id: req.session.cart_id || null,
+                user_id: req.jwt ? req.jwt.sub : null, 
+                product_id: req.params.product_id, 
+                quantity: req.body.quantity
+            };
 
-            const response = await putCartItem({ cart_id, product_id, quantity });
+            // get response
+            const response = await putCartItem(data);
+
+            // attach cart_id to session, in case cart_id changed
+            req.session.cart_id = response.cartItem.cart_id;
 
             res.status(200).json(response);
         } catch(err) {
@@ -221,12 +235,18 @@ module.exports = (app) => {
     */
     router.delete('/:product_id', async (req, res ,next) => {
         try {
-            // grab cart_id from express session
-            const cart_id = req.session.cart_id ? req.session.cart_id : null;
-            // grab product_id from express params object
-            const { product_id } = req.params;
+            // grab data needed to get post cart item 
+            const data = {
+                cart_id: req.session.cart_id || null,
+                user_id: req.jwt ? req.jwt.sub : null, 
+                product_id: req.params.product_id
+            };
 
-            const response = await deleteCartItem({ cart_id, product_id });
+            // get response
+            const response = await deleteCartItem(data);
+
+            // attach cart_id to session, in case cart_id changed
+            req.session.cart_id = response.cartItem.cart_id;
 
             res.status(200).json(response);
         } catch(err) {

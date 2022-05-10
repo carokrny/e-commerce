@@ -67,6 +67,12 @@ module.exports = (app) => {
     *                   type: string
     *                 expires:
     *                   type: number
+    *                 cart:
+    *                   $ref: '#/components/schemas/Cart'
+    *                 cartItems:
+    *                   type: array
+    *                   items: 
+    *                     $ref: '#/components/schemas/CartItem'
     *         headers: 
     *           Set-Cookie:
     *             schema: 
@@ -85,6 +91,11 @@ module.exports = (app) => {
             // await response 
             const response = await login({ ...req.body, cart_id: cart_id });
 
+            // attach cart_id to session, in case cart_id changed in cart consolidation
+            if (response.cart) {
+                req.session.cart_id = response.cart.id;
+            }
+            
             // put jwt in a secure cookie and send to client
             res.cookie("access_token", response.token, JWTcookieOptions).status(200).json(response);
         } catch(err) {

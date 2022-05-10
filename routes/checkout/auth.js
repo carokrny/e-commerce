@@ -62,20 +62,33 @@ module.exports = (app) => {
     */ 
     router.post('/login', demiAuth, async (req, res, next) => {
         try {
-            // redirect to shipping if user is logged in
-            if (req.jwt && req.jwt.sub) res.redirect('/checkout/shipping');
+            // check if user is already logged in 
+            if (req.jwt && req.jwt.sub) {
+                // redirect to shipping if user is logged in
+                res.redirect('/checkout/shipping');
+            } else {
             
-            // grab cart_id from express session, if it exists
-            const cart_id = req.session.cart_id || null;
+                // grab necessary data 
+                const data = {
+                    email: req.body.email,
+                    password: req.body.password,
+                    cart_id: req.session.cart_id || null
+                }
 
-            // await response 
-            const response = await login({ ...req.body, cart_id: cart_id });
+                // await response 
+                const response = await login(data);
 
-            // attach JWT 
-            res.header('Authorization', response.token);
+                // attach cart_id to session, in case cart_id changed in cart consolidation
+                if (response.cart && data.cart_id !== response.cart.id) {
+                    req.session.cart_id = response.cart.id;
+                }
 
-            // attach cookie and redirect to get shipping info 
-            res.cookie("access_token", response.token, JWTcookieOptions).redirect('/checkout/shipping');
+                // add JWT to header
+                res.header('Authorization', response.token);
+
+                // attach JWT cookie and redirect to get shipping info 
+                res.cookie("access_token", response.token, JWTcookieOptions).redirect('/checkout/shipping');
+            }
         } catch(err) {
             if (err.status === 400 || err.status === 401) {
                 res.redirect('/checkout/auth');
@@ -124,20 +137,33 @@ module.exports = (app) => {
     */ 
     router.post('/register', demiAuth, async (req, res, next) => {
         try {
-            // redirect to shipping if user is logged in
-            if (req.jwt && req.jwt.sub) res.redirect('/checkout/shipping');
+            // check if user is already logged in 
+            if (req.jwt && req.jwt.sub) {
+                // redirect to shipping if user is logged in
+                res.redirect('/checkout/shipping');
+            } else {
 
-            // grab cart_id from express session, if it exists
-            const cart_id = req.session.cart_id || null;
+                // grab necessary data 
+                const data = {
+                    email: req.body.email,
+                    password: req.body.password,
+                    cart_id: req.session.cart_id || null
+                }
 
-            // await response
-            const response = await register({ ...req.body, cart_id: cart_id });
+                // await response
+                const response = await register(data/*{ ...req.body, cart_id: cart_id }*/);
 
-            // attach JWT 
-            res.header('Authorization', response.token);
+                // attach cart_id to session, in case cart_id changed in cart consolidation
+                if (response.cart && data.cart_id !== response.cart.id) {
+                    req.session.cart_id = response.cart.id;
+                }
 
-            // attach cookie and redirect to get shipping info 
-            res.cookie("access_token", response.token, JWTcookieOptions).redirect('/checkout/shipping');
+                // add JWT to header 
+                res.header('Authorization', response.token);
+
+                // attach cookie and redirect to get shipping info 
+                res.cookie("access_token", response.token, JWTcookieOptions).redirect('/checkout/shipping');
+            }
         } catch(err) {
             if (err.status === 400 || err.status === 409) {
                 res.redirect('/checkout/auth');

@@ -119,6 +119,7 @@ const createCart = async (testSession, csrfToken) => {
             .send(product)
             .set('Accept', 'application/json')
             .set(`XSRF-TOKEN`, csrfToken);
+        return res.body.cartItem.cart_id;
     } catch(e) {
         console.log(e);
     }

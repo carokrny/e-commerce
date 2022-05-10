@@ -179,9 +179,13 @@ class CartItem {
                                     RETURNING *
                                 )
                                 SELECT 
-	                                deleted_item.*, 
+	                                deleted_item.cart_id, 
+                                    deleted_item.product_id,
+                                    deleted_item.created, 
+                                    deleted_item.modified,
+                                    deleted_item.quantity * 0 AS "quantity",
                                     products.name,
-                                    products.price * deleted_item.quantity AS "total_price", 
+                                    products.price * 0 AS "total_price", 
                                     products.description,
                                     products.quantity > 0 AS "in_stock"
                                 FROM deleted_item 

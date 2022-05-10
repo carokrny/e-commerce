@@ -135,14 +135,20 @@ const products = {
 
 // test product for entering into carts and orders
 const product = {
-    product_id: products.product1.id, 
-    quantity: 2
+   product_id: products.product1.id, 
+   quantity: 2
 };
 
 // updated quantity to product for updating cart
 const updatedProduct = {
-    product_id: products.product1.id,
-    quantity: 5
+   product_id: products.product1.id,
+   quantity: 5
+};
+
+// test product for entering into carts and orders
+const product2 = {
+   product_id: products.product2.id, 
+   quantity: 1
 };
 //******************************************************************************************************
 
@@ -391,6 +397,7 @@ module.exports = {
    testRegister2, 
    userAccountPut, 
    product, 
+   product2,
    updatedProduct,
    addressPost,
    addressPut, 
